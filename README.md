@@ -24,14 +24,14 @@ python3 compute.py --dataset_name ${DATASET_NAME} --method=${METHOD}
 *  Run **TransferGraph** to map model-dataset relationships in a graph and use GNN to train node representations.
 ```console
 cd ..
-cd graph
+cd tools
 python3 run.py                                                                
 ```
 ### Predict the model performance 
 Learn a simple regression model, e.g., XGBoost, to predict model performance using the features along with other metadata.
 ```console
-cd methods
-python3 train_with_linear_regression.py
+cd tools
+python3 train_prediction_model.py
 ```
 ### Evaluation
 We use **Pearson correlation** as evaluation metric. We compare the predicted model performance with the actual fine-tuning results.
