@@ -30,9 +30,9 @@ class GraphAttributes():
         self.args = args
         self.root = '../'
         if self.args.modality == 'image':
-            self.record_path = 'doc/records.csv'
+            self.record_path = 'resources/experiments/image_classification/records.csv'
         elif self.args.modality == 'text':
-            self.record_path = 'doc/sequence_classification/records.csv'
+            self.record_path = 'resources/experiments/sequence_classification/records.csv'
 
         self.finetune_records = self.get_finetuned_records()
         # get node id
@@ -108,7 +108,7 @@ class GraphAttributes():
 
         ## Filter distance with top K
 
-        path = f'../doc/corr_{self.args.dataset_embed_method}_{self.args.dataset_reference_model}_{base_dataset}.csv'
+        path = f'../resources/experiments/{self.args.task_type}/corr_{self.args.dataset_embed_method}_{self.args.dataset_reference_model}_{base_dataset}.csv'
         # if not os.path.exists(path):
         if True:
             dict_distance = {}
@@ -399,7 +399,7 @@ class GraphAttributes():
         df_list = []
         df_neg_list = []
         if self.args.modality == 'text':
-            df_score_all = pd.read_csv('../doc/sequence_classification/transferability_score_records.csv', index_col=0)
+            df_score_all = pd.read_csv('../resources/experiments/sequence_classification/transferability_score_records.csv', index_col=0)
             # df_score = df_score_all[df_score_all['model']!='time']
         for ori_dataset_name, dataset_name in self.dataset_list.items():
             if self.args.modality == 'image':
@@ -409,7 +409,7 @@ class GraphAttributes():
             # print(f'\n ori_dataset_name: {ori_dataset_name}, dataset_name: {dataset_name}')
             try:
                 if self.args.modality == 'image':
-                    path = f'baselines/LogME_scores/{dataset_name.replace(" ", "-")}.csv'
+                    path = f'resources/LogME_scores/{dataset_name.replace(" ", "-")}.csv'
                     # print(f'path: {path}')
                     df_score = pd.read_csv(path, index_col=0)
                     df_score = df_score[df_score['model'] != 'time']
@@ -464,7 +464,7 @@ class GraphAttributes():
         df = pd.concat(df_list)
         # print(df.head())
         df = df.dropna(subset=['score'])
-        df.to_csv(f'../features/transferility_{self.args.modality}.csv')
+        df.to_csv(f'../resources/features/transferility_{self.args.modality}.csv')
 
         if 'score' not in df.columns: df['score'] = 0
         df_neg = pd.concat(df_neg_list).dropna()
@@ -477,12 +477,12 @@ class GraphAttributes():
 
     def get_finetuned_records(self):
         if self.args.modality == 'image':
-            file = 'doc/model_config_dataset.csv'
+            file = 'resources/experiments/image_classification/model_config_dataset.csv'
         elif self.args.modality == 'text':
-            file = 'doc/sequence_classification/model_config_dataset.csv'
+            file = 'resources/experiments/sequence_classification/model_config_dataset.csv'
         config = pd.read_csv(os.path.join(self.root, file))
         # model configuration
-        config['configs'] = {}
+        config['configs'] = ''
         # config['accuracy'] = 0
         available_models = config['model'].unique()
         if self.args.modality == 'image':
@@ -625,7 +625,10 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
     def get_dataset_features(self, reference_model):
         # sys.path.append(os.path.abspath('../'))
         # sys.path.append(os.getcwd())
-        from dataset_embed.domain_similarity.embed import embed
+        from transfergraph.dataset.embed_utils import DatasetEmbeddingMethod
+        from transfergraph.dataset.embedder import DatasetEmbedder
+        from transfergraph.dataset.hugging_face.dataset import HuggingFaceDatasetImage, HuggingFaceDatasetText
+        from transfergraph.dataset.task import TaskType
         data_feat = {}
 
         dataset_list = self.dataset_list.copy()
@@ -633,19 +636,41 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
 
         for ori_dataset_name, dataset_name in dataset_list.items():
             ds_name = dataset_name.replace(' ', '-').replace('/', '_')
-            path = os.path.join(f'../dataset_embed/domain_similarity/feature', reference_model, f'{ds_name}_feature.npy')
+            path = os.path.join(f'../resources/dataset_embed/domain_similarity/feature', reference_model, f'{ds_name}_feature.npy')
             if not os.path.exists(path):
                 print(f'\nTry to obtain missing features of {dataset_name}')
-                # features = embed('../',dataset_name)
-                try:
-                    features = embed('../', dataset_name, reference_model)
-                # except FileNotFoundError as e:
-                except Exception as e:
-                    # print(e)
-                    # print(f'== fail to retrieve features and delete row {i}')
-                    # self.delete_dataset_row_idx.append(i)
-                    del self.dataset_list[ori_dataset_name]
-                    continue
+                dataset = HuggingFaceDatasetImage.load(
+                    dataset_path=args.dataset_path,
+                    dataset_name=args.dataset_name,
+                    batch_size=args.batch_size,
+                    image_processor=AutoImageProcessor.from_pretrained(args.model_name)
+                )
+                config = AutoConfig.from_pretrained(
+                    args.model_name,
+                    finetuning_task=args.task_type,
+                )
+                model = AutoModelForImageClassification.from_pretrained(
+                    args.model_name,
+                    config=config,
+                )
+                embedder = DatasetEmbedder(
+                    model.to(device),
+                    dataset,
+                    args.embedding_method,
+                    args.task_type
+                )
+
+                embedder.embed()
+                # # features = embed('../',dataset_name)
+                # try:
+                #     features = embed('../', dataset_name, reference_model)
+                # # except FileNotFoundError as e:
+                # except Exception as e:
+                #     # print(e)
+                #     # print(f'== fail to retrieve features and delete row {i}')
+                #     # self.delete_dataset_row_idx.append(i)
+                #     del self.dataset_list[ori_dataset_name]
+                #     continue
             try:
                 features = np.load(path)
             except Exception as e:
