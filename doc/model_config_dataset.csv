@@ -1,0 +1,186 @@
+model,input_shape,output_shape,architectures,task,dataset,#labels,labels,task_specific_params,problem_type,finetuning_task,accuracy,model_type,number_of_parameters,memory_consumption
+Aftabhussain/Tomato_Leaf_Classifier,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['Bacterial_spot', 'Healthy']",,,,1.0,vit,85800194.0,1571600896
+Ahmed9275/ALL-3,224.0,768.0,['SwinForImageClassification'],,imagenet,1000.0,imagenet,,single_label_classification,,0.929,swin,28288354.0,1571600896
+Ahmed9275/ALL-test,224.0,768.0,['SwinForImageClassification'],,imagenet,1000.0,imagenet,,single_label_classification,,0.957,swin,28288354.0,1571600896
+Ahmed9275/Vit-Cifar100,224.0,768.0,['ViTForImageClassification'],,cifar100,100.0,cifar100,,single_label_classification,,0.898,vit,85875556.0,1571600896
+AhmedSayeem/VIT_Basic,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['chairs', 'hot dog', 'ice cream', 'ladders', 'tables']",,single_label_classification,,0.911,vit,85802501.0,1571600896
+AkshatSurolia/BEiT-FaceMask-Finetuned,224.0,768.0,['BeitForImageClassification'],,poolrf2001/facemask,2.0,poolrf2001/facemask,,,,0.975,beit,85667666.0,1571600896
+AkshatSurolia/ConvNeXt-FaceMask-Finetuned,224.0,768.0,['ConvNextForImageClassification'],,poolrf2001/mask,2.0,poolrf2001/facemask,,single_label_classification,,0.9961,convnext,27821666.0,1571600896
+AkshatSurolia/DeiT-FaceMask-Finetuned,224.0,768.0,['DeiTForImageClassification'],,poolrf2001/facemask,2.0,poolrf2001/facemask,,,,0.9922,deit,85801730.0,1571600896
+AkshatSurolia/ViT-FaceMask-Finetuned,224.0,768.0,['ViTForImageClassification'],,poolrf2001/facemask,2.0,poolrf2001/facemask,,,,0.9894,vit,85800194.0,1571600896
+Amrrs/indian-foods,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['idli', 'kachori', 'pani puri', 'samosa', 'vada pav']",,,,0.929,vit,85802501.0,1571600896
+Amrrs/south-indian-foods,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['dosai', 'idiyappam', 'idli', 'puttu', 'vadai']",,,,0.875,vit,85802501.0,1571600896
+Annabelleabbott/swin-tiny-patch4-window7-224-finetuned-eurosat,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.973,swin,27527044.0,1571600896
+AykeeSalazar/vc-bantai-vit-withoutAMBI,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['Public Drinking', 'Public Smoking', 'non-violation']",,single_label_classification,,0.9533,vit,85800963.0,1571600896
+Calin/convnext-tiny-finteuned-eurosat,224.0,768.0,['ConvNextForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,,convnext,27827818.0,1571600896
+Frodnar/bee-likes,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['bee', 'hoverfly', 'wasp']",,,,0.833,vit,85800963.0,1571600896
+GRANTHE2761/swin-tiny-patch4-window7-224-finetuned-eurosat,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.969,swin,27527044.0,1571600896
+Giuliano/places,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['Beach', 'City', 'Forest']",,,,1.0,vit,85800963.0,1571600896
+HHousen/household-rooms,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['bathroom', 'bedroom', 'dining room', 'kitchen', 'living room']",,,,0.848,vit,85802501.0,1571600896
+Hijazzi/rare-puppers,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'samoyed', 'shiba inu']",,single_label_classification,,0.97,vit,85800963.0,1571600896
+IDEA-CCNL/Taiyi-vit-87M-D,224.0,768.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,0.824,vit,86567656.0,1571600896
+KL/swin-tiny-patch4-window7-224-finetuned-eurosat,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,,swin,27527044.0,1571600896
+LorenzoDeMattei/lawn-weeds,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['clover', 'dichondra', 'grass']",,,,0.917,vit,85800963.0,1571600896
+Matthijs/snacks-classifier,224.0,768.0,['SwinForImageClassification'],,Matthijs/snacks,20.0,Matthijs/snacks,,single_label_classification,,0.9286,swin,27534734.0,1571600896
+Neto71/sea_mammals,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['blue whale', 'dolphin', 'orca whale']",,,,0.847,vit,85800963.0,1571600896
+Nonem100/Test-Model,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['cotton candy', 'hamburger', 'hot dog', 'nachos', 'popcorn']",,single_label_classification,,0.902,vit,85802501.0,1571600896
+Rajaram1996/FacialEmoRecog,224.0,768.0,['ViTForImageClassification'],,FastJobs/Visual_Emotional_Analysis,8.0,FastJobs/Visual_Emotional_Analysis,,,,0.919,vit,85804808.0,1571600896
+Sena/dog,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['buldog', 'golden', 'pug']",,,,0.958,vit,85800963.0,1571600896
+Sena/flowers,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['karanfil', 'leylak', 'menekse', 'nergis', 'zambak']",,,,0.604,vit,85802501.0,1571600896
+SriramSridhar78/sriram-car-classifier,224.0,768.0,['ViTForImageClassification'],,stanfordcars,196.0,stanfordcars,,,,0.827,vit,85949380.0,1571600896
+Suzana/new-york-tokyo-london,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['London', 'New York', 'Tokyo']",,,,0.91,vit,85800963.0,1571600896
+SyedMujtabaHassanRizvi/convnext-tiny-finetuned-eurosat,224.0,768.0,['ConvNextForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,,convnext,27827818.0,1571600896
+Symbermine/rare-puppers,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['Husky siberiano', 'cocker spaniel', 'galgo', 'labrador', 'pastor aleman']",,single_label_classification,,0.929,vit,85802501.0,1571600896
+Visual-Attention-Network/van-base,224.0,512.0,['VanForImageClassification'],,imagenet,1000.0,imagenet,,,,0.828,van,26579496.0,1571600896
+Visual-Attention-Network/van-large,224.0,512.0,['VanForImageClassification'],,imagenet,1000.0,imagenet,,,,0.839,van,44766632.0,1571600896
+Visual-Attention-Network/van-small,224.0,512.0,['VanForImageClassification'],,imagenet,1000.0,imagenet,,,,0.811,van,13862824.0,1571600896
+Visual-Attention-Network/van-tiny,224.0,256.0,['VanForImageClassification'],,imagenet,1000.0,imagenet,,,,0.754,van,4106312.0,1571600896
+WinKawaks/vit-small-patch16-224,224.0,384.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,,vit,22050664.0,1571600896
+WinKawaks/vit-tiny-patch16-224,224.0,192.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,,vit,5717416.0,1571600896
+Zayn/VIT_Basic,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['chairs', 'hot dog', 'ice cream', 'ladders', 'tables']",,single_label_classification,,0.911,vit,85802501.0,1571600896
+aaraki/vit-base-patch16-224-in21k-finetuned-cifar10,224.0,768.0,['ViTForImageClassification'],,cifar10,10.0,cifar10,,single_label_classification,,0.979,vit,85806346.0,1571600896
+ajanco/greens,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['cucumber', 'green beans', 'okra', 'pickle', 'zucinni']",,,,0.759,vit,85802501.0,1571600896
+akahana/vit-base-cats-vs-dogs,224.0,768.0,['ViTForImageClassification'],,cats_vs_dogs,2.0,cats_vs_dogs,,,,0.988,vit,85800194.0,1571600896
+aricibo/swin-tiny-patch4-window7-224-finetuned-eurosat,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.973,swin,27527044.0,1571600896
+b25mayank3/shirt_identifier,224.0,768.0,['ViTForImageClassification'],,hfpics,4.0,"['Big Check shirt', 'Formal Shirt', 'casual shirt', 'denim shirt']",,,,0.688,vit,85801732.0,1571600896
+black/simple_kitchen,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['best kitchen island', 'kitchen cabinet', 'kitchen countertop']",,,,0.722,vit,85800963.0,1571600896
+domluna/vit-base-patch16-224-in21k-shiba-inu-detector,224.0,768.0,['ViTForImageClassification'],,hfpics,4.0,"['Bulldog', 'German Shepherd Dog', 'Golden Retriever Dog', 'Shiba Inu Dog']",,single_label_classification,,1.0,vit,85801732.0,1571600896
+drab/Infrastructures,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['Cooling tower', 'Transmission grid', 'Wind turbines']",,,,0.925,vit,85800963.0,1571600896
+driboune/skin_type,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['dark skin', 'light skin']",,single_label_classification,,0.822,vit,85800194.0,1571600896
+edixo/road_good_damaged_condition,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['damaged road', 'good road']",,,,0.958,vit,85800194.0,1571600896
+eren23/pneumonia_test_attempt,224.0,768.0,['ViTForImageClassification'],,chest_xray_classification,2.0,chest_xray_classification,,single_label_classification,,0.978,vit,85800194.0,1571600896
+eslamxm/vit-base-food101,224.0,768.0,['ViTForImageClassification'],,food101,101.0,food101,,single_label_classification,,0.854,vit,85876325.0,1571600896
+facebook/convnext-base-224,224.0,1024.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,0.838,convnext,88591464.0,1571600896
+facebook/convnext-base-224-22k,224.0,1024.0,['ConvNextForImageClassification'],,imagenet-21k,21841.0,imagenet-21k,,,,0.858,convnext,109953489.0,1571600896
+facebook/convnext-base-224-22k-1k,224.0,1024.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,0.787,convnext,88591464.0,1571600896
+facebook/convnext-base-384,384.0,1024.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,0.851,convnext,88591464.0,1571600896
+facebook/convnext-base-384-22k-1k,384.0,1024.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,0.868,convnext,88591464.0,1571600896
+facebook/convnext-large-224,224.0,1536.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,0.843,convnext,197767336.0,1571600896
+facebook/convnext-large-224-22k,224.0,1536.0,['ConvNextForImageClassification'],,imagenet-21k,21841.0,imagenet-21k,,,,0.866,convnext,229799953.0,1571600896
+facebook/convnext-large-224-22k-1k,224.0,1536.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,0.826,convnext,197767336.0,1571600896
+facebook/convnext-large-384,384.0,1536.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,0.855,convnext,197767336.0,1571600896
+facebook/convnext-large-384-22k-1k,384.0,1536.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,0.875,convnext,197767336.0,1571600896
+facebook/convnext-small-224,224.0,768.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,0.831,convnext,50223688.0,1571600896
+facebook/convnext-tiny-224,224.0,768.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,0.821,convnext,28589128.0,1571600896
+facebook/convnext-xlarge-224-22k,224.0,2048.0,['ConvNextForImageClassification'],,imagenet-21k,21841.0,imagenet-21k,,,,0.87,convnext,392900177.0,1571600896
+facebook/convnext-xlarge-224-22k-1k,224.0,2048.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,,convnext,350196968.0,1571600896
+facebook/deit-base-distilled-patch16-224,224.0,768.0,['DeiTForImageClassificationWithTeacher'],,imagenet,1000.0,imagenet,,,,0.834,deit,87338192.0,1571600896
+facebook/deit-base-distilled-patch16-384,384.0,768.0,['DeiTForImageClassificationWithTeacher'],,imagenet,1000.0,imagenet,,,,0.852,deit,87630032.0,1571600896
+facebook/deit-base-patch16-224,224.0,768.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,0.818,vit,86567656.0,1571600896
+facebook/deit-base-patch16-384,384.0,768.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,0.829,vit,86859496.0,1571600896
+facebook/deit-small-distilled-patch16-224,224.0,384.0,['DeiTForImageClassificationWithTeacher'],,imagenet,1000.0,imagenet,,,,0.812,deit,22436432.0,1571600896
+facebook/deit-small-patch16-224,224.0,384.0,['DeiTForImageClassificationWithTeacher'],,imagenet,1000.0,imagenet,,,,0.799,vit,22050664.0,1571600896
+facebook/deit-tiny-distilled-patch16-224,224.0,192.0,['DeiTForImageClassificationWithTeacher'],,imagenet,1000.0,imagenet,,,,0.745,deit,5910800.0,1571600896
+facebook/deit-tiny-patch16-224,224.0,192.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,0.722,vit,5717416.0,1571600896
+ferdinand/rare-puppers,224.0,768.0,['DeiTForImageClassificationWithTeacher'],,hfpics,3.0,"['corgi', 'samoyed', 'shiba inu']",,,,0.986,vit,85800963.0,1571600896
+filipafcastro/beer_vs_wine,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['beer', 'wine']",,,,0.978,vit,85800194.0,1571600896
+firas-spanioli/beer-whisky-wine-detection,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['beer', 'whisky', 'wine']",,single_label_classification,,0.97,vit,85800963.0,1571600896
+firebolt/llama_or_what,224.0,768.0,['ViTForImageClassification'],,hfpics,4.0,"['alpaca', 'guanaco', 'llama', 'vicuna']",,,,0.313,vit,85801732.0,1571600896
+firebolt/llama_or_what2,224.0,768.0,['ViTForImageClassification'],,hfpics,4.0,"['alpaca', 'guanaco', 'llama', 'vicuna']",,,,0.417,vit,85801732.0,1571600896
+flyswot/test,224.0,192.0,['ViTForImageClassification'],,hfpics,2.0,"['control', 'flysheet']",,single_label_classification,,,vit,5524802.0,1571600896
+gatecitypreservation/architectural_styles,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['classical revival architecture', 'craftsman bungalow architecture', 'mid-century modern ranch', 'queen anne architecture', 'tudor cottage architecture']",,,,0.78,vit,85802501.0,1571600896
+godiec/diam,224.0,768.0,['ViTForImageClassification'],,hfpics,4.0,"['bunny', 'moon', 'sun', 'tiger']",,,,0.978,vit,85801732.0,1571600896
+google/vit-base-patch16-224,224.0,768.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,0.855,vit,86567656.0,1571600896
+google/vit-base-patch16-384,384.0,768.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,0.855,vit,86859496.0,1571600896
+google/vit-base-patch32-384,384.0,768.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,0.834,vit,88297192.0,1571600896
+google/vit-large-patch16-224,224.0,1024.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,0.856,vit,304326632.0,1571600896
+google/vit-large-patch32-384,384.0,1024.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,0.856,vit,306632680.0,1571600896
+guhuawuli/swin-tiny-patch4-window7-224-finetuned-eurosat,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.968,swin,27527044.0,1571600896
+hafidber/fruits,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['apple', 'banana', 'grape', 'kiwi', 'lemon']",,single_label_classification,,0.991,vit,85802501.0,1571600896
+hafidber/rare-puppers,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'samoyed', 'shiba inu']",,single_label_classification,,0.955,vit,85800963.0,1571600896
+hgarg/fruits,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['apple', 'banana', 'mango', 'orange', 'tomato']",,,,0.973,vit,85802501.0,1571600896
+hgarg/indian-snacks,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['dosa', 'idli', 'naan', 'samosa', 'vada']",,,,0.65,vit,85802501.0,1571600896
+ibombonato/swin-age-classifier,224.0,768.0,['SwinForImageClassification'],,age-prediction,10.0,age-prediction,,single_label_classification,,0.817,swin,27527044.0,1571600896
+ibombonato/vit-age-classifier,224.0,768.0,['ViTForImageClassification'],,age-prediction,10.0,age-prediction,,,,0.836,vit,85806346.0,1571600896
+imjeffhi/pokemon_classifier,224.0,768.0,['ViTForImageClassification'],,keremberke/pokemon-classification,898.0,keremberke/pokemon-classification,,,,0.95,vit,86489218.0,1571600896
+ipvikas/rare-puppers,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'samoyed', 'shiba inu']",,single_label_classification,,0.955,vit,85800963.0,1571600896
+ismgar01/vit-base-cats-vs-dogs,224.0,768.0,['ViTForImageClassification'],,cats_vs_dogs,2.0,cats_vs_dogs,,,,0.994,vit,85800194.0,1571600896
+iyzg/computer-stuff,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['computer mouse', 'desktop', 'keyboard', 'laptop', 'monitor']",,single_label_classification,,0.884,vit,85802501.0,1571600896
+jadohu/BEiT-finetuned,224.0,768.0,['BeitForImageClassification'],,cifar10,10.0,cifar10,,single_label_classification,,0.992,beit,85769674.0,1571600896
+jasmeen/dogs,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['golden retriever', 'great dane', 'husky']",,,,1.0,vit,85800963.0,1571600896
+jaygala24/finetuned-vit-base-patch16-224-upside-down-detector,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['upside_down', 'original']",,single_label_classification,,0.895,vit,85800194.0,1571600896
+jeffboudier/vision-transformers-spain-or-italy-fan,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['italy soccer fan', 'spain soccer fan']",,,,0.567,vit,85800194.0,1571600896
+jemole/swin-tiny-patch4-window7-224-finetuned-eurosat,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.976,swin,27527044.0,1571600896
+jjhoffstein/lotr,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['aragorn', 'frodo', 'gandalf', 'gollum', 'legolas']",,,,0.438,vit,85802501.0,1571600896
+jmarshall/rare-puppers,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'samoyed', 'shiba inu']",,single_label_classification,,0.94,vit,85800963.0,1571600896
+johnnydevriese/vit-airplanes,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['drone', 'fighter', 'uav']",,single_label_classification,,1.0,vit,85800963.0,1571600896
+johnnydevriese/vit_beans,224.0,768.0,['ViTForImageClassification'],,beans,3.0,beans,,,,,vit,85800963.0,1571600896
+juanfiguera/ice_cream,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['chocolate ice cream', 'vanilla ice cream']",,,,0.517,vit,85800194.0,1571600896
+julien-c/hotdog-not-hotdog,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['hot dog', 'not hot dog']",,,,0.825,vit,85800194.0,1571600896
+karthiksv/vit-base-beans,224.0,768.0,['ViTForImageClassification'],,beans,3.0,beans,,single_label_classification,,,vit,85800963.0,1571600896
+karthiksv/vit-base-patch16-224-cifar10,224.0,768.0,['ViTForImageClassification'],,cifar10,10.0,cifar10,,single_label_classification,,,vit,85806346.0,1571600896
+karthiksv/vit-base-patch16-224-in21k-finetuned-cifar10,224.0,768.0,['ViTForImageClassification'],,cifar10,10.0,cifar10,,single_label_classification,,,vit,85806346.0,1571600896
+lewtun/oz-fauna,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['dingo', 'koala', 'kookaburra', 'possum', 'tasmanian devil']",,,,0.857,vit,85802501.0,1571600896
+lysandre/tiny-vit-random,224.0,32.0,['ViTForImageClassification'],,imagenet,1000.0,imagenet,,,,,vit,76936.0,1571600896
+matteopilotto/vit-base-patch16-224-in21k-snacks,224.0,768.0,['ViTForImageClassification'],,Matthijs/snacks,20.0,Matthijs/snacks,,single_label_classification,,0.893,vit,85814036.0,1571600896
+mbyanfei/swin-tiny-patch4-window7-224-finetuned-eurosat,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.988,swin,27527044.0,1571600896
+meame2010/rare-puppers,224.0,768.0,['ViTForImageClassification'],,hfpics,4.0,"['dog drinking water', 'dog eating food', 'dog playing toy', 'dog sleeping']",,single_label_classification,,0.644,vit,85801732.0,1571600896
+mehnaazasad/swin-tiny-patch4-window7-224-finetuned-eurosat,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.977,swin,27527044.0,1571600896
+michaelbenayoun/vit-base-beans,224.0,768.0,['ViTForImageClassification'],,cifar10,10.0,cifar10,,,,0.622,,,1571600896
+micole66/dwarf-goats,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['african pygmy goat', 'nigerian dwarf goat']",,,,0.611,vit,85800194.0,1571600896
+microsoft/beit-base-patch16-224,224.0,768.0,['BeitForImageClassification'],,imagenet,1000.0,imagenet,,,,,beit,86530984.0,1571600896
+microsoft/beit-base-patch16-224-pt22k,224.0,768.0,['BeitForImageClassification'],,imagenet,1000.0,imagenet,,,,,beit,85667666.0,1571600896
+microsoft/beit-base-patch16-224-pt22k-ft22k,224.0,768.0,['BeitForImageClassification'],,imagenet-21k,21841.0,imagenet-21k,,,,,beit,102557713.0,1571600896
+microsoft/beit-base-patch16-384,384.0,768.0,['BeitForImageClassification'],,imagenet,1000.0,imagenet,,,,,beit,86744104.0,1571600896
+microsoft/beit-large-patch16-224,224.0,1024.0,['BeitForImageClassification'],,imagenet,1000.0,imagenet,,,,,beit,304430568.0,1571600896
+microsoft/beit-large-patch16-224-pt22k-ft22k,224.0,1024.0,['BeitForImageClassification'],,imagenet-21k,21841.0,imagenet-21k,,,,,beit,325792593.0,1571600896
+microsoft/beit-large-patch16-384,384.0,1024.0,['BeitForImageClassification'],,imagenet,1000.0,imagenet,,,,0.884,beit,304998888.0,1571600896
+microsoft/resnet-50,224.0,2048.0,['ResNetForImageClassification'],,imagenet,1000.0,imagenet,,,,,resnet,25557032.0,1571600896
+microsoft/swin-base-patch4-window12-384,384.0,1024.0,['SwinForImageClassification'],,imagenet,1000.0,imagenet,,,,0.845,swin,87903584.0,1571600896
+microsoft/swin-base-patch4-window12-384-in22k,384.0,1024.0,['SwinForImageClassification'],,imagenet-21k,21841.0,imagenet-21k,,,,0.864,swin,109265609.0,1571600896
+microsoft/swin-base-patch4-window7-224,224.0,1024.0,['SwinForImageClassification'],,imagenet,1000.0,imagenet,,,,0.835,swin,87768224.0,1571600896
+microsoft/swin-base-patch4-window7-224-in22k,224.0,1024.0,['SwinForImageClassification'],,imagenet-21k,21841.0,imagenet-21k,,,,0.852,swin,109130249.0,1571600896
+microsoft/swin-large-patch4-window12-384,384.0,1536.0,['SwinForImageClassification'],,imagenet,1000.0,imagenet,,,,,swin,196735516.0,1571600896
+microsoft/swin-large-patch4-window12-384-in22k,384.0,1536.0,['SwinForImageClassification'],,imagenet-21k,21841.0,imagenet-21k,,,,0.873,swin,228768133.0,1571600896
+microsoft/swin-large-patch4-window7-224,224.0,1536.0,['SwinForImageClassification'],,imagenet,1000.0,imagenet,,,,,swin,196532476.0,1571600896
+microsoft/swin-large-patch4-window7-224-in22k,224.0,1536.0,['SwinForImageClassification'],,imagenet-21k,21841.0,imagenet-21k,,,,0.863,swin,228565093.0,1571600896
+microsoft/swin-small-patch4-window7-224,224.0,768.0,['SwinForImageClassification'],,imagenet,1000.0,imagenet,,,,0.832,swin,49606258.0,1571600896
+microsoft/swin-tiny-patch4-window7-224,224.0,768.0,['SwinForImageClassification'],,imagenet,1000.0,imagenet,,,,0.812,swin,28288354.0,1571600896
+mmekias/vit-base-beans,224.0,768.0,['ViTForImageClassification'],,beans,3.0,beans,,,,,vit,85800963.0,1571600896
+mmgyorke/vit-world-landmarks,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['arc de triomphe', 'big ben', 'la sagrada familia', 'leaning tower of pisa', 'taj mahal']",,single_label_classification,,1.0,vit,85802501.0,1571600896
+mrm8488/convnext-tiny-finetuned-beans,224.0,768.0,['ConvNextForImageClassification'],,beans,3.0,beans,,single_label_classification,,0.961,convnext,27822435.0,1571600896
+mrm8488/convnext-tiny-finetuned-eurosat,224.0,768.0,['ConvNextForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.98,convnext,27827818.0,1571600896
+mrm8488/data2vec-base-finetuned-imagenet1k,224.0,768.0,['Data2VecVisionForImageClassification'],,imagenet,1000.0,imagenet,,single_label_classification,,,data2vec-vision,86530984.0,1571600896
+mrm8488/vit-base-patch16-224_finetuned-pneumothorax,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['normal', 'pneumothorax']",,,,,vit,85800194.0,1571600896
+nateraw/baked-goods,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['cake', 'cookie', 'pie']",,,,0.875,vit,85800963.0,1571600896
+nateraw/baseball-stadium-foods,224.0,768.0,['ViTForImageClassification'],,hfpics,5.0,"['cotton candy', 'hamburger', 'hot dog', 'nachos', 'popcorn']",,,,0.911,vit,85802501.0,1571600896
+nateraw/denver-nyc-paris,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['denver', 'new york city', 'paris']",,,,0.866,vit,85800963.0,1571600896
+nateraw/doggos-lol,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['bernese mountain dog', 'husky', 'saint bernard']",,,,0.917,vit,85800963.0,1571600896
+nateraw/donut-or-bagel,224.0,768.0,['ViTForImageClassification'],,hfpics,2.0,"['bagel', 'donut']",,,,0.938,vit,85800194.0,1571600896
+nateraw/ex-for-evan,224.0,768.0,['ViTForImageClassification'],,hfpics,4.0,"['cheetah', 'elephant', 'giraffe', 'rhino']",,,,0.979,vit,85801732.0,1571600896
+nateraw/food,224.0,768.0,['ViTForImageClassification'],,food101,101.0,food101,,,,0.891,vit,85876325.0,1571600896
+nateraw/huggingpics-package-demo-2,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'husky', 'shibu inu']",,,,0.94,vit,85800963.0,1571600896
+nateraw/pasta-pizza-ravioli,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['pasta', 'pizza', 'ravioli']",,,,0.938,vit,85800963.0,1571600896
+nateraw/pasta-shapes,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'husky', 'shibu inu']",,,,0.94,vit,85800963.0,1571600896
+nateraw/planes-trains-automobiles,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['automobiles', 'planes', 'trains']",,,,0.985,vit,85800963.0,1571600896
+nateraw/rare-puppers,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'samoyed', 'shiba inu']",,,,0.958,vit,85800963.0,1571600896
+nateraw/rare-puppers-09-04-2021,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'samoyed', 'shiba inu']",,,,0.866,vit,85800963.0,1571600896
+nateraw/rare-puppers-123,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'samoyed', 'shiba inu']",,,,0.97,vit,85800963.0,1571600896
+nateraw/rare-puppers-demo,224.0,768.0,['ViTForImageClassification'],,hfpics,4.0,"['corgi', 'husky', 'samoyed', 'shiba inu']",,,,0.91,vit,85801732.0,1571600896
+nateraw/rare-puppers-new-auth,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'samoyed', 'shiba inu']",,,,0.896,vit,85800963.0,1571600896
+nateraw/test_model_a,224.0,32.0,['ViTForImageClassification'],,cats_vs_dogs,2.0,cats_vs_dogs,,,,,vit,44002.0,1571600896
+nateraw/trainer-rare-puppers,224.0,768.0,['ViTForImageClassification'],,hfpics,3.0,"['corgi', 'samoyed', 'shiba inu']",,,,0.881,vit,85800963.0,1571600896
+nateraw/vit-age-classifier,224.0,768.0,['ViTForImageClassification'],,age-prediction,9.0,age-prediction,,,,,vit,85805577.0,1571600896
+nateraw/vit-base-beans,224.0,768.0,['ViTForImageClassification'],,beans,3.0,beans,,,,0.945,vit,85800963.0,1571600896
+nateraw/vit-base-beans-demo,224.0,768.0,['ViTForImageClassification'],,beans,3.0,beans,,,,0.977,vit,85800963.0,1571600896
+nateraw/vit-base-beans-demo-v2,224.0,768.0,['ViTForImageClassification'],,beans,3.0,beans,,,,1.0,vit,85800963.0,1571600896
+nateraw/vit-base-beans-demo-v3,224.0,768.0,['ViTForImageClassification'],,beans,3.0,beans,,,,0.985,vit,85800963.0,1571600896
+nateraw/vit-base-cats-vs-dogs,224.0,768.0,['ViTForImageClassification'],,cats_vs_dogs,2.0,cats_vs_dogs,,,,0.993,vit,85800194.0,1571600896
+nateraw/vit-base-food101,224.0,768.0,['ViTForImageClassification'],,food101,101.0,food101,,single_label_classification,,,vit,85876325.0,1571600896
+nateraw/vit-base-patch16-224-cifar10,224.0,768.0,['ViTForImageClassification'],,cifar10,10.0,cifar10,,,,,vit,85806346.0,1571600896
+nickmuchi/swin-tiny-patch4-window7-224-finetuned-eurosat,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.985,swin,27527044.0,1571600896
+nickmuchi/vit-base-beans,224.0,768.0,['ViTForImageClassification'],,beans,3.0,beans,,,,0.969,vit,85800963.0,1571600896
+nickmuchi/vit-base-xray-pneumonia,224.0,768.0,['ViTForImageClassification'],,chest_xray_classification,2.0,chest_xray_classification,,single_label_classification,,,vit,85800194.0,1571600896
+nickmuchi/vit-finetuned-cats-dogs,224.0,768.0,['ViTForImageClassification'],,cats_vs_dogs,2.0,cats_vs_dogs,,,,0.997,vit,85800194.0,1571600896
+nickmuchi/vit-finetuned-chest-xray-pneumonia,224.0,768.0,['ViTForImageClassification'],,chest_xray_classification,2.0,chest_xray_classification,,single_label_classification,,0.9551,vit,85800194.0,1571600896
+nielsr/convnext-tiny-224-finetuned-eurosat-albumentations,224.0,768.0,['ConvNextForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.975,convnext,27827818.0,1571600896
+nielsr/convnext-tiny-finetuned-eurosat,224.0,768.0,['ConvNextForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,,convnext,27827818.0,1571600896
+nielsr/convnext-tiny-finetuned-eurostat,224.0,768.0,['ConvNextForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,,convnext,27827818.0,1571600896
+nielsr/convnext-xlarge-224-22k,224.0,2048.0,['ConvNextForImageClassification'],,imagenet-21k,21841.0,imagenet-21k,,,,,convnext,392900177.0,1571600896
+nielsr/convnext-xlarge-224-22k-1k,224.0,2048.0,['ConvNextForImageClassification'],,imagenet,1000.0,imagenet,,,,,convnext,350196968.0,1571600896
+nielsr/swin-tiny-patch4-window7-224-finetuned-cifar10,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.979,swin,27527044.0,1571600896
+nielsr/swin-tiny-patch4-window7-224-finetuned-eurosat,224.0,768.0,['SwinForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.974,swin,27527044.0,1571600896
+nielsr/van-base-finetuned-eurosat-imgaug,224.0,512.0,['VanForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,0.989,van,26071626.0,1571600896
+nielsr/vit-base-patch16-224-in21k-finetuned-cifar10,224.0,768.0,['ViTForImageClassification'],,cifar10,10.0,cifar10,,single_label_classification,,0.988,vit,85806346.0,1571600896
+nielsr/vit-finetuned-eurosat-kornia,224.0,768.0,['ViTForImageClassification'],,eurosat,10.0,eurosat,,single_label_classification,,,vit,85806346.0,1571600896
+tanlq/vit-base-patch16-224-in21k-finetuned-cifar10,224.0,768.0,['VanForImageClassification'],,cifar10,10.0,cifar10,,single_label_classification,,0.988,vit,85806346.0,1571600896
