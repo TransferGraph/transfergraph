@@ -8,6 +8,7 @@
 
 # logs
 logs/
+doc/log/
 
 # Python virtual environment
 venv/
