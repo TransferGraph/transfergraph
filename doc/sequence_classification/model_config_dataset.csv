@@ -1,0 +1,165 @@
+,model,architectures,number_of_labels,labels,model_type,number_of_parameters,memory_consumption,dataset,accuracy
+0,Jeevesh8/init_bert_ft_qqp-33,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+1,ali2066/finetuned_sentence_itr1_2e-05_all_26_02_2022-04_03_26,DistilBertForSequenceClassification,2,"['NEGATIVE', 'POSITIVE']",distilbert,66955010,268957184,glue/sst2,0.8299
+2,vaariis/distilbert-base-uncased-finetuned-emotion,DistilBertForSequenceClassification,6,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5']",distilbert,66958086,268969472,dair-ai/emotion,0.9205
+3,philschmid/tiny-distilbert-classification,DistilBertForSequenceClassification,2,"['NEGATIVE', 'POSITIVE']",distilbert,62172,271872,glue/sst2
+4,heranm/finetuning-sentiment-model-3000-samples,DistilBertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",distilbert,66955010,268957184,imdb,0.873
+5,marcelcastrobr/sagemaker-distilbert-emotion,DistilBertForSequenceClassification,6,"['sadness', 'joy', 'love', 'anger', 'fear', 'surprise']",distilbert,66958086,268969472,dair-ai/emotion,0.928
+6,jasonyim2/distilbert-base-uncased-finetuned-emotion,DistilBertForSequenceClassification,6,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5']",distilbert,66958086,268969472,dair-ai/emotion,0.921
+7,riyadhctg/distilbert-base-uncased-finetuned-cola,DistilBertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",distilbert,66955010,268957184,glue/cola,0.5527
+8,dapang/distilroberta-base-mic-sym,RobertaForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",roberta,82119938,329782784,,
+9,PrasunMishra/finetuning-sentiment-model-3000-samples,DistilBertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",distilbert,66955010,268957184,imdb,
+10,nurkayevaa/autonlp-bert-covid-407910458,DistilBertForSequenceClassification,2,"['0', '1']",distilbert,66955010,268957184,nurkayevaa/autonlp-data-bert-covid,0.9112
+11,SetFit/distilbert-base-uncased__sst2__train-16-0,DistilBertForSequenceClassification,2,"['negative', 'positive']",distilbert,66955010,268957184,glue/sst2,0.5091
+12,abdelkader/distilbert-base-uncased-finetuned-emotion,DistilBertForSequenceClassification,6,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5']",distilbert,66958086,268969472,dair-ai/emotion,0.921
+13,SetFit/distilbert-base-uncased__hate_speech_offensive__train-16-1,DistilBertForSequenceClassification,3,"['hate speech', 'offensive language', 'neither']",distilbert,66955779,268960256,badmatr11x/hate-offensive-speech,0.5355
+14,gchhablani/fnet-base-finetuned-sst2,FNetForSequenceClassification,2,"['negative', 'positive']",fnet,82862594,331721216,glue/sst2,0.894
+15,Capreolus/bert-base-msmarco,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,,
+16,Splend1dchan/bert-base-uncased-slue-goldtrascription-e3-lr1e-4,BertForSequenceClassification,3,"['Negative', 'Neutral', 'Positive']",bert,109484547,439079424,,
+17,crcb/isear_bert,RobertaForSequenceClassification,7,"['anger', 'disgust', 'fear', 'guilt', 'joy', 'sadness', 'shame']",roberta,124651015,499907072,crcb/autotrain-data-isear_bert,0.7273
+18,connectivity/cola_6ep_ft-33,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/cola,
+19,Jeevesh8/init_bert_ft_qqp-49,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+20,Jeevesh8/feather_berts_46,BertForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",bert,109484547,439079424,,
+21,connectivity/cola_6ep_ft-22,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/cola,
+22,yukta10/finetuning-sentiment-model-3000-samples,DistilBertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",distilbert,66955010,268957184,imdb,
+23,JonatanGk/roberta-base-bne-finetuned-cyberbullying-spanish,RobertaForSequenceClassification,2,"['Not_bullying', 'Bullying']",roberta,124644866,499891712,,0.9607
+24,cambridgeltl/guardian_news_distilbert-base-uncased,DistilBertForSequenceClassification,5,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4']",distilbert,66957317,268966400,,
+25,gchhablani/fnet-base-finetuned-cola,FNetForSequenceClassification,2,"['unacceptable', 'acceptable']",fnet,82862594,331721216,glue/cola,0.359
+26,ncduy/roberta-imdb-sentiment-analysis,RobertaForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",roberta,124647170,499891712,,
+27,vesteinn/XLMR-ENIS-finetuned-cola,XLMRobertaForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",xlm-roberta,124447490,498317824,glue/cola,0.631
+28,isakbos/Q8BERT_COLA_L_512,QuantizedBertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/cola,
+29,connectivity/bert_ft_qqp-7,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+30,moghis/distilbert-base-uncased-finetuned-emotion,DistilBertForSequenceClassification,6,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5']",distilbert,66958086,268969472,dair-ai/emotion,0.924
+31,moshew/bert-mini-sst2-distilled,BertForSequenceClassification,2,"['negative', 'positive']",bert,11171074,44895744,glue/sst2,
+32,nreimers/mmarco-mMiniLMv2-L6-H384-v1,XLMRobertaForSequenceClassification,1,['LABEL_0'],xlm-roberta,106994305,427986944,,
+33,uygarkurt/distilbert-base-uncased-finetuned-emotion,DistilBertForSequenceClassification,6,"['sadness', 'joy', 'love', 'anger', 'fear', 'surprise']",distilbert,66958086,268969472,dair-ai/emotion,0.92
+34,amyma21/sincere_question_classification,DistilBertForSequenceClassification,2,"['sincere', 'insincere']",distilbert,66955010,268957184,,
+35,phailyoor/distilbert-base-uncased-finetuned-yahd,DistilBertForSequenceClassification,17,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5', 'LABEL_6', 'LABEL_7', 'LABEL_8', 'LABEL_9', 'LABEL_10', 'LABEL_11', 'LABEL_12', 'LABEL_13', 'LABEL_14', 'LABEL_15', 'LABEL_16']",distilbert,66966545,269003264,,0.4
+36,arianpasquali/distilbert-base-multilingual-cased-toxicity,DistilBertForSequenceClassification,2,"['toxic', 'not_toxic']",distilbert,135326210,541586944,,
+37,robertou2/roberta-base-bne-finetuned-amazon_reviews_multi,RobertaForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",roberta,124644866,499891712,amazon_reviews_multi,0.9325
+38,neibla/distilbert-base-uncased-finetuned-emotion,DistilBertForSequenceClassification,6,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5']",distilbert,66958086,268969472,dair-ai/emotion,0.925
+39,Anthos23/FS-distilroberta-fine-tuned,RobertaForSequenceClassification,3,"['negative', 'neutral', 'positive']",roberta,82120707,329785856,,
+40,pietrotrope/emotion_final,DistilBertForSequenceClassification,4,"['anger', 'joy', 'optimism', 'sadness']",distilbert,66956548,268963328,,
+41,aviator-neural/bert-base-uncased-sst2,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/sst2,
+42,Jeevesh8/bert_ft_qqp-40,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+43,jaesun/distilbert-base-uncased-finetuned-cola,DistilBertForSequenceClassification,2,"['unacceptable', 'acceptable']",distilbert,66955010,268957184,glue/cola,0.517
+44,SetFit/distilbert-base-uncased__sst2__train-32-9,DistilBertForSequenceClassification,2,"['negative', 'positive']",distilbert,66955010,268957184,glue/sst2,0.7353
+45,strickvl/nlp-redaction-classifier,DebertaV2ForSequenceClassification,1,['LABEL_0'],deberta-v2,141895681,568852992,custom,0.8273
+46,usami/distilbert-base-uncased-finetuned-cola,DistilBertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",distilbert,66955010,268957184,glue/cola,0.5492
+47,connectivity/feather_berts_28,BertForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",bert,109484547,439079424,,
+48,IMSyPP/hate_speech_it,BertForSequenceClassification,4,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3']",bert,184348420,738975232,,
+49,Jeevesh8/512seq_len_6ep_bert_ft_cola-91,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/cola,
+50,Jeevesh8/bert_ft_qqp-9,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+51,Jeevesh8/bert_ft_qqp-88,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+52,Recognai/bert-base-spanish-wwm-cased-xnli,BertForSequenceClassification,3,"['contradiction', 'neutral', 'entailment']",bert,109853187,439945728,xnli,0.799
+53,markt23917/finetuning-sentiment-model-3000-samples,DistilBertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",distilbert,66955010,268957184,imdb,0.877
+54,chiragasarpota/scotus-bert,BertForSequenceClassification,14,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5', 'LABEL_6', 'LABEL_7', 'LABEL_8', 'LABEL_9', 'LABEL_10', 'LABEL_11', 'LABEL_12', 'LABEL_13']",bert,4387726,17559552,,
+55,JNK789/distilbert-base-uncased-finetuned-tweets-emoji-dataset,DistilBertForSequenceClassification,20,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5', 'LABEL_6', 'LABEL_7', 'LABEL_8', 'LABEL_9', 'LABEL_10', 'LABEL_11', 'LABEL_12', 'LABEL_13', 'LABEL_14', 'LABEL_15', 'LABEL_16', 'LABEL_17', 'LABEL_18', 'LABEL_19']",distilbert,66968852,269012480,tweet_eval/emoji,
+56,warwickai/fin-perceiver,PerceiverForSequenceClassification,3,"['negative', 'neutral', 'positive']",perceiver,206099971,824662528,financial_phrasebank,0.8624
+57,anirudh21/bert-base-uncased-finetuned-qnli,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qnli,0.7917
+58,Jeevesh8/6ep_bert_ft_cola-47,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/cola,
+59,oferweintraub/bert-base-finance-sentiment-noisy-search,BertForSequenceClassification,3,"['negative', 'neutral', 'positive']",bert,109484547,439079424,kaggle_sentiment_financial_news,0.88
+60,aXhyra/demo_sentiment_31415,DistilBertForSequenceClassification,3,"['negative', 'neutral', 'positive']",distilbert,66955779,268960256,tweet_eval/sentiment,0.711
+61,milyiyo/selectra-small-finetuned-amazon-review,ElectraForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",electra,22475779,89911808,amazon_reviews_multi,0.737
+62,saattrupdan/job-listing-relevance-model,XLMRobertaForSequenceClassification,1,['LABEL_0'],xlm-roberta,278044417,1112257024,,
+63,Alireza1044/albert-base-v2-qnli,AlbertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",albert,11685122,46749184,glue/qnli,0.9138
+64,aXhyra/presentation_sentiment_1234567,DistilBertForSequenceClassification,3,"['negative', 'neutral', 'positive']",distilbert,66955779,268960256,tweet_eval/sentiment,0.718
+65,liangyuant/distilbert-base-uncased-finetuned-num200-450-405cls,DistilBertForSequenceClassification,405,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5', 'LABEL_6', 'LABEL_7', 'LABEL_8', 'LABEL_9', 'LABEL_10', 'LABEL_11', 'LABEL_12', 'LABEL_13', 'LABEL_14', 'LABEL_15', 'LABEL_16', 'LABEL_17', 'LABEL_18', 'LABEL_19', 'LABEL_20', 'LABEL_21', 'LABEL_22', 'LABEL_23', 'LABEL_24', 'LABEL_25', 'LABEL_26', 'LABEL_27', 'LABEL_28', 'LABEL_29', 'LABEL_30', 'LABEL_31', 'LABEL_32', 'LABEL_33', 'LABEL_34', 'LABEL_35', 'LABEL_36', 'LABEL_37', 'LABEL_38', 'LABEL_39', 'LABEL_40', 'LABEL_41', 'LABEL_42', 'LABEL_43', 'LABEL_44', 'LABEL_45', 'LABEL_46', 'LABEL_47', 'LABEL_48', 'LABEL_49', 'LABEL_50', 'LABEL_51', 'LABEL_52', 'LABEL_53', 'LABEL_54', 'LABEL_55', 'LABEL_56', 'LABEL_57', 'LABEL_58', 'LABEL_59', 'LABEL_60', 'LABEL_61', 'LABEL_62', 'LABEL_63', 'LABEL_64', 'LABEL_65', 'LABEL_66', 'LABEL_67', 'LABEL_68', 'LABEL_69', 'LABEL_70', 'LABEL_71', 'LABEL_72', 'LABEL_73', 'LABEL_74', 'LABEL_75', 'LABEL_76', 'LABEL_77', 'LABEL_78', 'LABEL_79', 'LABEL_80', 'LABEL_81', 'LABEL_82', 'LABEL_83', 'LABEL_84', 'LABEL_85', 'LABEL_86', 'LABEL_87', 'LABEL_88', 'LABEL_89', 'LABEL_90', 'LABEL_91', 'LABEL_92', 'LABEL_93', 'LABEL_94', 'LABEL_95', 'LABEL_96', 'LABEL_97', 'LABEL_98', 'LABEL_99', 'LABEL_100', 'LABEL_101', 'LABEL_102', 'LABEL_103', 'LABEL_104', 'LABEL_105', 'LABEL_106', 'LABEL_107', 'LABEL_108', 'LABEL_109', 'LABEL_110', 'LABEL_111', 'LABEL_112', 'LABEL_113', 'LABEL_114', 'LABEL_115', 'LABEL_116', 'LABEL_117', 'LABEL_118', 'LABEL_119', 'LABEL_120', 'LABEL_121', 'LABEL_122', 'LABEL_123', 'LABEL_124', 'LABEL_125', 'LABEL_126', 'LABEL_127', 'LABEL_128', 'LABEL_129', 'LABEL_130', 'LABEL_131', 'LABEL_132', 'LABEL_133', 'LABEL_134', 'LABEL_135', 'LABEL_136', 'LABEL_137', 'LABEL_138', 'LABEL_139', 'LABEL_140', 'LABEL_141', 'LABEL_142', 'LABEL_143', 'LABEL_144', 'LABEL_145', 'LABEL_146', 'LABEL_147', 'LABEL_148', 'LABEL_149', 'LABEL_150', 'LABEL_151', 'LABEL_152', 'LABEL_153', 'LABEL_154', 'LABEL_155', 'LABEL_156', 'LABEL_157', 'LABEL_158', 'LABEL_159', 'LABEL_160', 'LABEL_161', 'LABEL_162', 'LABEL_163', 'LABEL_164', 'LABEL_165', 'LABEL_166', 'LABEL_167', 'LABEL_168', 'LABEL_169', 'LABEL_170', 'LABEL_171', 'LABEL_172', 'LABEL_173', 'LABEL_174', 'LABEL_175', 'LABEL_176', 'LABEL_177', 'LABEL_178', 'LABEL_179', 'LABEL_180', 'LABEL_181', 'LABEL_182', 'LABEL_183', 'LABEL_184', 'LABEL_185', 'LABEL_186', 'LABEL_187', 'LABEL_188', 'LABEL_189', 'LABEL_190', 'LABEL_191', 'LABEL_192', 'LABEL_193', 'LABEL_194', 'LABEL_195', 'LABEL_196', 'LABEL_197', 'LABEL_198', 'LABEL_199', 'LABEL_200', 'LABEL_201', 'LABEL_202', 'LABEL_203', 'LABEL_204', 'LABEL_205', 'LABEL_206', 'LABEL_207', 'LABEL_208', 'LABEL_209', 'LABEL_210', 'LABEL_211', 'LABEL_212', 'LABEL_213', 'LABEL_214', 'LABEL_215', 'LABEL_216', 'LABEL_217', 'LABEL_218', 'LABEL_219', 'LABEL_220', 'LABEL_221', 'LABEL_222', 'LABEL_223', 'LABEL_224', 'LABEL_225', 'LABEL_226', 'LABEL_227', 'LABEL_228', 'LABEL_229', 'LABEL_230', 'LABEL_231', 'LABEL_232', 'LABEL_233', 'LABEL_234', 'LABEL_235', 'LABEL_236', 'LABEL_237', 'LABEL_238', 'LABEL_239', 'LABEL_240', 'LABEL_241', 'LABEL_242', 'LABEL_243', 'LABEL_244', 'LABEL_245', 'LABEL_246', 'LABEL_247', 'LABEL_248', 'LABEL_249', 'LABEL_250', 'LABEL_251', 'LABEL_252', 'LABEL_253', 'LABEL_254', 'LABEL_255', 'LABEL_256', 'LABEL_257', 'LABEL_258', 'LABEL_259', 'LABEL_260', 'LABEL_261', 'LABEL_262', 'LABEL_263', 'LABEL_264', 'LABEL_265', 'LABEL_266', 'LABEL_267', 'LABEL_268', 'LABEL_269', 'LABEL_270', 'LABEL_271', 'LABEL_272', 'LABEL_273', 'LABEL_274', 'LABEL_275', 'LABEL_276', 'LABEL_277', 'LABEL_278', 'LABEL_279', 'LABEL_280', 'LABEL_281', 'LABEL_282', 'LABEL_283', 'LABEL_284', 'LABEL_285', 'LABEL_286', 'LABEL_287', 'LABEL_288', 'LABEL_289', 'LABEL_290', 'LABEL_291', 'LABEL_292', 'LABEL_293', 'LABEL_294', 'LABEL_295', 'LABEL_296', 'LABEL_297', 'LABEL_298', 'LABEL_299', 'LABEL_300', 'LABEL_301', 'LABEL_302', 'LABEL_303', 'LABEL_304', 'LABEL_305', 'LABEL_306', 'LABEL_307', 'LABEL_308', 'LABEL_309', 'LABEL_310', 'LABEL_311', 'LABEL_312', 'LABEL_313', 'LABEL_314', 'LABEL_315', 'LABEL_316', 'LABEL_317', 'LABEL_318', 'LABEL_319', 'LABEL_320', 'LABEL_321', 'LABEL_322', 'LABEL_323', 'LABEL_324', 'LABEL_325', 'LABEL_326', 'LABEL_327', 'LABEL_328', 'LABEL_329', 'LABEL_330', 'LABEL_331', 'LABEL_332', 'LABEL_333', 'LABEL_334', 'LABEL_335', 'LABEL_336', 'LABEL_337', 'LABEL_338', 'LABEL_339', 'LABEL_340', 'LABEL_341', 'LABEL_342', 'LABEL_343', 'LABEL_344', 'LABEL_345', 'LABEL_346', 'LABEL_347', 'LABEL_348', 'LABEL_349', 'LABEL_350', 'LABEL_351', 'LABEL_352', 'LABEL_353', 'LABEL_354', 'LABEL_355', 'LABEL_356', 'LABEL_357', 'LABEL_358', 'LABEL_359', 'LABEL_360', 'LABEL_361', 'LABEL_362', 'LABEL_363', 'LABEL_364', 'LABEL_365', 'LABEL_366', 'LABEL_367', 'LABEL_368', 'LABEL_369', 'LABEL_370', 'LABEL_371', 'LABEL_372', 'LABEL_373', 'LABEL_374', 'LABEL_375', 'LABEL_376', 'LABEL_377', 'LABEL_378', 'LABEL_379', 'LABEL_380', 'LABEL_381', 'LABEL_382', 'LABEL_383', 'LABEL_384', 'LABEL_385', 'LABEL_386', 'LABEL_387', 'LABEL_388', 'LABEL_389', 'LABEL_390', 'LABEL_391', 'LABEL_392', 'LABEL_393', 'LABEL_394', 'LABEL_395', 'LABEL_396', 'LABEL_397', 'LABEL_398', 'LABEL_399', 'LABEL_400', 'LABEL_401', 'LABEL_402', 'LABEL_403', 'LABEL_404']",distilbert,67264917,271049728,,
+66,DoyyingFace/bert-asian-hate-tweets-asian-unclean-freeze-4,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,,
+67,connectivity/cola_6ep_ft-10,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/cola,
+68,Jeevesh8/lecun_feather_berts-3,BertForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",bert,109484547,439079424,,
+69,jb2k/bert-base-multilingual-cased-language-detection,BertForSequenceClassification,45,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5', 'LABEL_6', 'LABEL_7', 'LABEL_8', 'LABEL_9', 'LABEL_10', 'LABEL_11', 'LABEL_12', 'LABEL_13', 'LABEL_14', 'LABEL_15', 'LABEL_16', 'LABEL_17', 'LABEL_18', 'LABEL_19', 'LABEL_20', 'LABEL_21', 'LABEL_22', 'LABEL_23', 'LABEL_24', 'LABEL_25', 'LABEL_26', 'LABEL_27', 'LABEL_28', 'LABEL_29', 'LABEL_30', 'LABEL_31', 'LABEL_32', 'LABEL_33', 'LABEL_34', 'LABEL_35', 'LABEL_36', 'LABEL_37', 'LABEL_38', 'LABEL_39', 'LABEL_40', 'LABEL_41', 'LABEL_42', 'LABEL_43', 'LABEL_44']",bert,177888045,711838208,common_language,0.978
+70,Giyaseddin/distilroberta-base-finetuned-short-answer-assessment,RobertaForSequenceClassification,4,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3']",roberta,82121476,329788928,,0.954
+71,connectivity/bert_ft_qqp-25,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+72,Jeevesh8/6ep_bert_ft_cola-12,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/cola,
+73,18811449050/bert_finetuning_test,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,,
+74,aXhyra/emotion_trained_31415,DistilBertForSequenceClassification,4,"['anger', 'joy', 'optimism', 'sadness']",distilbert,66956548,268963328,tweet_eval/emotion,0.72
+75,aXhyra/presentation_emotion_31415,DistilBertForSequenceClassification,4,"['anger', 'joy', 'optimism', 'sadness']",distilbert,66956548,268963328,tweet_eval/emotion,0.715
+76,JB173/distilbert-base-uncased-finetuned-emotion,DistilBertForSequenceClassification,6,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5']",distilbert,66958086,268969472,dair-ai/emotion,
+77,nickmuchi/facebook-data2vec-finetuned-finance-classification,Data2VecTextForSequenceClassification,3,"['bearish', 'neutral', 'bullish']",data2vec-text,124647939,499894784,,038557
+78,Jeevesh8/feather_berts_96,BertForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",bert,109484547,439079424,,
+79,AnonymousSub/dummy_2,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,177854978,711706112,,
+80,Jeevesh8/init_bert_ft_qqp-24,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+81,Jeevesh8/bert_ft_qqp-55,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+82,Jeevesh8/lecun_feather_berts-51,BertForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",bert,109484547,439079424,,
+83,Jeevesh8/bert_ft_qqp-68,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+84,viviastaari/finetuning-sentiment-analysis-en-id,DistilBertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",distilbert,135326210,541586944,,0.9527
+85,Jeevesh8/6ep_bert_ft_cola-29,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/cola,
+86,connectivity/bert_ft_qqp-17,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+87,Jeevesh8/init_bert_ft_qqp-28,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+88,vinai/bertweet-base,RobertaForMaskedLM,2,"['LABEL_0', 'LABEL_1']",roberta,134901506,540130816,,
+89,dhimskyy/wiki-bert,BertForMaskedLM,2,"['LABEL_0', 'LABEL_1']",bert,227835650,912793088,wikipedia,
+90,finiteautomata/betonews-tweetcontext,BertForMaskedLM,2,"['LABEL_0', 'LABEL_1']",bert,109855490,439954944,,
+91,bert-base-uncased,BertForMaskedLM,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,wikipedia,
+92,justinqbui/bertweet-covid19-base-uncased-pretraining-covid-vaccine-tweets,RobertaForMaskedLM,2,"['LABEL_0', 'LABEL_1']",roberta,134901506,540130816,,
+93,vinai/bertweet-covid19-base-cased,RobertaForMaskedLM,2,"['LABEL_0', 'LABEL_1']",roberta,134901506,540130816,,
+94,distilbert-base-uncased,DistilBertForMaskedLM,2,"['LABEL_0', 'LABEL_1']",distilbert,66955010,268957184,wikipedia,
+95,roberta-base,RobertaForMaskedLM,2,"['LABEL_0', 'LABEL_1']",roberta,124647170,499891712,wikipedia,
+96,bert-base-cased,BertForMaskedLM,2,"['LABEL_0', 'LABEL_1']",bert,108311810,433780224,wikipedia,
+97,cross-encoder/quora-distilroberta-base,RobertaForSequenceClassification,1,['LABEL_0'],roberta,82119169,329779712,,
+98,albert-base-v2,AlbertForMaskedLM,2,"['LABEL_0', 'LABEL_1']",albert,11685122,46749184,wikipedia,
+99,michiyasunaga/LinkBERT-base,BertModel,2,"['LABEL_0', 'LABEL_1']",bert,108311810,433780224,wikipedia,
+100,Aureliano/distilbert-base-uncased-if,DistilBertForSequenceClassification,84,"['answer.v.01', 'ask.v.01', 'ask.v.02', 'blow.v.01', 'brandish.v.01', 'break.v.05', 'burn.v.01', 'buy.v.01', 'charge.v.17', 'choose.v.01', 'clean.v.01', 'climb.v.01', 'close.v.01', 'connect.v.01', 'consult.v.02', 'cut.v.01', 'dig.v.01', 'drink.v.01', 'drive.v.01', 'drop.v.01', 'eat.v.01', 'enter.v.01', 'examine.v.02', 'exit.v.01', 'fill.v.01', 'follow.v.01', 'give.v.03', 'hit.v.02', 'hit.v.03', 'insert.v.01', 'insert.v.02', 'inventory.v.01', 'jump.v.01', 'kill.v.01', 'lie_down.v.01', 'light_up.v.05', 'listen.v.01', 'look.v.01', 'lower.v.01', 'memorize.v.01', 'move.v.02', 'note.v.04', 'open.v.01', 'play.v.03', 'pour.v.01', 'pray.v.01', 'press.v.01', 'pull.v.04', 'push.v.01', 'put.v.01', 'raise.v.02', 'read.v.01', 'remove.v.01', 'repeat.v.01', 'rub.v.01', 'say.v.08', 'search.v.04', 'sequence.n.02', 'set.v.05', 'shake.v.01', 'shoot.v.01', 'show.v.01', 'sit_down.v.01', 'skid.v.04', 'sleep.v.01', 'smash.v.02', 'smell.v.01', 'stand.v.03', 'switch_off.v.01', 'switch_on.v.01', 'take.v.04', 'take_off.v.06', 'talk.v.02', 'tell.v.03', 'throw.v.01', 'touch.v.01', 'travel.v.01', 'turn.v.09', 'unknown', 'unlock.v.01', 'wait.v.01', 'wake_up.v.02', 'wear.v.02', 'write.v.07']",distilbert,67018068,269209088,,
+101,rmihaylov/roberta-base-sentiment-bg,XLMRobertaForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",xlm-roberta,111377666,446038528,,
+102,cardiffnlp/twitter-roberta-base-2021-124m,RobertaForMaskedLM,2,"['LABEL_0', 'LABEL_1']",roberta,124647170,499891712,,
+103,bert-large-uncased,BertForMaskedLM,2,"['LABEL_0', 'LABEL_1']",bert,335143938,1341395456,wikipedia,
+104,roberta-large,RobertaForMaskedLM,2,"['LABEL_0', 'LABEL_1']",roberta,355361794,1421456896,wikipedia,
+105,vinai/bertweet-covid19-base-uncased,RobertaForMaskedLM,2,"['LABEL_0', 'LABEL_1']",roberta,134901506,540130816,,
+106,anferico/bert-for-patents,BertForMaskedLM,2,"['LABEL_0', 'LABEL_1']",bert,344705026,1379144192,,
+107,connectivity/bert_ft_qqp-1,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+108,juliensimon/autonlp-imdb-demo-hf-16622767,DistilBertForSequenceClassification,2,"['0', '1']",distilbert,66955010,268957184,imdb,0.9256
+109,Alassea/glue_sst_classifier,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,108311810,433780224,glue/sst2,0.903
+110,cross-encoder/ms-marco-MiniLM-L-4-v2,BertForSequenceClassification,1,['LABEL_0'],bert,19164673,76667392,,
+111,Nanatan/distilbert-base-uncased-finetuned-emotion,DistilBertForSequenceClassification,6,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5']",distilbert,66958086,268969472,dair-ai/emotion,0.9215
+112,Jeevesh8/bert_ft_qqp-39,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+113,Jeevesh8/bert_ft_cola-60,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/cola,
+114,navsad/navid_test_bert,BertForSequenceClassification,2,"['unacceptable', 'acceptable']",bert,108311810,433780224,glue/cola,0.583
+115,Jeevesh8/lecun_feather_berts-8,BertForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",bert,109484547,439079424,,
+116,Jeevesh8/lecun_feather_berts-7,BertForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",bert,109484547,439079424,,
+117,IMSyPP/hate_speech_nl,BertForSequenceClassification,4,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3']",bert,109140484,436985344,,
+118,morenolq/SumTO_FNS2020,BertForSequenceClassification,1,['LABEL_0'],bert,108311041,433777152,,
+119,navteca/quora-roberta-base,RobertaForSequenceClassification,1,['LABEL_0'],roberta,124646401,499888640,quora,
+120,connectivity/bert_ft_qqp-94,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+121,w11wo/sundanese-bert-base-emotion-classifier,BertForSequenceClassification,4,"['sadness', 'joy', 'fear', 'anger']",bert,109485316,439082496,sundanese_tweet,
+122,Hate-speech-CNERG/bert-base-uncased-hatexplain-rationale-two,BertForSequenceClassification,2,"['NORMAL', 'ABUSIVE']",bert,109483778,439076352,hatexplain,
+123,matthewburke/korean_sentiment,ElectraForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",electra,124546562,498719232,,
+124,korca/bae-roberta-base-boolq,RobertaForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",roberta,124647170,499891712,,
+125,Jeevesh8/bert_ft_cola-88,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/cola,
+126,waboucay/camembert-base-finetuned-xnli_fr-finetuned-nli-rua_wl,CamembertForSequenceClassification,2,"['non-contradiction', 'contradiction']",camembert,110623490,443268608,,0.688
+127,aditeyabaral/finetuned-sail2017-xlm-roberta-base,XLMRobertaForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",xlm-roberta,278045955,1112263168,,
+128,aychang/bert-base-cased-trec-coarse,BertForSequenceClassification,6,"['DESC', 'ENTY', 'ABBR', 'HUM', 'NUM', 'LOC']",bert,108314886,433792512,trec,0.974
+129,cross-encoder/quora-roberta-base,RobertaForSequenceClassification,1,['LABEL_0'],roberta,124646401,499888640,,
+130,ishan/bert-base-uncased-mnli,BertForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",bert,109484547,439079424,glue/mnli,0.8456
+131,socialmediaie/TRAC2020_IBEN_B_bert-base-multilingual-uncased,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,167357954,669763072,,
+132,mrm8488/codebert-base-finetuned-detect-insecure-code,RobertaForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",roberta,124647170,499891712,,0.653
+133,cardiffnlp/bertweet-base-stance-climate,RobertaForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",roberta,134902275,540133888,,
+134,connectivity/bert_ft_qqp-96,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
+135,fgaim/tiroberta-geezswitch,RobertaForSequenceClassification,5,"['Amharic', 'Blin', ""Ge'ez"", 'Tigre', 'Tigrinya']",roberta,124649477,499900928,,0.9948
+136,M47Labs/spanish_news_classification_headlines_untrained,BertForSequenceClassification,10,"['ciencia_tecnologia', 'clickbait', 'cultura', 'deportes', 'economia', 'educacion', 'medio_ambiente', 'opinion', 'politica', 'sociedad']",bert,109858570,439967232,,0.362
+137,XSY/albert-base-v2-imdb-calssification,AlbertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",albert,11685122,46749184,imdb,0.9361
+138,zenkri/autotrain-Arabic_Poetry_by_Subject-920730230,BertForSequenceClassification,25,"['ابتهال', 'اعتذار', 'الاناشيد', 'المعلقات', 'جود', 'حزينه', 'حكمة', 'دينية', 'ذم', 'رثاء', 'رحمة', 'رومنسيه', 'سياسية', 'شوق', 'صبر', 'عامه', 'عتاب', 'عدل', 'غزل', 'فراق', 'قصيره', 'مدح', 'نصيحة', 'هجاء', 'وطنيه']",bert,124460569,497867264,,0.8785
+139,CAMeL-Lab/bert-base-arabic-camelbert-da-sentiment,BertForSequenceClassification,3,"['positive', 'negative', 'neutral']",bert,109083651,436982272,SemEval,
+140,bondi/bert-semaphore-prediction-w4,BertForSequenceClassification,4,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3']",bert,109853956,439948800,,
+141,cointegrated/roberta-base-formality,RobertaForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",roberta,124647170,499891712,,
+142,boychaboy/MNLI_roberta-base,RobertaForSequenceClassification,3,"['entailment', 'neutral', 'contradiction']",roberta,124647939,499894784,,
+143,fabriceyhc/bert-base-uncased-imdb,BertForSequenceClassification,2,"['neg', 'pos']",bert,109483778,439076352,imdb,0.9126
+144,JonatanGk/roberta-base-ca-finetuned-hate-speech-offensive-catalan,RobertaForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",roberta,125980419,504089088,,
+145,classla/bcms-bertic-parlasent-bcs-ter,ElectraForSequenceClassification,3,"['Negative', 'Neutral', 'Positive']",electra,110619651,443273728,,0.7941
+146,Raychanan/COVID_RandomOver,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,102269186,409716224,,0.9546
+147,gchhablani/bert-base-cased-finetuned-rte,BertForSequenceClassification,2,"['entailment', 'not_entailment']",bert,108311810,433780224,glue/rte,0.6715
+148,emrecan/bert-base-multilingual-cased-snli_tr,BertForSequenceClassification,3,"['entailment', 'neutral', 'contradiction']",bert,177855747,711709184,nli_tr,
+149,ali2066/DistilBERTFINAL_ctxSentence_TRAIN_editorials_TEST_NULL_second_train_set_null_False,RobertaForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",roberta,124647170,499891712,,0.2991
+150,anvay/finetuning-cardiffnlp-sentiment-model,RobertaForSequenceClassification,3,"['Negative', 'Neutral', 'Positive']",roberta,124647939,499894784,,0.9165
+151,elozano/tweet_offensive_eval,RobertaForSequenceClassification,2,"['Non-Offensive', 'Offensive']",roberta,124647170,499891712,tweet_eval/offensive,
+152,joebobby/finetuning-sentiment-model-5000-samples3,BertForSequenceClassification,5,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4']",bert,109486085,439085568,,
+153,YeRyeongLee/electra-base-discriminator-finetuned-filtered-0602,ElectraForSequenceClassification,6,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5']",electra,109486854,439088640,,0.972
+154,Jeevesh8/feather_berts_92,BertForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",bert,109484547,439079424,,
+155,CAMeL-Lab/bert-base-arabic-camelbert-mix-did-nadi,BertForSequenceClassification,21,"['Algeria', 'Bahrain', 'Morocco', 'Oman', 'Palestine', 'Qatar', 'Saudi_Arabia', 'Somalia', 'Sudan', 'Syria', 'Tunisia', 'United_Arab_Emirates', 'Djibouti', 'Yemen', 'Egypt', 'Iraq', 'Jordan', 'Kuwait', 'Lebanon', 'Libya', 'Mauritania']",bert,109097493,437037568,,
+156,mrm8488/electricidad-base-finetuned-pawsx-es,ElectraForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",electra,109852418,439942656,xtreme,
+157,Monsia/camembert-fr-covid-tweet-classification,CamembertForSequenceClassification,5,"['statistiques', 'mesures', 'opinions', 'symptomes', 'divers']",camembert,110625797,443277824,glue/sst2,0.66
+158,gchhablani/bert-base-cased-finetuned-wnli,BertForSequenceClassification,2,"['not_entailment', 'entailment']",bert,108311810,433780224,glue/wnli,0.4648
+159,manueltonneau/bert-twitter-en-is-hired,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,108311810,433780224,twitter-unemployment,
+160,Guscode/DKbert-hatespeech-detection,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,110618882,443270656,DKbert-hatespeech-detection,0.78
+161,ASCCCCCCCC/distilbert-base-chinese-amazon_zh_20000,BertForSequenceClassification,6,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5']",bert,102272262,409728512,,0.5092
+162,kyleinincubated/autonlp-cat333-624217911,BertForSequenceClassification,29,"['互联网服务', '交通运输', '休闲服务', '传媒', '信息技术', '公用事业', '农业', '化工制造', '医药生物', '商业贸易', '建筑业', '房地产', '教育', '文化', '有色金属', '林业', '汽车制造', '渔业', '电子制造', '电气设备', '畜牧业', '纺织服装制造', '轻工制造', '通信', '采矿业', '钢铁', '银行', '非银金融', '食品饮料']",bert,102289949,409799168,,0.9099
+163,ChrisUPM/BioBERT_Re_trained,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,108311810,433780224,glue/sst2,

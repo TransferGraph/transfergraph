@@ -1,0 +1,17 @@
+finetune_dataset,size,number_of_classes
+dbpedia_14,630000,14
+tweet_eval/sentiment,59900,3
+rotten_tomatoes,10662,2
+glue/sst2,70000,2
+tweet_eval/emotion,5050,4
+tweet_eval/irony,4600,2
+tweet_eval/hate,13000,2
+glue/cola,8550,2
+tweet_eval/offensive,24300,18
+ag_news,127600,4
+amazon_polarity,4000000,2
+emotion,16000,6
+glut/qqp,363846,2
+glue/mnli,392702,3
+glue/rte,2490,2
+imdb,25000,2
