@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 from scipy import stats
-from utils.ranking_metrics import apk
+from src.transfergraph.model_selection.graph.utils.ranking_metrics import apk
 
 dataset_map = {'oxford_iiit_pet': 'pets',
                'oxford_flowers102': 'flowers'}
