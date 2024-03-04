@@ -33,7 +33,7 @@ def main(args):
     print('======================= Begin New Session ==========================')
     root = '../'
     # root = './'
-    path = os.path.join(root, 'doc', f'performance_{args.dataset_embed_method}_{args.gnn_method}_score.csv')
+    path = os.path.join(root, 'resources', 'log',f'performance_{args.dataset_embed_method}_{args.gnn_method}_score.csv')
     args.path = path
     print(f'====== path: {path} ======')
     if os.path.exists(path):
@@ -112,16 +112,17 @@ def main(args):
     ## Check executed
     query = ' & '.join(list(map(djoin, [evaluation_dict])))
     # print(query)
-    df_tmp = df_perf.query(query)
 
     ## skip running because the performance exist
-    if not df_tmp.empty:  # df_tmp.dropna().empty:
-        print('===== pass ====\n')
-        # return 0
-        pass
-    else:
-        print(f'query: {query}')
-        # print(df_tmp.dropna())
+    if not df_perf.empty:
+        df_tmp = df_perf.query(query)
+        if not df_tmp.empty:  # df_tmp.dropna().empty:
+            print('===== pass ====\n')
+            # return 0
+            pass
+        else:
+            print(f'query: {query}')
+            # print(df_tmp.dropna())
 
     if args.gnn_method == 'lr':
         graph_attributes = GraphAttributes(args)
@@ -201,6 +202,7 @@ if __name__ == '__main__':
     parser.add_argument('-dataset_reference_model', default='resnet50', type=str)
 
     parser.add_argument('-modality', default='image', type=str)  # image or text
+    parser.add_argument('-task_type',default='image_classification',type=str)
 
     parser.add_argument('-gnn_method', default='SAGEConv', type=str, help='contain_model_feature')
     parser.add_argument('-accuracy_thres', default=0.7, type=float, help='accuracy_thres')
@@ -208,8 +210,8 @@ if __name__ == '__main__':
     parser.add_argument('-test_dataset', default='dmlab', type=str, help='remove all the edges from the dataset')
     parser.add_argument('-hidden_channels', default=128, type=int, help='hidden channels')  # 128
 
-    parser.add_argument('-top_pos_K', default=50, type=float, help='hidden channels')
-    parser.add_argument('-top_neg_K', default=20, type=float, help='hidden channels')
+    parser.add_argument('-top_pos_K', default=0.5, type=float, help='hidden channels')
+    parser.add_argument('-top_neg_K', default=0.5, type=float, help='hidden channels')
     parser.add_argument('-accu_pos_thres', default=0.6, type=float, help='hidden channels')
     parser.add_argument('-accu_neg_thres', default=0.2, type=float, help='hidden channels')
     parser.add_argument('-distance_thres', default=-1, type=float)
@@ -233,6 +235,7 @@ if __name__ == '__main__':
     if args.modality == 'text':
         args.dataset_reference_model = 'gpt2'  # 'openai-community_gpt2'
         args.record_path = 'sequence_classification/' + args.record_path
+        args.task_type = 'sequence_classification'
 
     # args.gnn_method = 'node2vec+' #'GATConv' #'HGTConv' #'SAGEConv' 
 
