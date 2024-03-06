@@ -32,7 +32,7 @@ class RegressionModel():
             corr_path = f'corr_task2vec_{reference_model}.csv'
         elif dataset_embed_method == 'domain_similarity':
             corr_path = f'corr_domain_similarity_{reference_model}.csv'
-        self.selected_columns = ['architectures', 'accuracy'
+        self.selected_columns = ['architectures', 'accuracy',
                                  'model_type', 'number_of_parameters',
                                  'train_runtime',
                                  'dataset',
@@ -424,9 +424,9 @@ class RegressionModel():
         df_results = pd.DataFrame({'model': df_test.index, 'score': y_pred})
 
         if embedding_dict == {}:
-            dir_path = os.path.join('../resources/rank_final', f"{self.test_dataset.replace('/', '_')}", self.method)
+            dir_path = os.path.join(self.directory_experiments, 'rank_final', f"{self.test_dataset.replace('/', '_')}", self.method)
         else:
-            dir_path = os.path.join('./resources/rank_final', f"{self.test_dataset.replace('/', '_')}", self.method)
+            dir_path = os.path.join(self.directory_experiments, 'rank_final', f"{self.test_dataset.replace('/', '_')}", self.method)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
         if self.finetune_ratio > 1:
@@ -475,12 +475,14 @@ def encode(df, columns):
 
 
 if __name__ == '__main__':
-
-    path = os.path.join(get_root_path_string(), 'resources/experiments', 'log', f'performance_rf_score.csv')
+    task_type = 'sequence_classification'
+    path = os.path.join(get_root_path_string(), 'resources/experiments', task_type, 'log')
+    performance_file = os.path.join(path, f'performance_rf_score.csv')
     print(f'====== path: {path} ======')
-    if os.path.exists(path):
-        df_perf = pd.read_csv(path, index_col=0)
+    if os.path.exists(performance_file):
+        df_perf = pd.read_csv(performance_file, index_col=0)
     else:
+        os.makedirs(path)
         df_perf = pd.DataFrame(
             columns=[
                 'method',
@@ -650,7 +652,7 @@ if __name__ == '__main__':
                         hidden_channels=hidden_channels,
                         dataset_embed_method='domain_similarity',  # '', #  task2vec
                         reference_model='gpt2_gpt',
-                        task_type='sequence_classification'
+                        task_type=task_type
                     )
                     # try:
                     score, df_results = trainer.train()
@@ -660,4 +662,4 @@ if __name__ == '__main__':
                 train_time = time.time() - start
                 df_perf.loc[len(df_perf)] = [method, test_dataset, train_time, score]
 
-        df_perf.to_csv(path)
+        df_perf.to_csv(performance_file)
