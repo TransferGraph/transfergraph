@@ -12,6 +12,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import normalize
 
+from transfergraph.config import get_root_path_string
+
 SAVE_FEATURE = True
 
 
@@ -481,7 +483,7 @@ def encode(df, columns):
 
 if __name__ == '__main__':
 
-    path = os.path.join('../', 'resources', 'log',f'performance_rf_score.csv')
+    path = os.path.join(get_root_path_string(), 'resources/experiments', 'log', f'performance_rf_score.csv')
     print(f'====== path: {path} ======')
     if os.path.exists(path):
         df_perf = pd.read_csv(path, index_col=0)
