@@ -32,11 +32,10 @@ class RegressionModel():
             corr_path = f'corr_task2vec_{reference_model}.csv'
         elif dataset_embed_method == 'domain_similarity':
             corr_path = f'corr_domain_similarity_{reference_model}.csv'
-        self.selected_columns = ['architectures', 'accuracy',
+        self.selected_columns = ['architectures',
                                  'model_type', 'number_of_parameters',
                                  'train_runtime',
                                  'finetune_dataset', 'size', 'number_of_classes',
-                                 'dataset',
                                  'test_accuracy'
                                  ]  # 'input_shape', 'elapsed_time', '#labels',
         dataset_map = {'oxford_iiit_pet': 'pets',
