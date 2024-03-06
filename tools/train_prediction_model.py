@@ -27,9 +27,6 @@ class RegressionModel():
             dataset_embed_method='domain_similarity',
             reference_model='resnet50',
             task_type='sequence_classification',
-            root='..',
-            #  corr_path='corr_domain_similarity_google_vit_base_patch16_224_imagenet.csv',
-            SAVE_FEATURE=True
     ):
         if dataset_embed_method == 'task2vec':
             corr_path = f'corr_task2vec_{reference_model}.csv'
@@ -48,12 +45,12 @@ class RegressionModel():
             self.test_dataset = dataset_map[test_dataset]
         else:
             self.test_dataset = test_dataset
-        self.root = root
         self.finetune_ratio = finetune_ratio
         self.method = method
         self.corr_path = corr_path
         self.hidden_channels = hidden_channels
         self.task_type = task_type
+        self.directory_experiments = os.path.join(get_root_path_string(), 'resources/experiments', self.task_type)
 
         if 'task2vec' in corr_path and 'task2vec' in dataset_embed_method:
             self.embed_addition = '_task2vec'
@@ -68,12 +65,12 @@ class RegressionModel():
 
     def feature_preprocess(self, embedding_dict={}, data_dict={}):
 
-        df_model_config = pd.read_csv(os.path.join(self.root, self.task_type, 'model_config_dataset.csv'))
+        df_model_config = pd.read_csv(os.path.join(self.directory_experiments, 'model_config_dataset.csv'))
         # print(f'\n df_model_config.columns: {df_model_config.columns}')
-        df_dataset_config = pd.read_csv(os.path.join(self.root, self.task_type, 'target_dataset_features.csv'))
+        df_dataset_config = pd.read_csv(os.path.join(self.directory_experiments, 'target_dataset_features.csv'))
         # print(f'\n df_dataset_config.columns: {df_dataset_config.columns}')
 
-        df_finetune = pd.read_csv(os.path.join(self.root, self.task_type, 'records.csv'), index_col=0)
+        df_finetune = pd.read_csv(os.path.join(self.directory_experiments, 'records.csv'), index_col=0)
         df_finetune = df_finetune.rename(columns={'eval_accuracy': 'test_accuracy'})
 
         df_finetune = df_finetune.rename(columns={'finetuned_dataset': 'finetune_dataset'})
@@ -110,12 +107,12 @@ class RegressionModel():
                 if method[-8:] == 'distance':
                     method = '_'.join(method.split('_')[:-2])
 
-                root = f"../resources/features_final/{self.test_dataset.replace('/', '_')}"
-                if not os.path.exists(root):
-                    os.makedirs(root)
+                path_dataset_features = os.path.join(self.directory_experiments, f"features_final/{self.test_dataset.replace('/', '_')}")
+                if not os.path.exists(path_dataset_features):
+                    os.makedirs(path_dataset_features)
                 if self.finetune_ratio == 1:
                     file = os.path.join(
-                        f"{root}/features_{method.replace('rf_', 'lr_').replace('svm_', 'lr_').replace('xgb_', 'lr_')}_{self.hidden_channels}.csv"
+                        f"{path_dataset_features}/features_{method.replace('rf_', 'lr_').replace('svm_', 'lr_').replace('xgb_', 'lr_')}_{self.hidden_channels}.csv"
                     )
                     print(f'\nfile: {file}')
                     # file = os.path.join(f"../../features/{self.test_dataset}/features_{method}.csv")
@@ -125,7 +122,7 @@ class RegressionModel():
                     # file = os.path.join(f"../../features/{self.test_dataset}/features_{method}_{self.finetune_ratio}.csv")
                     # if not os.path.exists(file):
                     file = os.path.join(
-                        f"{root}/features_{method.replace('rf_', 'lr_').replace('svm_', 'lr_').replace('xgb_', 'lr_')}_{self.hidden_channels}_{self.finetune_ratio}.csv"
+                        f"{path_dataset_features}/features_{method.replace('rf_', 'lr_').replace('svm_', 'lr_').replace('xgb_', 'lr_')}_{self.hidden_channels}_{self.finetune_ratio}.csv"
                     )
                 df_feature = pd.read_csv(file)  # index_col=0
                 print(f'\n1st df_feature.shape: {df_feature.shape}')
@@ -209,12 +206,7 @@ class RegressionModel():
                 df_feature.index = range(len(df_feature))
                 df_dataset_list = []
                 for dataset in df_feature['finetune_dataset'].unique():
-                    logme_path = os.path.join(
-                        get_root_path_string(),
-                        'resources/experiments',
-                        self.task_type,
-                        'transferability_score_records.csv'
-                        )
+                    logme_path = os.path.join(self.directory_experiments, 'transferability_score_records.csv')
                     logme = pd.read_csv(logme_path)
                     df_logme = logme[logme['model'] != 'time']
                     df_logme = df_logme[df_logme['target_dataset'] == dataset]
@@ -242,7 +234,7 @@ class RegressionModel():
 
         if 'data_distance' in self.method or 'all' in self.method:
             # if True:
-            corr_path = os.path.join(self.root, 'resources', self.corr_path)
+            corr_path = os.path.join(self.directory_experiments, 'resources', self.corr_path)
             # print(f'\ncorr_path: {corr_path}')
             df_corr = pd.read_csv(corr_path, index_col=0)
 
@@ -314,7 +306,7 @@ class RegressionModel():
         # print(f'\nSAVE_FEATURE: {SAVE_FEATURE}')
         if SAVE_FEATURE:
             # print(f'\n-----save feature')
-            _dir = os.path.join(self.root, 'features_final', self.test_dataset.replace('/', '_'))
+            _dir = os.path.join(self.directory_experiments, 'features_final', self.test_dataset.replace('/', '_'))
             if not os.path.exists(_dir):
                 os.makedirs(_dir)
             if self.finetune_ratio < 1:
@@ -370,8 +362,8 @@ class RegressionModel():
             df_test = encode(df_test, categorical_columns)
 
         if 0:
-            df_train.to_csv(os.path.join(self.root, 'train.csv'))
-            df_test.to_csv(os.path.join(self.root, 'test.csv'))
+            df_train.to_csv(os.path.join(self.directory_experiments, 'train.csv'))
+            df_test.to_csv(os.path.join(self.directory_experiments, 'test.csv'))
 
         return df_train, df_test
 
@@ -656,7 +648,6 @@ if __name__ == '__main__':
                         finetune_ratio=ratio,
                         method=method,
                         hidden_channels=hidden_channels,
-                        root='../resources',
                         dataset_embed_method='domain_similarity',  # '', #  task2vec
                         reference_model='gpt2_gpt',
                         task_type='sequence_classification'
