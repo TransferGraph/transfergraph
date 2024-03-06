@@ -12,6 +12,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import normalize
 
+from transfergraph.config import get_root_path_string
+
 SAVE_FEATURE = True
 
 
@@ -24,7 +26,7 @@ class RegressionModel():
             hidden_channels=128,
             dataset_embed_method='domain_similarity',
             reference_model='resnet50',
-            modality='text',
+            task_type='sequence_classification',
             root='..',
             #  corr_path='corr_domain_similarity_google_vit_base_patch16_224_imagenet.csv',
             SAVE_FEATURE=True
@@ -51,7 +53,7 @@ class RegressionModel():
         self.method = method
         self.corr_path = corr_path
         self.hidden_channels = hidden_channels
-        self.modality = modality
+        self.task_type = task_type
 
         if 'task2vec' in corr_path and 'task2vec' in dataset_embed_method:
             self.embed_addition = '_task2vec'
@@ -207,15 +209,16 @@ class RegressionModel():
                 df_feature.index = range(len(df_feature))
                 df_dataset_list = []
                 for dataset in df_feature['finetune_dataset'].unique():
-                    # if embedding_dict == {}:
-                    #     logme = pd.read_csv(f'../baselines/LogME_scores/{dataset}.csv',)
-                    ### Image
-                    # logme = pd.read_csv(f'./baselines/LogME_scores/{dataset}.csv',)
-                    if self.modality == 'text':
-                        ### Text
-                        logme = pd.read_csv(f'../../resources/experiments/sequence_classification/transferability_score_records.csv')
-                        df_logme = logme[logme['model'] != 'time']
-                        df_logme = df_logme[df_logme['target_dataset'] == dataset]
+                    logme_path = os.path.join(
+                        get_root_path_string(),
+                        'resources/experiments',
+                        self.task_type,
+                        'transferability_score_records.csv'
+                        )
+                    logme = pd.read_csv(logme_path)
+                    df_logme = logme[logme['model'] != 'time']
+                    df_logme = df_logme[df_logme['target_dataset'] == dataset]
+
                     # identify common models
                     # print('\n',df_feature['model'])
                     df_logme = df_logme[df_logme['model'].isin(model_list)]
@@ -656,7 +659,7 @@ if __name__ == '__main__':
                         root='../resources',
                         dataset_embed_method='domain_similarity',  # '', #  task2vec
                         reference_model='gpt2_gpt',
-                        modality='text'
+                        task_type='sequence_classification'
                     )
                     # try:
                     score, df_results = trainer.train()
