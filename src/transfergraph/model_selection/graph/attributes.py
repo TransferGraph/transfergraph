@@ -9,6 +9,8 @@ import pandas as pd
 import scipy.spatial.distance as distance
 import torch
 
+from transfergraph.config import get_root_path_string
+
 
 class GraphAttributes():
     PRINT = True
@@ -623,9 +625,16 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
 
         for ori_dataset_name, dataset_name in dataset_list.items():
             ds_name = dataset_name.replace(' ', '-').replace('/', '_')
-            path = os.path.join(f'../resources/dataset_embed/domain_similarity/feature', reference_model, f'{ds_name}_feature.npy')
+            path = os.path.join(
+                get_root_path_string(),
+                f'resources/dataset_embed/domain_similarity/feature',
+                reference_model,
+                f'{ds_name}_feature.npy'
+                )
             if not os.path.exists(path):
-                raise NotImplementedError(f'No embedding available for {dataset_name}. Please run tools/embed_dataset.py first.')
+                raise NotImplementedError(
+                    f'No embedding available for {dataset_name} at path {path}. Please run tools/embed_dataset.py first.'
+                    )
             try:
                 features = np.load(path)
             except Exception as e:
