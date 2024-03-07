@@ -10,6 +10,9 @@ import scipy.spatial.distance as distance
 import torch
 
 from transfergraph.config import get_root_path_string
+from transfergraph.dataset.embed_utils import DatasetEmbeddingMethod
+from transfergraph.dataset.embedder import determine_directory_embedded_dataset, determine_file_name_embedded_dataset
+from transfergraph.dataset.task import TaskType
 
 
 class GraphAttributes():
@@ -30,11 +33,9 @@ class GraphAttributes():
 
     def __init__(self, args):
         self.args = args
-        self.root = '../'
-        if self.args.modality == 'image':
-            self.record_path = 'resources/experiments/image_classification/records.csv'
-        elif self.args.modality == 'text':
-            self.record_path = 'resources/experiments/sequence_classification/records.csv'
+        self.resource_path = os.path.join(get_root_path_string(), "resources/experiments", args.task_type.value)
+        self.record_path = os.path.join(self.resource_path, "records.csv")
+        self.model_config_path = os.path.join(self.resource_path, "model_config_dataset.csv")
 
         self.finetune_records = self.get_finetuned_records()
         # get node id
@@ -110,7 +111,7 @@ class GraphAttributes():
 
         ## Filter distance with top K
 
-        path = f'../resources/experiments/{self.args.task_type}/corr_{self.args.dataset_embed_method}_{self.args.dataset_reference_model}_{base_dataset}.csv'
+        path = f'{self.resource_path}/corr_{self.args.dataset_embed_method.value}_{self.args.dataset_reference_model}_{base_dataset}.csv'
         # if not os.path.exists(path):
         if True:
             dict_distance = {}
@@ -393,23 +394,25 @@ class GraphAttributes():
         # print(len(self.dataset_list),self.dataset_list)
         df_list = []
         df_neg_list = []
-        if self.args.modality == 'text':
-            df_score_all = pd.read_csv('../resources/experiments/sequence_classification/transferability_score_records.csv', index_col=0)
-            # df_score = df_score_all[df_score_all['model']!='time']
+
         for ori_dataset_name, dataset_name in self.dataset_list.items():
-            if self.args.modality == 'image':
+            if self.args.task_type == TaskType.IMAGE_CLASSIFICATION:
                 df_sub = df[df['dataset'] == dataset_name]
-            elif self.args.modality == 'text':
+            elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
                 df_sub = df[df['dataset'] == ori_dataset_name]
-            # print(f'\n ori_dataset_name: {ori_dataset_name}, dataset_name: {dataset_name}')
+            else:
+                raise Exception(f"Unexpected task type {self.args.task_type}")
+
             try:
-                if self.args.modality == 'image':
-                    path = f'resources/LogME_scores/{dataset_name.replace(" ", "-")}.csv'
-                    # print(f'path: {path}')
+                if self.args.task_type == TaskType.IMAGE_CLASSIFICATION:
+                    path = f'{self.resource_path}/LogME_scores/{dataset_name.replace(" ", "-")}.csv'
                     df_score = pd.read_csv(path, index_col=0)
                     df_score = df_score[df_score['model'] != 'time']
-                elif self.args.modality == 'text':
+                elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
+                    df_score_all = pd.read_csv(f'{self.resource_path}/transferability_score_records.csv', index_col=0)
                     df_score = df_score_all[df_score_all['target_dataset'] == ori_dataset_name]
+                else:
+                    raise Exception(f"Unexpected task type {self.args.task_type}")
 
                 # drop rows with -inf amount or replace it with really small number
                 df_score['score'].replace([-np.inf, np.nan], -50, inplace=True)
@@ -459,7 +462,10 @@ class GraphAttributes():
         df = pd.concat(df_list)
         # print(df.head())
         df = df.dropna(subset=['score'])
-        df.to_csv(f'../resources/features/transferility_{self.args.modality}.csv')
+
+        if not os.path.isdir(f"{self.resource_path}/features"):
+            os.makedirs(f"{self.resource_path}/features")
+        df.to_csv(f'{self.resource_path}/features/transferability.csv')
 
         if 'score' not in df.columns: df['score'] = 0
         df_neg = pd.concat(df_neg_list).dropna()
@@ -471,36 +477,36 @@ class GraphAttributes():
         return df, df_neg
 
     def get_finetuned_records(self):
-        if self.args.modality == 'image':
-            file = 'resources/experiments/image_classification/model_config_dataset.csv'
-        elif self.args.modality == 'text':
-            file = 'resources/experiments/sequence_classification/model_config_dataset.csv'
-        config = pd.read_csv(os.path.join(self.root, file))
+        config = pd.read_csv(self.model_config_path)
         # model configuration
         config['configs'] = ''
         # config['accuracy'] = 0
         available_models = config['model'].unique()
-        if self.args.modality == 'image':
+        if self.args.task_type == TaskType.IMAGE_CLASSIFICATION:
             config['dataset'] = config['labels']
             config = config.dropna(subset=['accuracy'])
-        elif self.args.modality == 'text':
+        elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
             config = config.dropna(subset=['dataset'])
             ##### fill pre-trained null value with mean accuracy
             config['accuracy'].fillna((config['accuracy'].mean()), inplace=True)
             config['input_shape'] = 0
+        else:
+            raise Exception(f"Unexpected task type {self.args.task_type}")
         self.model_config = config
 
         ###### finetune results
-        finetune_records = pd.read_csv(os.path.join(self.root, self.record_path))
+        finetune_records = pd.read_csv(self.record_path)
 
         # rename column name
         finetune_records['model'] = finetune_records['model']
         finetune_records['dataset'] = finetune_records['finetuned_dataset']  # finetune_records['train_dataset_name']
-        if self.args.modality == 'image':
+        if self.args.task_type == TaskType.IMAGE_CLASSIFICATION:
             finetune_records['accuracy'] = finetune_records['test_accuracy']
-        elif self.args.modality == 'text':
+        elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
             finetune_records['accuracy'] = finetune_records['eval_accuracy']
             finetune_records = finetune_records[finetune_records['dataset'] != 'dbpedia_14']
+        else:
+            raise Exception(f"Unexpected task type {self.args.task_type}")
         finetune_records['input_shape'] = 0
         print()
         print(f'---- len(finetune_records_raw): {len(finetune_records)}')
@@ -518,12 +524,7 @@ class GraphAttributes():
         # Normalize finetune results per dataset
         accuracy = finetune_records[['dataset', 'accuracy']].groupby('dataset').transform(lambda x: (x - x.min()) / (x.max() - x.min()))
         finetune_records['accuracy'] = accuracy
-        # print(f'\nfinetune_recoreds["accuracy"]: {accuracy}')
-        # print(f'\n min_accuracy: {accuracy.min()}, max: {accuracy.max()}')
 
-        # if 'without_accuracy' in self.args.gnn_method:
-        #     finetune_records = config
-        # else:
         finetune_records = pd.concat(
             [config[['dataset', 'model', 'input_shape', 'accuracy']],
              finetune_records[['dataset', 'model', 'input_shape', 'accuracy']]],
@@ -551,25 +552,19 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
         # invoking the __init__ of the parent class
         GraphAttributes.__init__(self, args)
         self.dataset_list = self.get_dataset_list()
-        # print()
-        # print('========= Extracting Graph Attributes =========')
-        # print(self.unique_model_id.sort_values(['mappedID'],ascending=True).head())
-        # print(self.unique_dataset_id.sort_values(['mappedID'],ascending=False).head())
-        # print()
 
-        # print(f'args.dataset_reference_model: {self.args.dataset_reference_model}')
         self.data_features = self.get_dataset_features(self.args.dataset_reference_model)
         if 'node2vec' in args.gnn_method or (not args.contain_model_feature):
             self.model_features = []
             self.model_list = self.unique_model_id['model'].unique()
         else:
             self.model_features, self.model_list = self.get_model_features()
+
         # get common nodes
         self.drop_nodes()
         self.max_dataset_idx = self.unique_dataset_id['mappedID'].max()
-        ##########
+
         # get specific dataset index
-        ##########
         if args.test_dataset != '':
             try:
                 self.test_dataset_idx = self.unique_dataset_id[self.unique_dataset_id['dataset'] == args.test_dataset]['mappedID'].values[0]
@@ -624,18 +619,18 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
         print('\n', dataset_list)
 
         for ori_dataset_name, dataset_name in dataset_list.items():
-            ds_name = dataset_name.replace(' ', '-').replace('/', '_')
-            path = os.path.join(
-                get_root_path_string(),
-                f'resources/dataset_embed/domain_similarity/feature',
+            embedding_directory = determine_directory_embedded_dataset(
                 reference_model,
-                f'{ds_name}_feature.npy'
+                TaskType.SEQUENCE_CLASSIFICATION,
+                DatasetEmbeddingMethod.DOMAIN_SIMILARITY
                 )
-            if not os.path.exists(path):
-                raise NotImplementedError(
-                    f'No embedding available for {dataset_name} at path {path}. Please run tools/embed_dataset.py first.'
-                    )
+            path = determine_file_name_embedded_dataset(embedding_directory, ori_dataset_name)
+
             try:
+                if not os.path.exists(path):
+                    raise Exception(
+                        f'No embedding available for {dataset_name} at path {path}. Please run tools/embed_dataset.py first.'
+                    )
                 features = np.load(path)
             except Exception as e:
                 # print('\n----------')

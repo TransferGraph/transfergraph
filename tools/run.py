@@ -126,9 +126,9 @@ def main(args):
 
     if args.gnn_method == 'lr':
         graph_attributes = GraphAttributes(args)
-    elif args.dataset_embed_method == 'domain_similarity':
+    elif args.dataset_embed_method == DatasetEmbeddingMethod.DOMAIN_SIMILARITY:
         graph_attributes = GraphAttributesWithDomainSimilarity(args)
-    elif args.dataset_embed_method == 'task2vec':
+    elif args.dataset_embed_method == DatasetEmbeddingMethod.TASK2VEC:
         graph_attributes = GraphAttributesWithTask2Vec(args)
     else:
         graph_attributes = GraphAttributes(args)
@@ -193,32 +193,32 @@ if __name__ == '__main__':
     Configurations
     '''
     parser = argparse.ArgumentParser(description='Description')
-    parser.add_argument('-contain_dataset_feature', default='True', type=str, help="Whether to apply selectivity on a model level")
-    parser.add_argument('-contain_data_similarity', default='True', type=str, help="Whether to apply selectivity on a model level")
-    parser.add_argument('-contain_model_feature', default='False', type=str, help="contain_model_feature")
-    parser.add_argument('-embed_dataset_feature', default='True', type=str, help='embed_dataset_feature')
-    parser.add_argument('-embed_model_feature', default='True', type=str, help="embed_model_feature")
-    parser.add_argument('-complete_model_features', default='True', type=str)
-    parser.add_argument('-dataset_reference_model', default='resnet50', type=str)
+    parser.add_argument('--contain_dataset_feature', default='True', type=str, help="Whether to apply selectivity on a model level")
+    parser.add_argument('--contain_data_similarity', default='True', type=str, help="Whether to apply selectivity on a model level")
+    parser.add_argument('--contain_model_feature', default='False', type=str, help="contain_model_feature")
+    parser.add_argument('--embed_dataset_feature', default='True', type=str, help='embed_dataset_feature')
+    parser.add_argument('--embed_model_feature', default='True', type=str, help="embed_model_feature")
+    parser.add_argument('--complete_model_features', default='True', type=str)
+    parser.add_argument('--dataset_reference_model', default='resnet50', type=str)
 
-    parser.add_argument('-modality', default='image', type=str)  # image or text
-    parser.add_argument('-task_type',default='image_classification',type=str)
+    parser.add_argument('--modality', default='image', type=str)  # image or text
+    parser.add_argument('--task_type', default=TaskType.IMAGE_CLASSIFICATION, type=TaskType)
 
-    parser.add_argument('-gnn_method', default='SAGEConv', type=str, help='contain_model_feature')
-    parser.add_argument('-accuracy_thres', default=0.7, type=float, help='accuracy_thres')
-    parser.add_argument('-finetune_ratio', default=1.0, type=float, help='finetune_ratio')
-    parser.add_argument('-test_dataset', default='dmlab', type=str, help='remove all the edges from the dataset')
-    parser.add_argument('-hidden_channels', default=128, type=int, help='hidden channels')  # 128
+    parser.add_argument('--gnn_method', default='SAGEConv', type=str, help='contain_model_feature')
+    parser.add_argument('--accuracy_thres', default=0.7, type=float, help='accuracy_thres')
+    parser.add_argument('--finetune_ratio', default=1.0, type=float, help='finetune_ratio')
+    parser.add_argument('--test_dataset', default='dmlab', type=str, help='remove all the edges from the dataset')
+    parser.add_argument('--hidden_channels', default=128, type=int, help='hidden channels')  # 128
 
-    parser.add_argument('-top_pos_K', default=0.5, type=float, help='hidden channels')
-    parser.add_argument('-top_neg_K', default=0.5, type=float, help='hidden channels')
-    parser.add_argument('-accu_pos_thres', default=0.6, type=float, help='hidden channels')
-    parser.add_argument('-accu_neg_thres', default=0.2, type=float, help='hidden channels')
-    parser.add_argument('-distance_thres', default=-1, type=float)
+    parser.add_argument('--top_pos_K', default=0.5, type=float, help='hidden channels')
+    parser.add_argument('--top_neg_K', default=0.5, type=float, help='hidden channels')
+    parser.add_argument('--accu_pos_thres', default=0.6, type=float, help='hidden channels')
+    parser.add_argument('--accu_neg_thres', default=0.2, type=float, help='hidden channels')
+    parser.add_argument('--distance_thres', default=-1, type=float)
 
-    parser.add_argument('-dataset_embed_method', default='domain_similarity', type=str)  # task2vec
-    parser.add_argument('-dataset_distance_method', default='euclidean', type=str)  # correlation
-    parser.add_argument('-model_dataset_edge_attribute', default='LogMe', type=str)  # correlation
+    parser.add_argument('--dataset_embed_method', default=DatasetEmbeddingMethod.DOMAIN_SIMILARITY, type=DatasetEmbeddingMethod)  # task2vec
+    parser.add_argument('--dataset_distance_method', default='euclidean', type=str)  # correlation
+    parser.add_argument('--model_dataset_edge_attribute', default='LogMe', type=str)  # correlation
 
     parser.add_argument('--record_path', default='records.csv', type=str)
 
@@ -228,16 +228,19 @@ if __name__ == '__main__':
 
     # args.dataset_embed_method  =  'task2vec' #'' # 
 
-    if args.dataset_embed_method == 'domain_similarity':
-        args.dataset_reference_model = 'google_vit_base_patch16_224'  # ''resnet50'#' #'Ahmed9275_Vit-Cifar100' #''johnnydevriese_vit_beans
-    elif args.dataset_embed_method == 'task2vec':
-        args.dataset_reference_model = 'resnet34'
-    if args.modality == 'text':
-        args.dataset_reference_model = 'gpt2'  # 'openai-community_gpt2'
-        args.record_path = 'sequence_classification/' + args.record_path
-        args.task_type = 'sequence_classification'
+    if args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
+        args.dataset_reference_model = 'EleutherAI_gpt-neo-125m'
+    elif args.task_type == TaskType.IMAGE_CLASSIFICATION:
+        if args.dataset_embed_method == DatasetEmbeddingMethod.DOMAIN_SIMILARITY:
+            args.dataset_reference_model = 'google_vit_base_patch16_224'
+        elif args.dataset_embed_method == DatasetEmbeddingMethod.TASK2VEC:
+            args.dataset_reference_model = 'resnet34'
+        else:
+            raise Exception(f'Unexpected embedding method {args.dataset_embed_method}')
+    else:
+        raise Exception(f'Unexpected task type {args.task_type}')
 
-    # args.gnn_method = 'node2vec+' #'GATConv' #'HGTConv' #'SAGEConv' 
+    # args.gnn_method = 'node2vec+' #'GATConv' #'HGTConv' #'SAGEConv'
 
     args.contain_data_similarity = str2bool(args.contain_data_similarity)
     args.contain_model_feature = str2bool(args.contain_model_feature)

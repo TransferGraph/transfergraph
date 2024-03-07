@@ -13,6 +13,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import normalize
 
 from transfergraph.config import get_root_path_string
+from transfergraph.dataset.embed_utils import DatasetEmbeddingMethod
+from transfergraph.dataset.task import TaskType
 
 SAVE_FEATURE = True
 
@@ -24,14 +26,17 @@ class RegressionModel():
             finetune_ratio=1.0,
             method='',
             hidden_channels=128,
-            dataset_embed_method='domain_similarity',
+            dataset_embed_method=DatasetEmbeddingMethod.DOMAIN_SIMILARITY,
             reference_model='resnet50',
-            task_type='sequence_classification',
+            task_type=TaskType.SEQUENCE_CLASSIFICATION,
     ):
-        if dataset_embed_method == 'task2vec':
+        if dataset_embed_method == DatasetEmbeddingMethod.TASK2VEC:
             corr_path = f'corr_task2vec_{reference_model}.csv'
-        elif dataset_embed_method == 'domain_similarity':
+        elif dataset_embed_method == DatasetEmbeddingMethod.DOMAIN_SIMILARITY:
             corr_path = f'corr_domain_similarity_{reference_model}.csv'
+        else:
+            raise Exception(f"Unexpected embedding method {dataset_embed_method}")
+
         self.selected_columns = ['architectures', 'accuracy',
                                  'model_type', 'number_of_parameters',
                                  'train_runtime',

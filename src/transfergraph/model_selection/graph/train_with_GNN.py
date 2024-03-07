@@ -1,13 +1,15 @@
 import os
+import time
 
 import torch.nn as nn
 import torch.nn.functional as F
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, precision_score
 from torch_geometric.data import Data
+from tqdm import tqdm
 
-from utils.CustomRandomLinkSplit import RandomLinkSplit
-from utils._util import *
-from utils.graph import HGraph
+from .utils.CustomRandomLinkSplit import RandomLinkSplit
+from .utils._util import *
+from .utils.graph import HGraph
 
 # We can make use of the `loader.LinkNeighborLoader` from PyG:
 
@@ -28,6 +30,8 @@ def train(model, train_data, graph_type='hetero', label_type=[], gnn_method='lr_
         train_loader = get_dataloader(train_data, label_type, batch_size=batch_size, is_train=True)
     elif graph_type == 'homo':
         train_loader = get_homo_dataloader(train_data, batch_size=batch_size, is_train=True)
+    else:
+        raise Exception(f"Unexpected graph type {graph_type}")
 
     if 'e2e' in gnn_method:
         L_fn = nn.MSELoss()
@@ -37,12 +41,8 @@ def train(model, train_data, graph_type='hetero', label_type=[], gnn_method='lr_
     # torch.cuda.empty_cache()
     for epoch in range(1, epochs + 1):
         total_loss = total_examples = 0
-        for sampled_data in tqdm.tqdm(train_loader):
+        for sampled_data in tqdm(train_loader):
             optimizer.zero_grad()
-            # print(sampled_data['dataset'].x)
-            # sampled_data.to(device)
-            # print(sampled_data)
-            # print(sampled_data['dataset'].x)
             pred = model(sampled_data)
             if graph_type == 'hetero':
                 ground_truth = sampled_data[s, r, t].edge_label
@@ -71,7 +71,7 @@ def validate(model, val_data, graph_type='hetero', label_type=[], batch_size=8):
     elif graph_type == 'homo':
         val_loader = get_homo_dataloader(val_data, batch_size=batch_size, is_train=True)
 
-    for sampled_data in tqdm.tqdm(val_loader):
+    for sampled_data in tqdm(val_loader):
         with torch.no_grad():
             sampled_data.to(device)
             preds.append(model(sampled_data))
@@ -198,7 +198,7 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
 
     ## Define GNN
     print(f'== Load {args.gnn_method} ==')
-    from utils.gnn import HeteroModel, HomoModel
+    from .utils.gnn import HeteroModel, HomoModel
     num_dataset_nodes = data["dataset"].num_nodes
     num_model_nodes = data["model"].num_nodes
     evaluation_dict['num_model'] = num_model_nodes
@@ -292,7 +292,7 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
 
         ############ Get regression label
         if 'e2e' in args.gnn_method:
-            from utils._util import set_labels
+            from .utils._util import set_labels
             ft_records = data_dict['finetune_records']
             unique_model_id = data_dict['unique_model_id']
             unique_dataset_id = data_dict['unique_dataset_id']
@@ -398,7 +398,7 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
     pred, x_embedding_dict = predict_model_for_dataset(model, data)
 
     if 'lr' in args.gnn_method or 'rf' in args.gnn_method:
-        from methods.train_with_linear_regression import RegressionModel
+        from .train_with_linear_regression import RegressionModel
         trainer = RegressionModel(
             args.test_dataset,
             finetune_ratio=args.finetune_ratio,
@@ -406,7 +406,7 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
             hidden_channels=args.hidden_channels,
             dataset_embed_method=args.dataset_embed_method,
             reference_model=args.dataset_reference_model,
-            modality=args.modality,
+            modality=args.task_type,
         )
         score, results = trainer.train(x_embedding_dict, data_dict)
     else:
