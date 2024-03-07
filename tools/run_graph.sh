@@ -54,7 +54,21 @@ do
                                                 echo GNN_METHOD-$GNN_METHOD
                                                 for finetune_ratio in 1.0; #1.0; #; # 0.3 0.7 0.5 
                                                 do
-                                                    echo finetune_ratio-$finetune_ratio
+                                                    echo "python3 run.py"
+                                                    echo "        -contain_data_similarity ${CONTAIN_DATA_SIMILARITY}"
+                                                    echo "        contain_dataset_feature ${CONTAIN_DATASET_FEATURE}"
+                                                    echo "        -contain_model_feature ${CONTAIN_MODEL_FEATURE}"
+                                                    echo "        -complete_model_features ${complete_model_features}"
+                                                    echo "        -gnn_method ${GNN_METHOD}"
+                                                    echo "        -test_dataset ${dataset}"
+                                                    echo "        -top_neg_K ${top_neg_K}"
+                                                    echo "        -top_pos_K ${top_pos_K}"
+                                                    echo "        -accu_neg_thres ${accu_neg_thres}"
+                                                    echo "        -accu_pos_thres ${accu_pos_thres}"
+                                                    echo "        -hidden_channels ${hidden_channels}"
+                                                    echo "        -finetune_ratio ${finetune_ratio}"
+                                                    echo "        -dataset_embed_method ${dataset_embed_method}"
+                                                    echo "        -modality ${modality}"
                                                     python3 run.py \
                                                             -contain_data_similarity ${CONTAIN_DATA_SIMILARITY} \
                                                             -contain_dataset_feature ${CONTAIN_DATASET_FEATURE} \

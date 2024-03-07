@@ -9,12 +9,12 @@
 import sys
 
 # sys.path.append(os.getcwd())
-sys.path.append('../')
+sys.path.append('../src/')
 
 # from dataset_embed.task2vec_embed import task2vec
 # sys.modules['task2vec'] = task2vec
-from src.transfergraph.model_selection.graph.utils.metric import record_metric  # record_result_metric
-from src.transfergraph.model_selection.graph.attributes import *
+from transfergraph.model_selection.graph.utils.metric import record_metric  # record_result_metric
+from transfergraph.model_selection.graph.attributes import *
 import argparse
 
 

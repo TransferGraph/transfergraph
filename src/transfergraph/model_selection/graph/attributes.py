@@ -341,14 +341,7 @@ class GraphAttributes():
         for i, row in self.unique_dataset_id.iterrows():
             ds_name = row['dataset']
             dataset_name = ds_name.replace('/', '_').replace('-', '_')
-            # self._print('dataset_name',dataset_name)
-            if dataset_name in ['davanstrien_iiif_manuscripts_label_ge_50',
-                                'dsprites',
-                                'age_prediction',
-                                'FastJobs_Visual_Emotional_Analysis',
-                                ]:
-                # delete_dataset_row_idx.append(i)
-                continue
+
             dataset_name = self.dataset_map[dataset_name] if dataset_name in self.dataset_map.keys() else dataset_name
             if isinstance(dataset_name, list):
                 # print(dataset_name)
@@ -623,12 +616,6 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
         print(f'len(unique_dataset_id): {len(self.unique_dataset_id)}')
 
     def get_dataset_features(self, reference_model):
-        # sys.path.append(os.path.abspath('../'))
-        # sys.path.append(os.getcwd())
-        from transfergraph.dataset.embed_utils import DatasetEmbeddingMethod
-        from transfergraph.dataset.embedder import DatasetEmbedder
-        from transfergraph.dataset.hugging_face.dataset import HuggingFaceDatasetImage, HuggingFaceDatasetText
-        from transfergraph.dataset.task import TaskType
         data_feat = {}
 
         dataset_list = self.dataset_list.copy()
@@ -638,39 +625,7 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
             ds_name = dataset_name.replace(' ', '-').replace('/', '_')
             path = os.path.join(f'../resources/dataset_embed/domain_similarity/feature', reference_model, f'{ds_name}_feature.npy')
             if not os.path.exists(path):
-                print(f'\nTry to obtain missing features of {dataset_name}')
-                dataset = HuggingFaceDatasetImage.load(
-                    dataset_path=args.dataset_path,
-                    dataset_name=args.dataset_name,
-                    batch_size=args.batch_size,
-                    image_processor=AutoImageProcessor.from_pretrained(args.model_name)
-                )
-                config = AutoConfig.from_pretrained(
-                    args.model_name,
-                    finetuning_task=args.task_type,
-                )
-                model = AutoModelForImageClassification.from_pretrained(
-                    args.model_name,
-                    config=config,
-                )
-                embedder = DatasetEmbedder(
-                    model.to(device),
-                    dataset,
-                    args.embedding_method,
-                    args.task_type
-                )
-
-                embedder.embed()
-                # # features = embed('../',dataset_name)
-                # try:
-                #     features = embed('../', dataset_name, reference_model)
-                # # except FileNotFoundError as e:
-                # except Exception as e:
-                #     # print(e)
-                #     # print(f'== fail to retrieve features and delete row {i}')
-                #     # self.delete_dataset_row_idx.append(i)
-                #     del self.dataset_list[ori_dataset_name]
-                #     continue
+                raise NotImplementedError(f'No embedding available for {dataset_name}. Please run tools/embed_dataset.py first.')
             try:
                 features = np.load(path)
             except Exception as e:

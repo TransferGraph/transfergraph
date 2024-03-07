@@ -26,10 +26,7 @@ class RegressionModel():
             hidden_channels=128,
             dataset_embed_method='domain_similarity',
             reference_model='resnet50',
-            modality='text',
-            root='..',
-            #  corr_path='corr_domain_similarity_google_vit_base_patch16_224_imagenet.csv',
-            SAVE_FEATURE=True
+            task_type='sequence_classification',
     ):
         if dataset_embed_method == 'task2vec':
             corr_path = f'corr_task2vec_{reference_model}.csv'
@@ -38,8 +35,8 @@ class RegressionModel():
         self.selected_columns = ['architectures', 'accuracy',
                                  'model_type', 'number_of_parameters',
                                  'train_runtime',
-                                 'finetune_dataset', 'size', 'number_of_classes',
                                  'dataset',
+                                 'finetune_dataset', 'size', 'number_of_classes',
                                  'test_accuracy'
                                  ]  # 'input_shape', 'elapsed_time', '#labels',
         dataset_map = {'oxford_iiit_pet': 'pets',
@@ -48,12 +45,12 @@ class RegressionModel():
             self.test_dataset = dataset_map[test_dataset]
         else:
             self.test_dataset = test_dataset
-        self.root = root
         self.finetune_ratio = finetune_ratio
         self.method = method
         self.corr_path = corr_path
         self.hidden_channels = hidden_channels
-        self.modality = modality
+        self.task_type = task_type
+        self.directory_experiments = os.path.join(get_root_path_string(), 'resources/experiments', self.task_type)
 
         if 'task2vec' in corr_path and 'task2vec' in dataset_embed_method:
             self.embed_addition = '_task2vec'
@@ -68,12 +65,12 @@ class RegressionModel():
 
     def feature_preprocess(self, embedding_dict={}, data_dict={}):
 
-        df_model_config = pd.read_csv(os.path.join(self.root, self.task_type, 'model_config_dataset.csv'))
+        df_model_config = pd.read_csv(os.path.join(self.directory_experiments, 'model_config_dataset.csv'))
         # print(f'\n df_model_config.columns: {df_model_config.columns}')
-        df_dataset_config = pd.read_csv(os.path.join(self.root, self.task_type, 'target_dataset_features.csv'))
+        df_dataset_config = pd.read_csv(os.path.join(self.directory_experiments, 'target_dataset_features.csv'))
         # print(f'\n df_dataset_config.columns: {df_dataset_config.columns}')
 
-        df_finetune = pd.read_csv(os.path.join(self.root, self.task_type, 'records.csv'), index_col=0)
+        df_finetune = pd.read_csv(os.path.join(self.directory_experiments, 'records.csv'), index_col=0)
         df_finetune = df_finetune.rename(columns={'eval_accuracy': 'test_accuracy'})
 
         df_finetune = df_finetune.rename(columns={'finetuned_dataset': 'finetune_dataset'})
@@ -110,12 +107,12 @@ class RegressionModel():
                 if method[-8:] == 'distance':
                     method = '_'.join(method.split('_')[:-2])
 
-                root = f"../resources/features_final/{self.test_dataset.replace('/', '_')}"
-                if not os.path.exists(root):
-                    os.makedirs(root)
+                path_dataset_features = os.path.join(self.directory_experiments, f"features_final/{self.test_dataset.replace('/', '_')}")
+                if not os.path.exists(path_dataset_features):
+                    os.makedirs(path_dataset_features)
                 if self.finetune_ratio == 1:
                     file = os.path.join(
-                        f"{root}/features_{method.replace('rf_', 'lr_').replace('svm_', 'lr_').replace('xgb_', 'lr_')}_{self.hidden_channels}.csv"
+                        f"{path_dataset_features}/features_{method.replace('rf_', 'lr_').replace('svm_', 'lr_').replace('xgb_', 'lr_')}_{self.hidden_channels}.csv"
                     )
                     print(f'\nfile: {file}')
                     # file = os.path.join(f"../../features/{self.test_dataset}/features_{method}.csv")
@@ -125,7 +122,7 @@ class RegressionModel():
                     # file = os.path.join(f"../../features/{self.test_dataset}/features_{method}_{self.finetune_ratio}.csv")
                     # if not os.path.exists(file):
                     file = os.path.join(
-                        f"{root}/features_{method.replace('rf_', 'lr_').replace('svm_', 'lr_').replace('xgb_', 'lr_')}_{self.hidden_channels}_{self.finetune_ratio}.csv"
+                        f"{path_dataset_features}/features_{method.replace('rf_', 'lr_').replace('svm_', 'lr_').replace('xgb_', 'lr_')}_{self.hidden_channels}_{self.finetune_ratio}.csv"
                     )
                 df_feature = pd.read_csv(file)  # index_col=0
                 print(f'\n1st df_feature.shape: {df_feature.shape}')
@@ -209,15 +206,11 @@ class RegressionModel():
                 df_feature.index = range(len(df_feature))
                 df_dataset_list = []
                 for dataset in df_feature['finetune_dataset'].unique():
-                    # if embedding_dict == {}:
-                    #     logme = pd.read_csv(f'../baselines/LogME_scores/{dataset}.csv',)
-                    ### Image
-                    # logme = pd.read_csv(f'./baselines/LogME_scores/{dataset}.csv',)
-                    if self.modality == 'text':
-                        ### Text
-                        logme = pd.read_csv(f'../../resources/experiments/sequence_classification/transferability_score_records.csv')
-                        df_logme = logme[logme['model'] != 'time']
-                        df_logme = df_logme[df_logme['target_dataset'] == dataset]
+                    logme_path = os.path.join(self.directory_experiments, 'transferability_score_records.csv')
+                    logme = pd.read_csv(logme_path)
+                    df_logme = logme[logme['model'] != 'time']
+                    df_logme = df_logme[df_logme['target_dataset'] == dataset]
+
                     # identify common models
                     # print('\n',df_feature['model'])
                     df_logme = df_logme[df_logme['model'].isin(model_list)]
@@ -226,7 +219,7 @@ class RegressionModel():
                     df_logme['score'].replace([-np.inf, np.nan], -50, inplace=True)
 
                     score = df_logme['score']  # .astype('float64')
-                    # normalized_pred = (score-score.min())/(score.max()-score.min()) #df_score['score'].values/norm 
+                    # normalized_pred = (score-score.min())/(score.max()-score.min()) #df_score['score'].values/norm
                     normalized_pred = (score - score.mean()) / score.std()
                     df_logme['score'] = normalized_pred
 
@@ -241,7 +234,7 @@ class RegressionModel():
 
         if 'data_distance' in self.method or 'all' in self.method:
             # if True:
-            corr_path = os.path.join(self.root, 'resources', self.corr_path)
+            corr_path = os.path.join(self.directory_experiments, 'resources', self.corr_path)
             # print(f'\ncorr_path: {corr_path}')
             df_corr = pd.read_csv(corr_path, index_col=0)
 
@@ -281,7 +274,7 @@ class RegressionModel():
         if 'feature' in self.method:
             print(f'feature in self.method')
             records = {'finetune_dataset': [], 'model': [], 'feature': []}
-            emb_files = glob(os.path.join('../../', 'model_embed', 'embeddings') + '/*')
+            emb_files = glob(os.path.join('../../../../../', 'model_embed', 'embeddings') + '/*')
             for file in emb_files:
                 components = file.split(',')
                 array = np.reshape(np.load(file), (1, -1))
@@ -313,7 +306,7 @@ class RegressionModel():
         # print(f'\nSAVE_FEATURE: {SAVE_FEATURE}')
         if SAVE_FEATURE:
             # print(f'\n-----save feature')
-            _dir = os.path.join(self.root, 'features_final', self.test_dataset.replace('/', '_'))
+            _dir = os.path.join(self.directory_experiments, 'features_final', self.test_dataset.replace('/', '_'))
             if not os.path.exists(_dir):
                 os.makedirs(_dir)
             if self.finetune_ratio < 1:
@@ -342,7 +335,7 @@ class RegressionModel():
 
         self.df_feature = df_feature
 
-        # 
+        #
         # print(f'\n nan_columns: {nan_columns}')
         # normal_columns = [col for col in df_feature.columns if 'm_f' not in col and 'd_f' not in col]
         # df_feature[normal_columns].to_csv('../../features/features.csv')
@@ -369,8 +362,8 @@ class RegressionModel():
             df_test = encode(df_test, categorical_columns)
 
         if 0:
-            df_train.to_csv(os.path.join(self.root, 'train.csv'))
-            df_test.to_csv(os.path.join(self.root, 'test.csv'))
+            df_train.to_csv(os.path.join(self.directory_experiments, 'train.csv'))
+            df_test.to_csv(os.path.join(self.directory_experiments, 'test.csv'))
 
         return df_train, df_test
 
@@ -431,9 +424,9 @@ class RegressionModel():
         df_results = pd.DataFrame({'model': df_test.index, 'score': y_pred})
 
         if embedding_dict == {}:
-            dir_path = os.path.join('../resources/rank_final', f"{self.test_dataset.replace('/', '_')}", self.method)
+            dir_path = os.path.join(self.directory_experiments, 'rank_final', f"{self.test_dataset.replace('/', '_')}", self.method)
         else:
-            dir_path = os.path.join('./resources/rank_final', f"{self.test_dataset.replace('/', '_')}", self.method)
+            dir_path = os.path.join(self.directory_experiments, 'rank_final', f"{self.test_dataset.replace('/', '_')}", self.method)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
         if self.finetune_ratio > 1:
@@ -482,12 +475,14 @@ def encode(df, columns):
 
 
 if __name__ == '__main__':
-
-    path = os.path.join(get_root_path_string(), 'resources/experiments', 'log', f'performance_rf_score.csv')
+    task_type = 'sequence_classification'
+    path = os.path.join(get_root_path_string(), 'resources/experiments', task_type, 'log')
+    performance_file = os.path.join(path, f'performance_rf_score.csv')
     print(f'====== path: {path} ======')
-    if os.path.exists(path):
-        df_perf = pd.read_csv(path, index_col=0)
+    if os.path.exists(performance_file):
+        df_perf = pd.read_csv(performance_file, index_col=0)
     else:
+        os.makedirs(path)
         df_perf = pd.DataFrame(
             columns=[
                 'method',
@@ -655,10 +650,9 @@ if __name__ == '__main__':
                         finetune_ratio=ratio,
                         method=method,
                         hidden_channels=hidden_channels,
-                        root='../resources',
                         dataset_embed_method='domain_similarity',  # '', #  task2vec
                         reference_model='gpt2_gpt',
-                        modality='text'
+                        task_type=task_type
                     )
                     # try:
                     score, df_results = trainer.train()
@@ -668,4 +662,4 @@ if __name__ == '__main__':
                 train_time = time.time() - start
                 df_perf.loc[len(df_perf)] = [method, test_dataset, train_time, score]
 
-        df_perf.to_csv(path)
+        df_perf.to_csv(performance_file)
