@@ -55,7 +55,7 @@ class RegressionModel():
         self.corr_path = corr_path
         self.hidden_channels = hidden_channels
         self.task_type = task_type
-        self.directory_experiments = os.path.join(get_root_path_string(), 'resources/experiments', self.task_type)
+        self.directory_experiments = os.path.join(get_root_path_string(), 'resources/experiments', self.task_type.value)
 
         if 'task2vec' in corr_path and 'task2vec' in dataset_embed_method:
             self.embed_addition = '_task2vec'
@@ -365,10 +365,6 @@ class RegressionModel():
         if set(categorical_columns) < set(list(df_train.columns)):
             df_train = encode(df_train, categorical_columns)
             df_test = encode(df_test, categorical_columns)
-
-        if 0:
-            df_train.to_csv(os.path.join(self.directory_experiments, 'train.csv'))
-            df_test.to_csv(os.path.join(self.directory_experiments, 'test.csv'))
 
         return df_train, df_test
 

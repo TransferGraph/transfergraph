@@ -10,6 +10,7 @@ from tqdm import tqdm
 from .utils.CustomRandomLinkSplit import RandomLinkSplit
 from .utils._util import *
 from .utils.graph import HGraph
+from ...dataset.embed_utils import DatasetEmbeddingMethod
 
 # We can make use of the `loader.LinkNeighborLoader` from PyG:
 
@@ -39,9 +40,11 @@ def train(model, train_data, graph_type='hetero', label_type=[], gnn_method='lr_
         L_fn = F.binary_cross_entropy_with_logits
     # print("Capturing:", torch.cuda.is_current_stream_capturing())
     # torch.cuda.empty_cache()
+    number_of_training_step = epochs * len(train_loader)
+    progress_bar = tqdm(total=number_of_training_step)
     for epoch in range(1, epochs + 1):
         total_loss = total_examples = 0
-        for sampled_data in tqdm(train_loader):
+        for sampled_data in train_loader:
             optimizer.zero_grad()
             pred = model(sampled_data)
             if graph_type == 'hetero':
@@ -55,9 +58,9 @@ def train(model, train_data, graph_type='hetero', label_type=[], gnn_method='lr_
             optimizer.step()
             total_loss += float(loss) * pred.numel()
             total_examples += pred.numel()
-        # if total_loss < 1: break
-        print(f"Epoch: {epoch:03d}, Loss: {total_loss / total_examples:.4f}")
-        # if (total_loss / total_examples) < 0.1: break
+            loss = f"{total_loss / total_examples:.4f}"
+            progress_bar.set_postfix({'epoch': epoch, 'loss': loss})
+            progress_bar.update(1)
     train_time = time.time() - start
     return model, round(total_loss / total_examples, 4), train_time
 
@@ -406,7 +409,7 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
             hidden_channels=args.hidden_channels,
             dataset_embed_method=args.dataset_embed_method,
             reference_model=args.dataset_reference_model,
-            modality=args.task_type,
+            task_type=args.task_type,
         )
         score, results = trainer.train(x_embedding_dict, data_dict)
     else:
@@ -417,20 +420,13 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
 
 
 def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, results={}):
-    # print(f'\npred: {pred}')
-    print(f'\nlen(pred): {len(pred)}')
-    # norm = np.linalg.norm(pred)     # To find the norm of the array
-    # print(norm)                        # Printing the value of the norm
-    # normalized_pred = pred/norm 
-    # print(normalized_pred[:5])
-
     df_model = pd.DataFrame(data_dict['model_idx'], columns=['mappedID'])
     unique_model_id = data_dict['unique_model_id']
     unique_model_id.index = range(len(unique_model_id))
     df_results = df_model.merge(unique_model_id, how='inner', on='mappedID')
     df_results['score'] = pred
 
-    if 'task2vec' in args.dataset_embed_method:
+    if args.dataset_embed_method == DatasetEmbeddingMethod.TASK2VEC:
         embed_addition = '_task2vec'
     else:
         embed_addition = ''
@@ -447,16 +443,7 @@ def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, resu
     print(f'\n -- os.path.join(dir_path,file): {os.path.join(dir_path, file)}')
     df_results.to_csv(os.path.join(dir_path, file))
 
-    # results['score'] = normalized_pred.tolist()
-    # results = pd.merge(results,data_dict['unique_model_id'],how='left',on='model')
-    # unique_model_id['score'] = normalized_pred.tolist()
-    # np.save(os.path.join(dir_path,config_name+'.npy'),pred)
-    # unique_model_id.to_csv(os.path.join(dir_path,config_name+'.csv'))
     save_path = os.path.join(dir_path, config_name + '.csv')
-    # try:
-    #     results.to_csv(save_path)
-    # except:
-    #     results.to_csv(os.path.join(dir_path,'results.csv'))
 
     df_perf = pd.concat([df_perf, pd.DataFrame(evaluation_dict, index=[0])], ignore_index=True)
     print()

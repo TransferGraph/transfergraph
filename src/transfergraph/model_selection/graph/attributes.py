@@ -48,10 +48,10 @@ class GraphAttributes():
             self.base_dataset = 'cifar100'
         elif args.dataset_reference_model == 'johnnydevriese_vit_beans':
             self.base_dataset = 'beans'
-        elif args.dataset_reference_model == 'gpt2':
+        elif args.dataset_reference_model == 'EleutherAI_gpt-neo-125m':
             self.base_dataset = 'gpt'
         else:
-            self.base_dataset = 'imagenet'
+            raise Exception(f'Unexpected reference model {args.dataset_reference_model}')
 
     def get_dataset_edge_index(self, threshold=0.3, base_dataset='imagenet', sim_method='cosine'):
         threshold = 1  # 0.7

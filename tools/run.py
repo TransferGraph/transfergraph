@@ -31,11 +31,15 @@ def djoin(ldict, req=''):
 def main(args):
     print()
     print('======================= Begin New Session ==========================')
-    root = '../'
-    # root = './'
-    path = os.path.join(root, 'resources', 'log',f'performance_{args.dataset_embed_method}_{args.gnn_method}_score.csv')
+    directory_experiments = os.path.join(get_root_path_string(), 'resources/experiments', args.task_type.value)
+    directory_log = os.path.join(directory_experiments, 'log')
+
+    if not os.path.exists(directory_log):
+        os.makedirs(directory_log)
+
+    path = os.path.join(directory_log, f'performance_{args.dataset_embed_method.value}_{args.gnn_method}_score.csv')
     args.path = path
-    print(f'====== path: {path} ======')
+
     if os.path.exists(path):
         df_perf = pd.read_csv(path, index_col=0)
     else:
@@ -78,7 +82,7 @@ def main(args):
         # 'contain_data_similarity':args.contain_data_similarity,
         'contain_dataset_feature': args.contain_dataset_feature,
         # 'embed_dataset_feature':args.embed_dataset_feature,
-        'dataset_embed_method': args.dataset_embed_method,
+        'dataset_embed_method': args.dataset_embed_method.value,
         'contain_model_feature': args.contain_model_feature,
         'dataset_reference_model': args.dataset_reference_model,  # model_embed_method
         # 'embed_model_feature':args.embed_model_feature,
@@ -105,7 +109,7 @@ def main(args):
     # evaluation_dict['embed_dataset_feature']=args.embed_dataset_feature
     # evaluation_dict['model_embed_method'],complete_model_features
     for k, v in evaluation_dict.items():
-        print(f'{k}: {v}')
+        print(f'{k}: {v.__str__()}')
     print(f'gnn_method: {args.gnn_method}\n')
     # print(evaluation_dict)
 
@@ -154,9 +158,6 @@ def main(args):
         # 'max_model_idx':                graph_attributes.max_model_idx
     }
 
-    # print()
-    # print(f'data_dict["edge_attr_model_to_dataset"]: {data_dict["edge_attr_model_to_dataset"]}')
-
     batch_size = 16
 
     if 'node2vec+' in args.gnn_method:
@@ -180,11 +181,7 @@ def main(args):
     if isinstance(results, int): return 0
 
     setting_dict['gnn_method'] = args.gnn_method
-    # metric_file_path = 'metric,'+','.join([('{0}{1}{2}'.format(k, '==',str(v))) for k,v in setting_dict.items() if k not in pre_key])
-    # metric_file_path_full = os.path.join('../','rank',dataset,'/'.join(pre_config),metric_file_path+'.csv')
-    record_metric('correlation', args.test_dataset, setting_dict, results, args.record_path, save_path, modality=args.modality, root='../')
-    # method,test_dataset,setting_dict,gnn_method,results={},record_path='records.csv',metric_file_path='',root='../'
-    # ('../',args.test_dataset,args.gnn_method,args.record_path,results,setting_dict,save_path)
+    record_metric('correlation', args.test_dataset, setting_dict, results, directory_experiments)
 
 
 if __name__ == '__main__':
@@ -219,8 +216,6 @@ if __name__ == '__main__':
     parser.add_argument('--dataset_embed_method', default=DatasetEmbeddingMethod.DOMAIN_SIMILARITY, type=DatasetEmbeddingMethod)  # task2vec
     parser.add_argument('--dataset_distance_method', default='euclidean', type=str)  # correlation
     parser.add_argument('--model_dataset_edge_attribute', default='LogMe', type=str)  # correlation
-
-    parser.add_argument('--record_path', default='records.csv', type=str)
 
     args = parser.parse_args()
     print(f'args.contain_model_feature: {args.contain_model_feature}')

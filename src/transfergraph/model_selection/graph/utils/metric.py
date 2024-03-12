@@ -10,13 +10,11 @@ dataset_map = {'oxford_iiit_pet': 'pets',
                'oxford_flowers102': 'flowers'}
 
 
-def get_records(root, test_dataset, record_path, modality):
-    if modality == 'image':
-        df_record = pd.read_csv(os.path.join(root, 'doc', record_path), index_col=0)[['model', 'finetuned_dataset', 'test_accuracy']]
-    else:
-        df_record = pd.read_csv(os.path.join(root, 'doc', record_path), index_col=0)[['model', 'finetuned_dataset', 'eval_accuracy']]
-        df_record = df_record.rename(columns={'eval_accuracy': 'test_accuracy'})
-    df_record = df_record[df_record['finetuned_dataset'] == test_dataset].sort_values(by=['test_accuracy'], ascending=False)
+def get_records(test_dataset, directory_experiments):
+    df_record = pd.read_csv(os.path.join(directory_experiments, 'records.csv'), index_col=0)[
+        ['model', 'finetuned_dataset', 'eval_accuracy']]
+
+    df_record = df_record[df_record['finetuned_dataset'] == test_dataset].sort_values(by=['eval_accuracy'], ascending=False)
     df_record_subset = df_record.drop_duplicates(subset=['model', 'finetuned_dataset'], keep='first')
     return df_record_subset
 
@@ -45,47 +43,33 @@ def map_common_models(results, df_record_subset):
     return results, df_record_subset
 
 
-def record_metric(method, test_dataset, setting_dict, results={}, record_path='records.csv', save_path='', modality='image', root='../'):
+def record_metric(method, test_dataset, setting_dict, results, directory_experiments):
     if test_dataset in dataset_map.keys():
         dataset = dataset_map[test_dataset]
     else:
         dataset = test_dataset
 
     gnn_method = setting_dict['gnn_method']
-    df_record_subset = get_records(root, dataset, record_path, modality)
-    # print('\ndf_record_subset')
-    # print(df_record_subset.head())
+    df_record_subset = get_records(dataset, directory_experiments)
 
     df_results, df_record = map_common_models(results, df_record_subset)
 
     if method == 'correlation':
-        corr = record_correlation_metric(gnn_method, df_results, df_record, setting_dict, save_path, test_dataset, root=root[:3])
+        corr = record_correlation_metric(gnn_method, df_results, df_record, test_dataset, directory_experiments)
         return corr, {}
     elif method == 'rank':
-        rank, apks = record_rank_metric(gnn_method, df_results, df_record, save_path)
+        rank, apks = record_rank_metric(gnn_method, df_results, df_record)
         return rank, apks
 
 
-def record_correlation_metric(gnn_method, df_results, df_record, setting_dict, save_path='', test_dataset='', root=''):
-    if 'test_accuracy' in df_results.columns:
-        df_results = df_results.drop(columns=['test_accuracy'])
-
-    # print('\n df_results:')
-    # print(df_results.head())
-    # print('\n df_record:')
-    # print(df_record.head())
-
+def record_correlation_metric(gnn_method, df_results, df_record, test_dataset, directory_experiments):
     df_join = df_results.set_index('model').join(df_record.set_index('model'))
-    # print('\n df_join:')
-    # print(df_join.head())
-
     df_join['score'].replace([-np.inf, np.nan], -20, inplace=True)
     df_join['score'].replace([np.inf], 20, inplace=True)
-    df_join['test_accuracy'].replace([np.nan], 0, inplace=True)
+    df_join['eval_accuracy'].replace([np.nan], 0, inplace=True)
 
     x = df_join['score']
-    y = df_join['test_accuracy']
-    # if (not x.isnull().values.any()) and (not y.isnull().values.any()):
+    y = df_join['eval_accuracy']
     try:
         corr = correlation(x, y)
     except Exception as e:
@@ -93,46 +77,17 @@ def record_correlation_metric(gnn_method, df_results, df_record, setting_dict, s
         print(f'x: {x}')
         print(f'y: {y}')
 
-    # if 'LogME' not in gnn_method:
-    setting_dict, dir = set_output_dir(os.path.join(root, 'rank_final', test_dataset.replace('/', '_')), setting_dict)
-    setting_dict = {k: v for k, v in setting_dict.items() if v != ''}
-    # print(setting_dict)
-    filename = 'metri,' + ','.join(['{0}={1}'.format(k, v) for k, v in setting_dict.items()]) + '.csv'
-    metric_file_path = os.path.join(dir, filename)
-    # print(f'\n--- filename: {filename}')
-
-    # if gnn_method not in ['LogME','lr']  and not os.path.exists(save_path):
-    #     dir_path = os.path.join('./rank_final',f'{test_dataset}', gnn_method)
-    #     if not os.path.exists(dir_path):
-    #         os.makedirs(dir_path)
-    #     try:
-    #         df_results.to_csv(save_path)
-    #     except:
-    #         df_results.to_csv(os.path.join(dir_path,'results.csv'))
     if 'LogME' in gnn_method:
-        if not os.path.exists(os.path.join(root, 'rank_final', test_dataset.replace('/', '_'), gnn_method)):
-            os.makedirs(os.path.join(root, 'rank_final', test_dataset.replace('/', '_'), gnn_method))
-            # save_path.split('/')[-1]
+        if not os.path.exists(os.path.join(directory_experiments, 'rank_final', test_dataset.replace('/', '_'), gnn_method)):
+            os.makedirs(os.path.join(directory_experiments, 'rank_final', test_dataset.replace('/', '_'), gnn_method))
         df_results.to_csv(
-            os.path.join(root, 'rank_final', test_dataset.replace('/', '_'), gnn_method, 'results.csv')
-        )  # filename.split('/')[-1]
-
-    # if not os.path.exists(metric_file_path):
-    #     metrics = {'correlation':corr}
-    #     df = pd.DataFrame.from_dict(metrics,orient='index',columns=[gnn_method])
-    #     if gnn_method in ['LogME','lr']: return corr
-    # else:
-    #     df = pd.read_csv(metric_file_path,index_col=0)
-    #     df.loc['correlation',gnn_method] = corr
-
-    # df.to_csv(metric_file_path)
-    # print(df)
+            os.path.join(directory_experiments, 'rank_final', test_dataset.replace('/', '_'), gnn_method, 'results.csv')
+        )
 
     return corr
 
 
-# def record_correlation_metric(gnn_method,df_results,df_record,setting_dict,save_path='',test_dataset='',root=''):
-def record_rank_metric(gnn_method, df_results, df_record, setting_dict, save_path='', test_dataset='', root=''):
+def record_rank_metric(gnn_method, df_results, df_record):
     print(f'gnn_method: {gnn_method}')
 
     df_join = df_results.set_index('model').join(df_record.set_index('model'))
