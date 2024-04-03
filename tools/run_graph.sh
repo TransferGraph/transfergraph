@@ -6,7 +6,7 @@ do
     for CONTAIN_DATA_SIMILARITY in True; #True
     do
         echo CONTAIN_DATA_SIMILARITY-$CONTAIN_DATA_SIMILARITY
-        modality=text
+        task_type=sequence_classification
         for dataset in glue/sst2
         do
             # tweet_eval/sentiment  tweet_eval/emotion rotten_tomatoes glue/cola tweet_eval/irony tweet_eval/hate tweet_eval/offensive ag_news
@@ -68,7 +68,7 @@ do
                                                     echo "        --hidden_channels ${hidden_channels}"
                                                     echo "        --finetune_ratio ${finetune_ratio}"
                                                     echo "        --dataset_embed_method ${dataset_embed_method}"
-                                                    echo "        --modality ${modality}"
+                                                    echo "        --task_type ${task_type}"
                                                     python3 run.py \
                                                             --contain_data_similarity ${CONTAIN_DATA_SIMILARITY} \
                                                             --contain_dataset_feature ${CONTAIN_DATASET_FEATURE} \
@@ -83,7 +83,7 @@ do
                                                             --hidden_channels ${hidden_channels} \
                                                             --finetune_ratio ${finetune_ratio} \
                                                             --dataset_embed_method ${dataset_embed_method} \
-                                                            --modality ${modality}                                                                                   ## -embed_dataset_feature ${EMBED_DATASET_FEATURE} \
+                                                            --task_type ${task_type}                                                                                   ## -embed_dataset_feature ${EMBED_DATASET_FEATURE} \
                                                     ## -embed_model_feature ${EMBED_MODEL_FEATURE} \
                                                     ## -accuracy_thres ${ACCU_THRES} \
                                                 done

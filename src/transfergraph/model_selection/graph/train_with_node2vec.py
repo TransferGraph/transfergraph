@@ -12,9 +12,9 @@ import torch.nn as nn
 import tqdm
 from torch_geometric.utils import degree
 
-from utils.graph import Graph
-from utils.node2vec import N2VModel
-from utils.node2vec_w2v import N2V_W2VModel
+from .utils.graph import Graph
+from .utils.node2vec import N2VModel
+from .utils.node2vec_w2v import N2V_W2VModel
 
 # from torch_geometric.nn import Node2Vec
 
@@ -95,19 +95,9 @@ def get_graph(args, data_dict, setting_dict):
 ############################
 def node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size, extend=False):
     data = get_graph(args, data_dict, setting_dict)
-    #### Save average degree
-    # print(f'=============')
-    # print(f'is undirected: {is_undirected(data.edge_index)}')
-    # if not is_undirected(data.edge_index):
-    #     edge_index, edge_attr = to_undirected(data.edge_index,data.edge_attr)
-    #     data.edge_index = edge_index
-    #     data.edge_attr = edge_attr
-    # print(f'data.edge_index[0]: {np.unique(data.edge_index[0])}')
-    # print(f'data.edge_index[1]: {np.unique(data.edge_index[1])}')
-    # degrees = .int()).type(torch.int64)
     avg_degree = torch.mean(degree(data.edge_index[0])).numpy()  # dtype=torch.long
     test_dataset = args.test_dataset.replace('/', '_')
-    print(f'\n --- {test_dataset} --- average degree: {avg_degree}')
+
     if not os.path.exists(f'./baselines/{test_dataset}/degree.csv'):
         df_degree = pd.DataFrame(columns=['degree', 'ratio'])
     else:
@@ -195,7 +185,7 @@ def node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batc
     ###############
     ### Generate prediction for models on target dataset
     ###############
-    from utils._util import predict_model_for_dataset
+    from .utils._util import predict_model_for_dataset
     pred, x_embedding_dict = predict_model_for_dataset(model, edge_index, gnn_method='node2vec')
 
     if 'lr' in args.gnn_method or 'rf' in args.gnn_method:
@@ -207,25 +197,18 @@ def node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batc
             hidden_channels=args.hidden_channels,
             dataset_embed_method=args.dataset_embed_method,
             reference_model=args.dataset_reference_model,
-            modality=args.modality,
-            root='../'
+            task_type=args.task_type,
         )
         score, results = trainer.train(x_embedding_dict, data_dict)
     else:
         results = {}
 
     config_name = ','.join([('{0}={1}'.format(k[:14], str(v)[:5])) for k, v in setting_dict.items()])
-    results, save_path = save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, results)
+    results, save_path = save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, trainer.directory_experiments)
     return results, save_path
 
 
-def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, results={}):
-    # print(pred[:5])        
-    norm = np.linalg.norm(pred)  # To find the norm of the array
-    # Printing the value of the norm
-    normalized_pred = pred / norm
-    # print(normalized_pred[:5])
-
+def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, directory_experiments):
     df_model = pd.DataFrame(data_dict['model_idx'], columns=['mappedID'])
     unique_model_id = data_dict['unique_model_id']
     unique_model_id.index = range(len(unique_model_id))
@@ -233,33 +216,11 @@ def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, resu
     df_results['score'] = pred
 
     # Save graph embedding distance results
-    dir_path = os.path.join('./rank_final', f"{args.test_dataset.replace('/', '_')}", args.gnn_method)
+    dir_path = os.path.join(directory_experiments, 'rank_final', f"{args.test_dataset.replace('/', '_')}", args.gnn_method)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
-    # print('\n ====== results: ')
-    # print(results)
-    # df_results = pd.DataFrame(data_dict['unique_model_id'])
-    resuldf_resultss = pd.merge(df_results, data_dict['unique_model_id'], how='left', on='model')
-    # results['score'] = float('-inf') #normalized_pred.tolist()
-
-    print(f'results: {df_results.head()}')
-    # results = results.reset_index().set_index('mappedID')
-    # for idx, p in zip(data_dict['model_idx'],pred):
-    #     # print(f'idx: {idx}')
-    #     if idx < len(results):
-    #         results.loc[idx,'score'] = p
-
-    # results = pd.merge(results,data_dict['unique_model_id'],how='left',on='mappedID')
-    # unique_model_id['score'] = normalized_pred.tolist()
-    # np.save(os.path.join(dir_path,config_name+'.npy'),pred)
-    # unique_model_id.to_csv(os.path.join(dir_path,config_name+'.csv'))
     save_path = os.path.join(dir_path, config_name + '.csv')
-    try:
-        df_results.to_csv(os.path.join(dir_path, 'results_edge_linkage_1.0.csv'))
-        # df_results.to_csv()
-    except:
-        df_results.to_csv(os.path.join(dir_path, 'results.csv'))
 
     df_perf = pd.concat([df_perf, pd.DataFrame(evaluation_dict, index=[0])], ignore_index=True)
     print()

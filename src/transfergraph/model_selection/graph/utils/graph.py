@@ -219,7 +219,7 @@ class Graph():
 
         if without_transfer:
             edge_attr = edge_attr_accu_model_to_dataset
-        if without_accuracy:
+        elif without_accuracy:
             edge_attr = edge_attr_tran_model_to_dataset
         else:
             edge_attr = torch.cat((edge_attr_accu_model_to_dataset, edge_attr_tran_model_to_dataset))

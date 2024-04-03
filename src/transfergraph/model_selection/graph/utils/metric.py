@@ -64,9 +64,9 @@ def record_metric(method, test_dataset, setting_dict, results, directory_experim
 
 def record_correlation_metric(gnn_method, df_results, df_record, test_dataset, directory_experiments):
     df_join = df_results.set_index('model').join(df_record.set_index('model'))
-    df_join['score'].replace([-np.inf, np.nan], -20, inplace=True)
-    df_join['score'].replace([np.inf], 20, inplace=True)
-    df_join['eval_accuracy'].replace([np.nan], 0, inplace=True)
+    df_join['score'] = df_join['score'].replace([-np.inf, np.nan], -20)
+    df_join['score'] = df_join['score'].replace([np.inf], 20)
+    df_join['eval_accuracy'] = df_join['eval_accuracy'].replace([np.nan], 0)
 
     x = df_join['score']
     y = df_join['eval_accuracy']

@@ -415,14 +415,14 @@ class GraphAttributes():
                     raise Exception(f"Unexpected task type {self.args.task_type}")
 
                 # drop rows with -inf amount or replace it with really small number
-                df_score['score'].replace([-np.inf, np.nan], -50, inplace=True)
+                df_score.loc[:, 'score'] = df_score['score'].replace([-np.inf, np.nan], -50)
                 score = df_score['score']  # .astype('float64')
 
                 ##### Normalize
                 ## mean normalization
                 normalized_pred = (score - score.mean()) / score.std()
 
-                df_score['score'] = normalized_pred
+                df_score.loc[:, 'score'] = normalized_pred
 
                 # top K = 20
                 # K = 50
@@ -454,7 +454,7 @@ class GraphAttributes():
                 # else:
                 #     df = pd.merge(df,df_,on=['dataset','model','accuracy'],how='left')
             except Exception as e:
-                # print(e)
+                print(e)
                 # df_list.append(df_sub)
                 # df_neg_list.append(df_s)
                 continue
@@ -488,7 +488,7 @@ class GraphAttributes():
         elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
             config = config.dropna(subset=['dataset'])
             ##### fill pre-trained null value with mean accuracy
-            config['accuracy'].fillna((config['accuracy'].mean()), inplace=True)
+            config['accuracy'] = config['accuracy'].fillna((config['accuracy'].mean()))
             config['input_shape'] = 0
         else:
             raise Exception(f"Unexpected task type {self.args.task_type}")

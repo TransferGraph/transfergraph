@@ -1,18 +1,6 @@
-# import torch
-# print(torch.__version__)
-
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# device = 'cpu'
-# print(f"Device: '{device}'")
-
-# distance.cosine(h1, h2)
 import sys
 
-# sys.path.append(os.getcwd())
 sys.path.append('../src/')
-
-# from dataset_embed.task2vec_embed import task2vec
-# sys.modules['task2vec'] = task2vec
 from transfergraph.model_selection.graph.utils.metric import record_metric  # record_result_metric
 from transfergraph.model_selection.graph.attributes import *
 import argparse
@@ -197,22 +185,17 @@ if __name__ == '__main__':
     parser.add_argument('--embed_model_feature', default='True', type=str, help="embed_model_feature")
     parser.add_argument('--complete_model_features', default='True', type=str)
     parser.add_argument('--dataset_reference_model', default='resnet50', type=str)
-
-    parser.add_argument('--modality', default='image', type=str)  # image or text
-    parser.add_argument('--task_type', default=TaskType.IMAGE_CLASSIFICATION, type=TaskType)
-
+    parser.add_argument('--task_type', required=True, type=TaskType)
     parser.add_argument('--gnn_method', default='SAGEConv', type=str, help='contain_model_feature')
     parser.add_argument('--accuracy_thres', default=0.7, type=float, help='accuracy_thres')
     parser.add_argument('--finetune_ratio', default=1.0, type=float, help='finetune_ratio')
     parser.add_argument('--test_dataset', default='dmlab', type=str, help='remove all the edges from the dataset')
     parser.add_argument('--hidden_channels', default=128, type=int, help='hidden channels')  # 128
-
     parser.add_argument('--top_pos_K', default=0.5, type=float, help='hidden channels')
     parser.add_argument('--top_neg_K', default=0.5, type=float, help='hidden channels')
     parser.add_argument('--accu_pos_thres', default=0.6, type=float, help='hidden channels')
     parser.add_argument('--accu_neg_thres', default=0.2, type=float, help='hidden channels')
     parser.add_argument('--distance_thres', default=-1, type=float)
-
     parser.add_argument('--dataset_embed_method', default=DatasetEmbeddingMethod.DOMAIN_SIMILARITY, type=DatasetEmbeddingMethod)  # task2vec
     parser.add_argument('--dataset_distance_method', default='euclidean', type=str)  # correlation
     parser.add_argument('--model_dataset_edge_attribute', default='LogMe', type=str)  # correlation

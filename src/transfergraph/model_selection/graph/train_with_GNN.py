@@ -415,11 +415,11 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
     else:
         results = {}
 
-    results, save_path = save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, results)
+    results, save_path = save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, trainer.directory_experiments)
     return results, save_path
 
 
-def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, results={}):
+def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, directory_experiments):
     df_model = pd.DataFrame(data_dict['model_idx'], columns=['mappedID'])
     unique_model_id = data_dict['unique_model_id']
     unique_model_id.index = range(len(unique_model_id))
@@ -432,10 +432,10 @@ def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, resu
         embed_addition = ''
 
     # Save graph embedding distance results
-    dir_path = os.path.join('./rank_final', f'{args.test_dataset}', args.gnn_method)
+    dir_path = os.path.join(directory_experiments, 'rank_final', f"{args.test_dataset.replace('/', '_')}", args.gnn_method)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-    if args.finetune_ratio > 1:
+    if args.finetune_ratio >= 1:
         file = f'results{embed_addition}_{args.hidden_channels}.csv'
     else:
         file = f'results{embed_addition}_{args.hidden_channels}_{args.finetune_ratio}.csv'

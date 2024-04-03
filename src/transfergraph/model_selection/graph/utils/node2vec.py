@@ -139,7 +139,7 @@ class N2VModel(torch.nn.Module):
         num_workers = 0 if sys.platform.startswith('win') else 4
         loader = self.base.loader(
             batch_size=64, shuffle=True,
-            num_workers=1
+            num_workers=0
         )
         optimizer = torch.optim.SparseAdam(list(self.base.parameters()), lr=0.01)
 

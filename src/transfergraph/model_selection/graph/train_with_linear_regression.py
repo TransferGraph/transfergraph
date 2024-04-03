@@ -57,7 +57,7 @@ class RegressionModel():
         self.task_type = task_type
         self.directory_experiments = os.path.join(get_root_path_string(), 'resources/experiments', self.task_type.value)
 
-        if 'task2vec' in corr_path and 'task2vec' in dataset_embed_method:
+        if 'task2vec' in corr_path:
             self.embed_addition = '_task2vec'
         else:
             self.embed_addition = ''
@@ -368,11 +368,7 @@ class RegressionModel():
 
         return df_train, df_test
 
-    def train(self, embedding_dict={}, data_dict={}, save_path='', run=0):
-        # if 'Conv' in method:
-        #     method = 'lr_' + method
-        # print(embedding_dict)
-
+    def train(self, embedding_dict={}, data_dict={}):
         self.feature_preprocess(embedding_dict, data_dict)
 
         df_train, df_test = self.split()
@@ -385,11 +381,8 @@ class RegressionModel():
 
         print(f'\n --- dataset: {self.test_dataset}')
         print(f'\n --- shape of X_train: {X_train.shape}, X_test.shape: {X_test.shape}')
-        # print(f'\n---y_train:{y_train[:20]}')
         assert X_train.shape[0] > 200
-        # print(f'\n --- shape of Y_train: {y_train.shape}, y_test.shape: {y_test.shape}')
-        # print(f'X_test:{X_test}')
-        # ### Model
+
         if 'lr' in self.method:
             model = LinearRegression()
         elif 'rf' in self.method:
@@ -409,18 +402,12 @@ class RegressionModel():
                 subsample=1,
                 colsample_bytree=0.8,
                 random_state=18
-            )  # random_state=18,subsample=0.7,
-            # early_stop = xgb.callback.EarlyStopping(
-            #     rounds=2, metric_name='logloss', data_name='Validation_0', save_best=True
-            # )
-            # model = xgb.XGBClassifier(tree_method="hist") #callbacks=[early_stop] early_stopping_rounds=2
+            )
 
         model.fit(X_train, y_train)
         score = model.score(X_test, y_test)
 
-        print(f'\n === score: {score}')
         y_pred = model.predict(X_test)
-        # print(f'\n y_pred: {y_pred[:10]}')
 
         df_results = pd.DataFrame({'model': df_test.index, 'score': y_pred})
 
@@ -431,11 +418,10 @@ class RegressionModel():
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
         if self.finetune_ratio > 1:
-            file = f'results{self.embed_addition}_{self.hidden_channels}_{run}.csv'
+            file = f'results{self.embed_addition}_{self.hidden_channels}.csv'
         else:
-            file = f'results{self.embed_addition}_{self.finetune_ratio}_{self.hidden_channels}_{run}.csv'
+            file = f'results{self.embed_addition}_{self.finetune_ratio}_{self.hidden_channels}.csv'
 
-        print(f'\n -- os.path.join(dir_path,file): {os.path.join(dir_path, file)}')
         df_results.to_csv(os.path.join(dir_path, file))
 
         return score, df_results
@@ -443,31 +429,23 @@ class RegressionModel():
 
 def fill_null_value(df, columns, method='mean', value=0):
     for col in columns:
-        print(f'fill null value on column: {col}')
         dtype = pd.api.types.infer_dtype(df[col])
-        print(f'{col} dtype: {dtype}')
         if dtype == 'floating' or dtype == 'integer':
             if method == 'mean':
-                df[col].fillna((df[col].mean()), inplace=True)
+                df[col] = df[col].fillna((df[col].mean()))
             else:
-                df[col].fillna((value), inplace=True)
+                df[col] = df[col].fillna((value))
         else:
-            print(f'data type: {pd.api.types.infer_dtype(df[col])}')
-            # df[col] = df[col].astype(str)
             df[col].fillna((''), inplace=True)
 
     return df
 
 
 def encode(df, columns):
-    # convert features to one-hot encoding
     encoder = LabelEncoder()
     for col in columns:
-        # print(f'\n encoder col:{col}')
-        # print(df[col].dtypes)
         if df[col].dtypes != 'str':
             df[col] = df[col].replace(0, '')
-            # df = df.dropna(subset=[col])
         _df = pd.DataFrame(encoder.fit_transform(df[col]), columns=[col])
         _df.index = df.index
         df = df.drop(columns=[col])
