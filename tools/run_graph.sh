@@ -37,7 +37,7 @@ do
                                         for hidden_channels in 128; #64 32
                                         do
                                             echo hidden_channels-$hidden_channels
-                                            for GNN_METHOD in lr_homoGATConv lr_homoGCNConv lr_homo_SAGEConv lr_node2vec lr_node2vec+ 
+                                            for GNN_METHOD in lr_homoGATConv_all_normalize lr_homoGCNConv_all_normalize lr_homo_SAGEConv_all_normalize lr_node2vec_all_normalize lr_node2vec+_all_normalize
                                                 # 
                                                 # lr_node2vec_without_accuracy lr_node2vec+_without_accuracy lr_homo_SAGEConv_without_accuracy lr_homoGATConv_without_accuracy
                                                 # lr_node2vec+_without_transfer lr_node2vec_without_transfer

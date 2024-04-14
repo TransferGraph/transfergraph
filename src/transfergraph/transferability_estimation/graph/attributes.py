@@ -36,6 +36,7 @@ class GraphAttributes():
         self.resource_path = os.path.join(get_root_path_string(), "resources/experiments", args.task_type.value)
         self.record_path = os.path.join(self.resource_path, "records.csv")
         self.model_config_path = os.path.join(self.resource_path, "model_config_dataset.csv")
+        self.peft_method = args.peft_method
 
         self.finetune_records = self.get_finetuned_records()
         # get node id
@@ -65,17 +66,13 @@ class GraphAttributes():
         data_source = []
         data_target = []
         attr = []
-        # print(features)
-        # print(f'\ndata_features:{self.data_features.keys()}')
-        # print(self.dataset_list,'\n')
+
         for i, row in self.unique_dataset_id.iterrows():
-            # for i, e1 in self.data_features.values :#enumerate(self.data_features):
             e1 = self.data_features[row['dataset']]
             if sim_method == 'correlation':
                 similarity = distance.correlation(e1, e1)  # cosine(e1,e1) #1 - distance.cosine(e1,e1)
             elif sim_method == 'euclidean':
                 similarity = distance.euclidean(e1, e1)
-            # print(f'similarity: {similarity}')
             distance_matrix[i, i] = similarity
         for (i, row1), (j, row2) in itertools.combinations(self.unique_dataset_id.iterrows(), 2):
             k1 = row1['dataset']
@@ -88,49 +85,31 @@ class GraphAttributes():
                 similarity = distance.correlation(e1, e1)  # cosine(e1,e1) #1 - distance.cosine(e1,e1)
             elif sim_method == 'euclidean':
                 similarity = distance.euclidean(e1, e2)
-            # similarity = kl(e1,e2)
 
             distance_matrix[p, q] = similarity
             distance_matrix[q, p] = similarity
-            # if threshold == -1 or similarity < threshold:
             data_source.append(p)
             data_target.append(q)
             attr.append(1 - similarity)  ## distance (smaller the better); similarity (higher the better ~ accuracy)
-            # if similarity < threshold:
-            # if i == 0:
-            #     print(f'\n-- similarity between datasets: {similarity}')
-        ## normalization
+
         attr = np.asarray([(float(i) - min(attr)) / (max(attr) - min(attr)) for i in attr])
         index = np.where(attr > (1 - threshold))
         attr = attr[index]
 
         data_source = np.asarray(data_source)[index]
         data_target = np.asarray(data_target)[index]
-        # print(f'data_source: {data_source}')
-        # print(f'data_target: {data_target}')
-
-        ## Filter distance with top K
 
         path = f'{self.resource_path}/corr_{self.args.dataset_embed_method.value}_{self.args.dataset_reference_model}_{base_dataset}.csv'
-        # if not os.path.exists(path):
-        if True:
-            dict_distance = {}
-            for i, row in self.unique_dataset_id.iterrows():  #
-                # for i,name in enumerate(unique_dataset_id['classname_name'].values):
-                name = row['dataset']
-                idx = row['mappedID']
-                dict_distance[name] = list(distance_matrix[idx, :])
-            df_tmp = pd.DataFrame(dict_distance)
-            df_tmp.index = df_tmp.columns
-            # print('df_tmp.head()')
-            # print(df_tmp.head())
-            print(f'\n\n ====  Save correlation to path: {path}')
-            df_tmp.to_csv(path)  # _class
+        dict_distance = {}
+        for i, row in self.unique_dataset_id.iterrows():  #
+            name = row['dataset']
+            idx = row['mappedID']
+            dict_distance[name] = list(distance_matrix[idx, :])
+        df_tmp = pd.DataFrame(dict_distance)
+        df_tmp.index = df_tmp.columns
+        print(f'\n\n ====  Save correlation to path: {path}')
+        df_tmp.to_csv(path)
 
-        else:
-            print(f'\n\n ====  Correlation to path exist: {path}\n')
-        # data_source = np.asarray(data_source)
-        # data_target = np.asarray(data_target)
         print(f'len(connected_dataset):{len(data_source)}')
         return torch.stack([torch.tensor(data_source), torch.tensor(data_target)]), torch.tensor(attr)  # dim=0
 
@@ -497,6 +476,12 @@ class GraphAttributes():
         ###### finetune results
         finetune_records = pd.read_csv(self.record_path)
 
+        # Filter by fine-tuning method
+        if self.peft_method is not None:
+            finetune_records = finetune_records[finetune_records['peft_method'] == self.peft_method]
+        else:
+            finetune_records = finetune_records[pd.isna(finetune_records['peft_method'])]
+
         # rename column name
         finetune_records['model'] = finetune_records['model']
         finetune_records['dataset'] = finetune_records['finetuned_dataset']  # finetune_records['train_dataset_name']
@@ -507,6 +492,7 @@ class GraphAttributes():
             finetune_records = finetune_records[finetune_records['dataset'] != 'dbpedia_14']
         else:
             raise Exception(f"Unexpected task type {self.args.task_type}")
+
         finetune_records['input_shape'] = 0
         print()
         print(f'---- len(finetune_records_raw): {len(finetune_records)}')

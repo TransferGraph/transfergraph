@@ -29,11 +29,23 @@ class RegressionModel():
             dataset_embed_method=DatasetEmbeddingMethod.DOMAIN_SIMILARITY,
             reference_model='resnet50',
             task_type=TaskType.SEQUENCE_CLASSIFICATION,
+            peft_method=None,
     ):
+        if reference_model == 'resnet34' or reference_model == 'google_vit_base_patch16_224':
+            base_dataset = 'imagenet'
+        elif reference_model == 'Ahmed9275_Vit-Cifar100':
+            base_dataset = 'cifar100'
+        elif reference_model == 'johnnydevriese_vit_beans':
+            base_dataset = 'beans'
+        elif reference_model == 'EleutherAI_gpt-neo-125m':
+            base_dataset = 'gpt'
+        else:
+            raise Exception(f'Unexpected reference model {reference_model}')
+
         if dataset_embed_method == DatasetEmbeddingMethod.TASK2VEC:
-            corr_path = f'corr_task2vec_{reference_model}.csv'
+            dataset_correlation_file_name = f'corr_task2vec_{reference_model}_{base_dataset}.csv'
         elif dataset_embed_method == DatasetEmbeddingMethod.DOMAIN_SIMILARITY:
-            corr_path = f'corr_domain_similarity_{reference_model}.csv'
+            dataset_correlation_file_name = f'corr_domain_similarity_{reference_model}_{base_dataset}.csv'
         else:
             raise Exception(f"Unexpected embedding method {dataset_embed_method}")
 
@@ -52,12 +64,13 @@ class RegressionModel():
             self.test_dataset = test_dataset
         self.finetune_ratio = finetune_ratio
         self.method = method
-        self.corr_path = corr_path
+        self.peft_method = peft_method
+        self.dataset_correlation_file_name = dataset_correlation_file_name
         self.hidden_channels = hidden_channels
         self.task_type = task_type
         self.directory_experiments = os.path.join(get_root_path_string(), 'resources/experiments', self.task_type.value)
 
-        if 'task2vec' in corr_path:
+        if 'task2vec' in dataset_correlation_file_name:
             self.embed_addition = '_task2vec'
         else:
             self.embed_addition = ''
@@ -76,6 +89,13 @@ class RegressionModel():
         # print(f'\n df_dataset_config.columns: {df_dataset_config.columns}')
 
         df_finetune = pd.read_csv(os.path.join(self.directory_experiments, 'records.csv'), index_col=0)
+
+        # Filter by fine-tuning method
+        if self.peft_method is not None:
+            df_finetune = df_finetune[df_finetune['peft_method'] == self.peft_method]
+        else:
+            df_finetune = df_finetune[pd.isna(df_finetune['peft_method'])]
+
         df_finetune = df_finetune.rename(columns={'eval_accuracy': 'test_accuracy'})
 
         df_finetune = df_finetune.rename(columns={'finetuned_dataset': 'finetune_dataset'})
@@ -239,7 +259,7 @@ class RegressionModel():
 
         if 'data_distance' in self.method or 'all' in self.method:
             # if True:
-            corr_path = os.path.join(self.directory_experiments, 'resources', self.corr_path)
+            corr_path = os.path.join(self.directory_experiments, self.dataset_correlation_file_name)
             # print(f'\ncorr_path: {corr_path}')
             df_corr = pd.read_csv(corr_path, index_col=0)
 
@@ -346,7 +366,6 @@ class RegressionModel():
         # df_feature[normal_columns].to_csv('../../features/features.csv')
 
     def split(self):
-
         df_train = self.df_feature[self.df_feature['finetune_dataset'] != self.test_dataset]
 
         ##### Sampling the finetune records given the ratio
@@ -417,7 +436,7 @@ class RegressionModel():
             dir_path = os.path.join(self.directory_experiments, 'rank_final', f"{self.test_dataset.replace('/', '_')}", self.method)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
-        if self.finetune_ratio > 1:
+        if self.finetune_ratio >= 1:
             file = f'results{self.embed_addition}_{self.hidden_channels}.csv'
         else:
             file = f'results{self.embed_addition}_{self.finetune_ratio}_{self.hidden_channels}.csv'
@@ -458,10 +477,12 @@ if __name__ == '__main__':
     path = os.path.join(get_root_path_string(), 'resources/experiments', task_type, 'log')
     performance_file = os.path.join(path, f'performance_rf_score.csv')
     print(f'====== path: {path} ======')
+    if not os.path.exists(path):
+        os.makedirs(path)
+
     if os.path.exists(performance_file):
         df_perf = pd.read_csv(performance_file, index_col=0)
     else:
-        os.makedirs(path)
         df_perf = pd.DataFrame(
             columns=[
                 'method',
@@ -629,9 +650,9 @@ if __name__ == '__main__':
                         finetune_ratio=ratio,
                         method=method,
                         hidden_channels=hidden_channels,
-                        dataset_embed_method='domain_similarity',  # '', #  task2vec
-                        reference_model='gpt2_gpt',
-                        task_type=task_type
+                        dataset_embed_method=DatasetEmbeddingMethod.DOMAIN_SIMILARITY,  # '', #  task2vec
+                        reference_model='EleutherAI_gpt-neo-125m',
+                        task_type=TaskType.SEQUENCE_CLASSIFICATION
                     )
                     # try:
                     score, df_results = trainer.train()

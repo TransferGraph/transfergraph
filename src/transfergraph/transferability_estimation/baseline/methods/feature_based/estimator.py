@@ -9,8 +9,8 @@ from transformers import PreTrainedModel
 
 from transfergraph.config import get_root_path_string
 from transfergraph.dataset.base_dataset import BaseDataset
-from transfergraph.model_selection.baseline.methods.utils import TransferabilityMetric, TransferabilityDistanceFunction
-from transfergraph.model_selection.utils import extract_features
+from transfergraph.transferability_estimation.baseline.methods.utils import TransferabilityMetric, TransferabilityDistanceFunction
+from transfergraph.transferability_estimation.utils import extract_features
 
 logger = logging.getLogger(__name__)
 
@@ -35,13 +35,13 @@ class TransferabilityEstimatorFeatureBased:
         logger.info(f"  Metric = {self.transferability_metric.name}")
 
         if self.transferability_metric == TransferabilityMetric.LOG_ME:
-            from transfergraph.model_selection.baseline.methods.feature_based.logme import LogME
+            from transfergraph.transferability_estimation.baseline.methods.feature_based.logme import LogME
             metric = LogME()
         elif self.transferability_metric == TransferabilityMetric.NLEEP:
-            from transfergraph.model_selection.baseline.methods.feature_based.nleep import NLEEP
+            from transfergraph.transferability_estimation.baseline.methods.feature_based.nleep import NLEEP
             metric = NLEEP()
         elif self.transferability_metric == TransferabilityMetric.PARC:
-            from transfergraph.model_selection.baseline.methods.feature_based.parc import PARC
+            from transfergraph.transferability_estimation.baseline.methods.feature_based.parc import PARC
             metric = PARC(TransferabilityDistanceFunction.CORRELATION)
         else:
             raise Exception(f"Unexpected TransferabilityMetric: {self.transferability_metric}")

@@ -10,7 +10,6 @@ import torch.nn as nn
 # os.environ['TORCH'] = torch.__version__
 # print(torch.__version__)
 import tqdm
-from torch_geometric.utils import degree
 
 from .utils.graph import Graph
 from .utils.node2vec import N2VModel
@@ -95,18 +94,6 @@ def get_graph(args, data_dict, setting_dict):
 ############################
 def node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size, extend=False):
     data = get_graph(args, data_dict, setting_dict)
-    avg_degree = torch.mean(degree(data.edge_index[0])).numpy()  # dtype=torch.long
-    test_dataset = args.test_dataset.replace('/', '_')
-
-    if not os.path.exists(f'./baselines/{test_dataset}/degree.csv'):
-        df_degree = pd.DataFrame(columns=['degree', 'ratio'])
-    else:
-        df_degree = pd.read_csv(f'./baselines/{test_dataset}/degree.csv', index_col=0)
-    df_degree = pd.concat([df_degree, pd.DataFrame({'degree': avg_degree, 'ratio': args.finetune_ratio}, index=[0])], ignore_index=True)
-    print(f'\n --- saving degree to ./baselines/{test_dataset}/degree.csv')
-    if not os.path.exists(f'./baselines/{test_dataset}'):
-        os.makedirs(f'./baselines/{test_dataset}')
-    df_degree.to_csv(f'./baselines/{test_dataset}/degree.csv')
 
     # Training settings
     epochs = 50

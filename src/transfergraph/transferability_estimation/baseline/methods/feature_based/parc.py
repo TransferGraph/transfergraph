@@ -3,7 +3,7 @@ import scipy
 import sklearn
 from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
 
-from transfergraph.model_selection.baseline.methods.utils import TransferabilityDistanceFunction
+from transfergraph.transferability_estimation.baseline.methods.utils import TransferabilityDistanceFunction
 
 
 class PARC(object):

@@ -10,7 +10,6 @@ from torch_geometric.loader import LinkNeighborLoader
 device = 'cpu'
 print(f"Device: '{device}'")
 
-import itertools
 import scipy.spatial.distance as distance
 # distance.cosine(h1, h2)
 
@@ -57,51 +56,6 @@ def get_scaled_hessian(e0, e1):
     h0 = np.array(e0)
     h1 = np.array(e1)
     return h0 / (h0 + h1 + 1e-8), h1 / (h0 + h1 + 1e-8)
-
-
-def get_dataset_edge_index(
-        features,
-        unique_dataset_id,
-        emb_method='task2vec',
-        reference_model='resnet50',
-        base_dataset='imagenet',
-        sim_method='cosine'
-):
-    n = features.shape[0]
-    print(f'len(dataset_features):{n}')
-    print(f'emb_method: {emb_method}')
-    thres = 0.6
-    distance_matrix = np.zeros([n, n])
-    data_source = []
-    data_target = []
-    # print(features)
-    for i, e1 in enumerate(features):
-        similarity = distance.correlation(e1, e1)  # cosine(e1,e1) #1 - distance.cosine(e1,e1)
-        # print(f'similarity: {similarity}')
-        distance_matrix[i, i] = similarity
-    for (i, e1), (j, e2) in itertools.combinations(enumerate(features), 2):
-        similarity = distance.correlation(e1, e2)  # cosine(e1,e1) #1 - distance.cosine(e1, e2)
-        # similarity = kl(e1,e2)
-        distance_matrix[i, j] = similarity
-        distance_matrix[j, i] = similarity
-        if similarity < thres:
-            data_source.append(i)
-            data_target.append(j)
-    base_dataset = 'imagenet'  # '' #'eurosat' #''
-    # if not os.path.exists(f'../doc/similarity_{emb_method}_{base_dataset}.csv'):
-    if True:
-        dict_distance = {}
-        for i, name in enumerate(unique_dataset_id['dataset'].values):  #
-            # for i,name in enumerate(unique_dataset_id['classname_name'].values):
-            dict_distance[name] = list(distance_matrix[i, :])
-        df_tmp = pd.DataFrame(dict_distance)
-        df_tmp.index = df_tmp.columns
-        df_tmp.to_csv(f'../doc/corr_{emb_method}_{reference_model}_{base_dataset}.csv')  # _class
-    # data_source = np.asarray(data_source)
-    # data_target = np.asarray(data_target)
-    print(f'len(data_source):{len(data_source)}')
-    return torch.stack([torch.tensor(data_source), torch.tensor(data_target)])  # dim=0
-
 
 def get_unique_node(col, name):
     unique_id = col.unique()

@@ -6,8 +6,8 @@ from transformers import AutoImageProcessor, AutoConfig, AutoModelForImageClassi
 
 from transfergraph.dataset.hugging_face.dataset import HuggingFaceDatasetImage, HuggingFaceDatasetText
 from transfergraph.dataset.task import TaskType
-from transfergraph.model_selection.baseline.methods.feature_based.estimator import TransferabilityEstimatorFeatureBased
-from transfergraph.model_selection.baseline.methods.utils import TransferabilityMetric
+from transfergraph.transferability_estimation.baseline.methods.feature_based.estimator import TransferabilityEstimatorFeatureBased
+from transfergraph.transferability_estimation.baseline.methods.utils import TransferabilityMetric
 
 
 def main(args: argparse.Namespace):

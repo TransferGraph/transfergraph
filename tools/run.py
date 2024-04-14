@@ -1,8 +1,8 @@
 import sys
 
 sys.path.append('../src/')
-from transfergraph.model_selection.graph.utils.metric import record_metric  # record_result_metric
-from transfergraph.model_selection.graph.attributes import *
+from transfergraph.transferability_estimation.graph.utils.metric import record_metric  # record_result_metric
+from transfergraph.transferability_estimation.graph.attributes import *
 import argparse
 
 
@@ -149,19 +149,19 @@ def main(args):
     batch_size = 16
 
     if 'node2vec+' in args.gnn_method:
-        from transfergraph.model_selection.graph.train_with_node2vec import node2vec_train
+        from transfergraph.transferability_estimation.graph.train_with_node2vec import node2vec_train
         results, save_path = node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size, extend=True)
     elif 'node2vec' in args.gnn_method:
-        from transfergraph.model_selection.graph.train_with_node2vec import node2vec_train
+        from transfergraph.transferability_estimation.graph.train_with_node2vec import node2vec_train
         results, save_path = node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size)
     elif 'Conv' in args.gnn_method:
-        from transfergraph.model_selection.graph.train_with_GNN import gnn_train
+        from transfergraph.transferability_estimation.graph.train_with_GNN import gnn_train
         results, save_path = gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size, custom_negative_sampling=True)
     elif args.gnn_method == '""':
-        from transfergraph.model_selection.graph.utils.basic import get_basic_features
+        from transfergraph.transferability_estimation.graph.utils.basic import get_basic_features
         results, save_path = get_basic_features(args.test_dataset, data_dict, setting_dict)
     elif 'lr' in args.gnn_method:
-        from transfergraph.model_selection.graph.train_with_linear_regression import lr_train
+        from transfergraph.transferability_estimation.graph.train_with_linear_regression import lr_train
         lr_train(args, graph_attributes)
     else:
         raise Exception(f"Unexpected gnn_method: {args.gnn_method}")
@@ -199,12 +199,11 @@ if __name__ == '__main__':
     parser.add_argument('--dataset_embed_method', default=DatasetEmbeddingMethod.DOMAIN_SIMILARITY, type=DatasetEmbeddingMethod)  # task2vec
     parser.add_argument('--dataset_distance_method', default='euclidean', type=str)  # correlation
     parser.add_argument('--model_dataset_edge_attribute', default='LogMe', type=str)  # correlation
+    parser.add_argument("--peft_method", required=False, type=str, help="PEFT method to use.", choices=['lora'])
 
     args = parser.parse_args()
     print(f'args.contain_model_feature: {args.contain_model_feature}')
     print(f'bool - args.contain_model_feature: {str2bool(args.contain_model_feature)}')
-
-    # args.dataset_embed_method  =  'task2vec' #'' # 
 
     if args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
         args.dataset_reference_model = 'EleutherAI_gpt-neo-125m'
