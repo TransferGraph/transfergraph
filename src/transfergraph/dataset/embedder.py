@@ -7,7 +7,7 @@ from transfergraph.config import get_root_path_string
 from transfergraph.dataset.base_dataset import BaseDataset
 from transfergraph.dataset.embed_utils import DatasetEmbeddingMethod
 from transfergraph.dataset.task import TaskType
-from transfergraph.transferability_estimation.utils import extract_features_without_labels
+from transfergraph.transferability_estimation.feature_utils import extract_features_without_labels
 
 
 class DatasetEmbedder:

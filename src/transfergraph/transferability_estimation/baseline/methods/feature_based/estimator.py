@@ -10,7 +10,7 @@ from transformers import PreTrainedModel
 from transfergraph.config import get_root_path_string
 from transfergraph.dataset.base_dataset import BaseDataset
 from transfergraph.transferability_estimation.baseline.methods.utils import TransferabilityMetric, TransferabilityDistanceFunction
-from transfergraph.transferability_estimation.utils import extract_features
+from transfergraph.transferability_estimation.feature_utils import extract_features
 
 logger = logging.getLogger(__name__)
 
