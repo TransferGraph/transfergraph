@@ -29,7 +29,7 @@ def main(args: argparse.Namespace):
             num_labels=len(dataset.all_class),
             i2label={label: str(i) for i, label in enumerate(dataset.all_class)},
             label2id={str(i): label for i, label in enumerate(dataset.all_class)},
-            finetuning_task=args.task_type,
+            finetuning_task=args.task_type.value,
         )
         model = AutoModelForImageClassification.from_pretrained(
             args.model_name,
@@ -48,7 +48,7 @@ def main(args: argparse.Namespace):
             num_labels=len(dataset.all_class),
             i2label={label: str(i) for i, label in enumerate(dataset.all_class)},
             label2id={str(i): label for i, label in enumerate(dataset.all_class)},
-            finetuning_task=args.task_type,
+            finetuning_task=args.task_type.value,
         )
         model = AutoModelForSequenceClassification.from_pretrained(
             args.model_name,

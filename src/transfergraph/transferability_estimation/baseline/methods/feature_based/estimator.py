@@ -43,6 +43,12 @@ class TransferabilityEstimatorFeatureBased:
         elif self.transferability_metric == TransferabilityMetric.PARC:
             from transfergraph.transferability_estimation.baseline.methods.feature_based.parc import PARC
             metric = PARC(TransferabilityDistanceFunction.CORRELATION)
+        elif self.transferability_metric == TransferabilityMetric.H_SCORE:
+            from transfergraph.transferability_estimation.baseline.methods.feature_based.hscore import HScore
+            metric = HScore()
+        elif self.transferability_metric == TransferabilityMetric.REG_H_SCORE:
+            from transfergraph.transferability_estimation.baseline.methods.feature_based.hscore_reg import HScoreR
+            metric = HScoreR()
         else:
             raise Exception(f"Unexpected TransferabilityMetric: {self.transferability_metric}")
 
@@ -65,7 +71,12 @@ class TransferabilityEstimatorFeatureBased:
             return pd.read_csv(file, index_col=0)
 
     def _save_result_to_csv(self, score, time_start) -> None:
-        file_name = os.path.join(get_root_path_string(), 'resources/experiments', self.args.task_type, 'transferability_score_records.csv')
+        file_name = os.path.join(
+            get_root_path_string(),
+            'resources/experiments',
+            self.args.task_type.value,
+            'transferability_score_records.csv'
+            )
         result_record = self._read_transferability_score_records(file_name)
 
         training_record = vars(self.args)

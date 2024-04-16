@@ -3,9 +3,6 @@ from sklearn.covariance import LedoitWolf
 
 
 class HScoreR(object):
-    def __init__(self, args):
-        self.args = args
-
     def score(self, features: np.ndarray, labels: np.ndarray):
         r"""
         Regularized H-score in `Newer is not always better: Rethinking transferability metrics, their peculiarities, stability and performance (NeurIPS 2021) 

@@ -7,7 +7,8 @@ class TransferabilityMetric(Enum):
     PARC = "PARC"
     LFC = "LFC"
     PAC_TRAN = "PacTran"
-
+    H_SCORE = "H-Score"
+    REG_H_SCORE = "Reg-H-Score"
 
 class TransferabilityDistanceFunction(Enum):
     EUCLIDIAN = "euclidian"

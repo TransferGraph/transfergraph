@@ -2,9 +2,6 @@ import numpy as np
 
 
 class HScore(object):
-    def __init__(self, args):
-        self.args = args
-
     def score(self, features: np.ndarray, labels: np.ndarray):
         r"""
         H-score in `An Information-theoretic Approach to Transferability in Task Transfer Learning (ICIP 2019) 
