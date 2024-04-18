@@ -534,7 +534,7 @@ class GraphAttributes():
 
 
 class GraphAttributesWithDomainSimilarity(GraphAttributes):
-    def __init__(self, args, approach='domain_similarity'):
+    def __init__(self, args):
         # invoking the __init__ of the parent class
         GraphAttributes.__init__(self, args)
         self.dataset_list = self.get_dataset_list()
