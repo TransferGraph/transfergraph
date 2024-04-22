@@ -71,3 +71,5 @@ wrapt==1.16.0
 xgboost==2.0.3
 xxhash==3.4.1
 yarl==1.9.4
+
+seaborn~=0.13.2

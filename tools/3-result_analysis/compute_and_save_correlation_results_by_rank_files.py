@@ -68,6 +68,9 @@ def compute_and_save_correlation_by_rank_files(task_type, all_metrics, all_metho
         if len(df) == 0:
             continue
 
+        # Remove rows with any NaN values across columns, I want the method to have all datasets.
+        df = df.dropna()
+
         # Calculate the mean correlation score for each method
         df['average'] = df.mean(axis=1)
 
@@ -102,12 +105,24 @@ def add_random_transferability_method_results(actual_performances_target, all_me
     # Randomize the eval_accuracy for the 'random' method
     random_transferability_metric = np.random.permutation(actual_performances_target['eval_accuracy'].values)
     for metric in all_metrics:
-        # Compute the correlation for the 'random' method
-        random_correlation = compute_correlation(
-            actual_performances_target['eval_accuracy'].tolist(),
-            random_transferability_metric.tolist(),
-            metric
-        )
+        if metric == TransferabilityCorrelationMetric.RELATIVE_TOP_1:
+            # Take the expected value as random pick, so we don't get lucky.
+            random_correlation = actual_performances_target['eval_accuracy'].mean() / actual_performances_target['eval_accuracy'].max()
+        elif metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_1_ERROR \
+                or metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_3_ERROR \
+                or metric == TransferabilityCorrelationMetric.PERCENTILE_TOP_1 \
+                or metric == TransferabilityCorrelationMetric.PERCENTILE_TOP_3 \
+                or metric == TransferabilityCorrelationMetric.RANDOM_ABSOLUTE_TOP_1_ERROR \
+                or metric == TransferabilityCorrelationMetric.RANDOM_ABSOLUTE_TOP_3_ERROR:
+            # This is already random corrected.
+            continue
+        else:
+            # Compute the correlation for the 'random' method
+            random_correlation = compute_correlation(
+                actual_performances_target['eval_accuracy'].tolist(),
+                random_transferability_metric.tolist(),
+                metric
+            )
         results[metric].loc['random', target_dataset] = random_correlation
 
 

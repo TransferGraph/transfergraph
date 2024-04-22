@@ -6,6 +6,9 @@
 # Metaflow files
 .metaflow/
 
+# Plots
+**.pdf
+
 # logs
 logs/
 doc/log/
