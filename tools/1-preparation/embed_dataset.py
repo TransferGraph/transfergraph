@@ -26,7 +26,7 @@ def main(args: argparse.Namespace):
         )
         config = AutoConfig.from_pretrained(
             args.model_name,
-            finetuning_task=args.task_type,
+            finetuning_task=args.task_type.value,
         )
         model = AutoModelForImageClassification.from_pretrained(
             args.model_name,
@@ -48,7 +48,7 @@ def main(args: argparse.Namespace):
         )
         config = AutoConfig.from_pretrained(
             args.model_name,
-            finetuning_task=args.task_type,
+            finetuning_task=args.task_type.value,
         )
         model = AutoModelForSequenceClassification.from_pretrained(
             args.model_name,

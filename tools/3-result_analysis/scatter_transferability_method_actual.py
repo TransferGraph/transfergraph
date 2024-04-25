@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from pandas import Series
+from sklearn.preprocessing import minmax_scale
 
 from transfergraph.config import get_root_path_string
 from transfergraph.dataset.task import TaskType
@@ -46,10 +47,17 @@ def scatter_plot_transferability_method_and_actual_performances(method, task_typ
         else:
             raise Exception("Method rank_final result file not found.")
 
+
         transferability_scores = pd.read_csv(method_path_final)
+
         merged_df = pd.merge(actual_performances_target, transferability_scores, on='model', how='inner')
         actual_list = merged_df['eval_accuracy'].tolist()
         transferability_list = replace_all_infinite_value(merged_df['score']).tolist()
+
+        if "normalize" not in method:
+            # Normalize the scores using minmax_scale
+            transferability_list = minmax_scale(transferability_list)
+
         actual_per_dataset[target_dataset] = actual_list
         transferability_per_dataset[target_dataset] = transferability_list
 

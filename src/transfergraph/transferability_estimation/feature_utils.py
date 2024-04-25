@@ -32,7 +32,7 @@ def extract_features(dataloader: DataLoader, model: PreTrainedModel) -> Tuple[nu
     return features_tensor, labels_tensor, feature_dimension
 
 
-def extract_features_without_labels(dataloader: DataLoader, model: PreTrainedModel) -> Tuple[numpy.ndarray, numpy.ndarray, int]:
+def extract_features_without_labels(dataloader: DataLoader, model: PreTrainedModel) -> Tuple[numpy.ndarray, numpy.ndarray]:
     features_tensor = None
 
     for batch in tqdm(dataloader):
