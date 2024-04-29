@@ -1,5 +1,5 @@
 # https://github.com/pyg-team/pytorch_geometric/blob/master/examples/node2vec.py
-
+import logging
 import os
 import time
 
@@ -7,22 +7,16 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-# os.environ['TORCH'] = torch.__version__
-# print(torch.__version__)
 import tqdm
 
 from .utils.graph import Graph
 from .utils.node2vec import N2VModel
 from .utils.node2vec_w2v import N2V_W2VModel
 
-# from torch_geometric.nn import Node2Vec
+logger = logging.getLogger(__name__)
 
-# import torch_cluster
-# !pip install torch_cluster -f -f https://data.pyg.org/whl/torch-1.13.0+cu117.html
-
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = 'cpu'
-print(f"Device: '{device}'")
+logger.info(f"Device: '{device}'")
 
 SAVE_GRAPH = False
 
@@ -33,15 +27,12 @@ def get_graph(args, data_dict, setting_dict):
     edge_index_tran_model_to_dataset = data_dict['edge_index_tran_model_to_dataset']
     edge_attr_tran_model_to_dataset = data_dict['edge_attr_tran_model_to_dataset']
 
-    print(f'\nedge_index_accu_model_to_dataset: {edge_index_accu_model_to_dataset.shape}')
-    # print(torch.unique(edge_index_accu_model_to_dataset))
-    print(f'\nedge_index_tran_model_to_dataset: {edge_index_tran_model_to_dataset.shape}')
-    # print(torch.unique(edge_index_tran_model_to_dataset))
+    logger.info(f'\nedge_index_accu_model_to_dataset: {edge_index_accu_model_to_dataset.shape}')
+    logger.info(f'\nedge_index_tran_model_to_dataset: {edge_index_tran_model_to_dataset.shape}')
 
     edge_index_dataset_to_dataset = data_dict['edge_index_dataset_to_dataset']
     edge_attr_dataset_to_dataset = data_dict['edge_attr_dataset_to_dataset']
-    # negative_pairs = data_dict['negative_pairs']
-    # node_IDs = data_dict['node_ID']
+
     ## Construct a graph
     without_accuracy = False
     without_transfer = False
@@ -82,11 +73,10 @@ def get_graph(args, data_dict, setting_dict):
         _dir = os.path.join('./saved_graph', f"{args.test_dataset.replace('/', '_')}", gnn)
         if not os.path.exists(_dir):
             os.makedirs(_dir)
-        # if not os.path.exists(os.path.join(_dir,config_name+'.pt')):
         torch.save(data, os.path.join(_dir, config_name + '.pt'))
 
-    print(f'------- data: ----------')
-    print(data)
+    logger.info(f'------- data: ----------')
+    logger.info(data)
 
     return data
 
@@ -130,12 +120,10 @@ def node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batc
                 total_loss += float(loss) * pred.numel()
                 total_examples += pred.numel()
             # if total_loss < 1: break
-            print(f"Epoch: {epoch:03d}, Loss: {total_loss / total_examples:.4f}")
+            logger.info(f"Epoch: {epoch:03d}, Loss: {total_loss / total_examples:.4f}")
             # if (total_loss / total_examples) < 0.1: break
         train_time = time.time() - start
         loss = round(total_loss / total_examples, 4)
-        # return model,round(total_loss/total_examples,4), train_time
-
     else:
         model = N2VModel(
             data.edge_index,
@@ -153,21 +141,17 @@ def node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batc
 
     # save
     dataset_index = data_dict['test_dataset_idx']  # + data_dict['max_model_idx'] + 1
-    print('dataset_index', dataset_index)
+    logger.info('dataset_index', dataset_index)
 
     # dataset_index = np.repeat(dataset_index,len(data_dict['unique_model_id']))
     dataset_index = np.repeat(dataset_index, len(data_dict['model_idx']))  # len(edge_index_accu_model_to_dataset[0,:]))
-    print(f"\nlen(model_index): {len(data_dict['model_idx'])}'")
-    print(f"\data_dict['model_idx']:{np.unique(data_dict['model_idx'])}")
+    logger.info(f"\nlen(model_index): {len(data_dict['model_idx'])}'")
+    logger.info(f"\data_dict['model_idx']:{np.unique(data_dict['model_idx'])}")
     # edge_index = torch.stack([torch.from_numpy(data_dict['model_idx']).to(torch.int64),torch.from_numpy(dataset_index).to(torch.int64)],dim=0)
     edge_index = torch.stack(
         [torch.from_numpy(data_dict['model_idx']).to(torch.int64), torch.from_numpy(dataset_index).to(torch.int64)],
         dim=0
     )
-    # data["model", "trained_on", "dataset"].edge_label_index = torch.stack([data['model'].node_id,torch.from_numpy(dataset_index).to(torch.int64)],dim=0)
-    # dataset_emb = model.base(dataset_index)
-    # print(f'\nedge_index: {edge_index}')
-    # print(f"node_ID: {data_dict['node_ID']}")
 
     ###############
     ### Generate prediction for models on target dataset
@@ -175,7 +159,7 @@ def node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batc
     from .utils._util import predict_model_for_dataset
     pred, x_embedding_dict = predict_model_for_dataset(model, edge_index, gnn_method='node2vec')
 
-    if 'lr' in args.gnn_method or 'rf' in args.gnn_method:
+    if 'xgb' in args.gnn_method or 'lr' in args.gnn_method or 'rf' in args.gnn_method:
         from .train_with_linear_regression import RegressionModel
         trainer = RegressionModel(
             args.test_dataset,
@@ -210,9 +194,7 @@ def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, dire
     save_path = os.path.join(dir_path, config_name + '.csv')
 
     df_perf = pd.concat([df_perf, pd.DataFrame(evaluation_dict, index=[0])], ignore_index=True)
-    print()
-    print('======== save =======')
-    # save the 
+    logger.info(f'======== save {args.path} =======')
     df_perf.to_csv(args.path)
 
     return df_results, save_path

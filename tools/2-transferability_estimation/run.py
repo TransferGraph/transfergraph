@@ -1,10 +1,9 @@
-import sys
-
-sys.path.append('../../src/')
-from transfergraph.transferability_estimation.graph.utils.metric import record_metric  # record_result_metric
-from transfergraph.transferability_estimation.graph.attributes import *
 import argparse
 
+from transfergraph.transferability_estimation.graph.attributes import *
+from transfergraph.transferability_estimation.graph.utils.metric import record_metric  # record_result_metric
+
+logger = logging.getLogger(__name__)
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -17,8 +16,12 @@ def djoin(ldict, req=''):
 
 
 def main(args):
-    print()
-    print('======================= Begin New Session ==========================')
+    logging.basicConfig(
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=logging.INFO,
+    )
+    logger.info('======================= Begin New Session ==========================')
     directory_experiments = os.path.join(get_root_path_string(), 'resources/experiments', args.task_type.value)
     directory_log = os.path.join(directory_experiments, 'log')
 
@@ -89,32 +92,24 @@ def main(args):
     }
     if args.dataset_reference_model != 'resnet50':
         setting_dict['dataset_reference_model'] = args.dataset_reference_model
-    print()
-    print('======= evaluation_dict ==========')
+
+    logger.info('======= evaluation_dict ==========')
     evaluation_dict = setting_dict.copy()
     evaluation_dict['test_dataset'] = args.test_dataset
-    # evaluation_dict['contain_data_similarity'] = args.contain_data_similarity
-    # evaluation_dict['embed_dataset_feature']=args.embed_dataset_feature
-    # evaluation_dict['model_embed_method'],complete_model_features
+
     for k, v in evaluation_dict.items():
-        print(f'{k}: {v.__str__()}')
-    print(f'gnn_method: {args.gnn_method}\n')
-    # print(evaluation_dict)
+        logger.info(f'{k}: {v.__str__()}')
+    logger.info(f'gnn_method: {args.gnn_method}\n')
 
     ## Check executed
     query = ' & '.join(list(map(djoin, [evaluation_dict])))
-    # print(query)
 
     ## skip running because the performance exist
     if not df_perf.empty:
         df_tmp = df_perf.query(query)
-        if not df_tmp.empty:  # df_tmp.dropna().empty:
-            print('===== pass ====\n')
-            # return 0
+        if not df_tmp.empty:
+            logger.info('Already executed, skipping.')
             pass
-        else:
-            print(f'query: {query}')
-            # print(df_tmp.dropna())
 
     if args.gnn_method == 'lr':
         graph_attributes = GraphAttributes(args)
@@ -202,8 +197,6 @@ if __name__ == '__main__':
     parser.add_argument("--peft_method", required=False, type=str, help="PEFT method to use.", choices=['lora'])
 
     args = parser.parse_args()
-    print(f'args.contain_model_feature: {args.contain_model_feature}')
-    print(f'bool - args.contain_model_feature: {str2bool(args.contain_model_feature)}')
 
     if args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
         args.dataset_reference_model = 'EleutherAI_gpt-neo-125m'
@@ -216,8 +209,6 @@ if __name__ == '__main__':
             raise Exception(f'Unexpected embedding method {args.dataset_embed_method}')
     else:
         raise Exception(f'Unexpected task type {args.task_type}')
-
-    # args.gnn_method = 'node2vec+' #'GATConv' #'HGTConv' #'SAGEConv'
 
     args.contain_data_similarity = str2bool(args.contain_data_similarity)
     args.contain_model_feature = str2bool(args.contain_model_feature)

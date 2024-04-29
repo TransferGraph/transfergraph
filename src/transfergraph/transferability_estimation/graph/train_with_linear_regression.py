@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 from glob import glob
@@ -18,6 +19,7 @@ from transfergraph.dataset.task import TaskType
 
 SAVE_FEATURE = True
 
+logger = logging.getLogger(__name__)
 
 class RegressionModel():
     def __init__(
@@ -82,11 +84,8 @@ class RegressionModel():
         pass
 
     def feature_preprocess(self, embedding_dict={}, data_dict={}):
-
         df_model_config = pd.read_csv(os.path.join(self.directory_experiments, 'model_config_dataset.csv'))
-        # print(f'\n df_model_config.columns: {df_model_config.columns}')
         df_dataset_config = pd.read_csv(os.path.join(self.directory_experiments, 'target_dataset_features.csv'))
-        # print(f'\n df_dataset_config.columns: {df_dataset_config.columns}')
 
         df_finetune = pd.read_csv(os.path.join(self.directory_experiments, 'records.csv'), index_col=0)
 
@@ -128,7 +127,7 @@ class RegressionModel():
                     method = '_'.join(method.split('_')[:-1])
                 if 'basic' in method or 'all' in method:
                     method = '_'.join(method.split('_')[:-1])
-                # print(method)
+                # logger.info(method)
                 if method[-8:] == 'distance':
                     method = '_'.join(method.split('_')[:-2])
 
@@ -139,7 +138,7 @@ class RegressionModel():
                     file = os.path.join(
                         f"{path_dataset_features}/features_{method.replace('rf_', 'lr_').replace('svm_', 'lr_').replace('xgb_', 'lr_')}_{self.hidden_channels}.csv"
                     )
-                    print(f'\nfile: {file}')
+                    logger.info(f'\nfile: {file}')
                     # file = os.path.join(f"../../features/{self.test_dataset}/features_{method}.csv")
                     # if not os.path.exists(file):
                     # file = os.path.join(f"../../features/{self.test_dataset}/features_{method.replace('lr','rf').replace('svm','rf')}.csv")
@@ -150,13 +149,13 @@ class RegressionModel():
                         f"{path_dataset_features}/features_{method.replace('rf_', 'lr_').replace('svm_', 'lr_').replace('xgb_', 'lr_')}_{self.hidden_channels}_{self.finetune_ratio}.csv"
                     )
                 df_feature = pd.read_csv(file)  # index_col=0
-                print(f'\n1st df_feature.shape: {df_feature.shape}')
+                logger.info(f'\n1st df_feature.shape: {df_feature.shape}')
                 # assert df_feature.shape[0] > 600
 
                 if 'model.1' in df_feature.columns:
                     # df_feature = df_feature.rename(columns={'model.1':'model'})
                     df_feature = df_feature.drop(columns=['model.1'])
-                # print(df_feature.columns)
+                # logger.info(df_feature.columns)
 
                 df_feature.index = range(len(df_feature))
 
@@ -166,8 +165,7 @@ class RegressionModel():
 
                 # if 'basic' in self.method or 'all' in self.method or 'without_accuracy' in self.method:
                 self.selected_columns += [col for col in df_feature.columns if 'm_f' in col or 'd_f' in col]
-                # print()
-                # print(list(df_feature.columns))
+                # logger.info(list(df_feature.columns))
 
             if embedding_dict != {}:
                 # assert data_dict == {}
@@ -177,11 +175,11 @@ class RegressionModel():
                 df_data_id = data_dict['unique_dataset_id'].rename({'dataset': 'finetune_dataset'}, axis='columns')
                 df_feature = df_feature.merge(df_data_id, how='inner', on='finetune_dataset')
 
-                print(f'\n embedding_dict != null, len(df_feature):{len(df_feature)}')
+                logger.info(f'\n embedding_dict != null, len(df_feature):{len(df_feature)}')
                 # assert len(df_feature) > 600
 
-                # print(f'\n df_feature.clumns: \n{df_feature.columns}')
-                # print(f'\ndf_feature: {df_feature.head()}')
+                # logger.info(f'\n df_feature.clumns: \n{df_feature.columns}')
+                # logger.info(f'\ndf_feature: {df_feature.head()}')
                 ### Capture the embeddings
                 df = pd.DataFrame()
                 model_emb = []
@@ -193,7 +191,7 @@ class RegressionModel():
                         model_emb.append(embedding_dict[model_id].detach().numpy())
                         dataset_emb.append(embedding_dict[dataset_id].detach().numpy())
                     else:
-                        # print(f'\nembedding_dict:{embedding_dict}')
+                        # logger.info(f'\nembedding_dict:{embedding_dict}')
 
                         model_emb.append(embedding_dict[model_id].numpy())
                         dataset_emb.append(embedding_dict[dataset_id].numpy())
@@ -204,30 +202,19 @@ class RegressionModel():
 
                 columns = ['m_f' + str(i) for i in range(len(embedding_dict[model_id]))]
                 df_ = pd.DataFrame(model_emb, columns=columns)
-                # df_feature[columns] = model_emb
                 df_feature = pd.concat([df_feature, df_], axis=1)
                 self.selected_columns += columns
 
                 columns = ['d_f' + str(i) for i in range(len(embedding_dict[dataset_id]))]
                 df_ = pd.DataFrame(dataset_emb, columns=columns)
-                # df_feature[columns] = dataset_emb
                 df_feature = pd.concat([df_feature, df_], axis=1)
                 self.selected_columns += columns
 
-                # print(df_feature.head())
-                # df_feature.to_csv('./methods/features.csv')
-
                 df_feature = df_feature.dropna(subset=['m_f0', 'd_f0'])
-                # print(df_feature.head())
 
         if 'logme' in self.method or 'without_accuracy' in self.method:  # or 'all' in self.method
-            # print(df_feature.columns)
-            # model_col_count = df_feature.columns.tolist().count('model')
-            # if model_col_count > 1: df_feature = df_feature.drop(columns=['model'])
-
             if 'score' not in df_feature.columns:
                 model_list = df_feature['model'].unique()
-                # df_feature.index = df_feature['model']
                 df_feature.index = range(len(df_feature))
                 df_dataset_list = []
                 for dataset in df_feature['finetune_dataset'].unique():
@@ -237,14 +224,12 @@ class RegressionModel():
                     df_logme = df_logme[df_logme['target_dataset'] == dataset]
 
                     # identify common models
-                    # print('\n',df_feature['model'])
                     df_logme = df_logme[df_logme['model'].isin(model_list)]
                     df_logme = df_logme.dropna(subset=['score'])
                     # normalize
                     df_logme['score'].replace([-np.inf, np.nan], -50, inplace=True)
 
                     score = df_logme['score']  # .astype('float64')
-                    # normalized_pred = (score-score.min())/(score.max()-score.min()) #df_score['score'].values/norm
                     normalized_pred = (score - score.mean()) / score.std()
                     df_logme['score'] = normalized_pred
 
@@ -253,14 +238,11 @@ class RegressionModel():
                         df_feature[df_feature['finetune_dataset'] == dataset].merge(df_logme, how='inner', on=['model'])
                     )  # ,'finetune_dataset']))
                 df_feature = pd.concat(df_dataset_list)
-                # print(f'after logme: if score in columns: {list(df_feature.columns)}')
             if 'score' not in self.selected_columns:
                 self.selected_columns += ['score']
 
         if 'data_distance' in self.method or 'all' in self.method:
-            # if True:
             corr_path = os.path.join(self.directory_experiments, self.dataset_correlation_file_name)
-            # print(f'\ncorr_path: {corr_path}')
             df_corr = pd.read_csv(corr_path, index_col=0)
 
             columns = df_corr.columns
@@ -277,33 +259,24 @@ class RegressionModel():
             if 'distance' in df_feature.columns:
                 df_feature = df_feature.drop(columns=['distance'])
 
-            # print('df_feature')
-            # print(df_feature.finetune_dataset.unique())
-            # print(df_feature.dataset.unique())
-            # print('df_corr')
-            # print(df_corr.finetune_dataset.unique())
-            # print(df_corr.dataset.unique())
-
             df_feature = df_feature.merge(df_corr, how='outer', on=['finetune_dataset', 'dataset'])
-            # df_feature = df_feature.merge(df_corr,how='inner',on=['finetune_dataset','dataset'])
+
             #### fill missing value with minimum value
             min_value = df_feature['distance'].min()
             df_feature['distance'].fillna(value=min_value, inplace=True)
 
-            # print(df_feature.head())
-            print(f'\n2nd df_feature.shape: {df_feature.shape}')
+            logger.info(f'\n2nd df_feature.shape: {df_feature.shape}')
             assert df_feature.shape[0] > 600
 
             self.selected_columns += ['distance']
 
         if 'feature' in self.method:
-            print(f'feature in self.method')
+            logger.info(f'feature in self.method')
             records = {'finetune_dataset': [], 'model': [], 'feature': []}
             emb_files = glob(os.path.join('../../../../../', 'model_embed', 'embeddings') + '/*')
             for file in emb_files:
                 components = file.split(',')
                 array = np.reshape(np.load(file), (1, -1))
-                # print(f'array.shape: {array.shape}')
                 array = normalize(array, norm='max').ravel()
                 model = components[2].split('_')
                 model_name = model[0] + '/' + '_'.join(model[1:])
@@ -322,15 +295,11 @@ class RegressionModel():
             scaler.fit(features)
             featues = scaler.transform(features)
             df[columns] = featues
-            # print(f'\ndf: {df.head()}')
             df_feature = df_feature.merge(df, how='inner', on=['finetune_dataset', 'model'])
-            # print(f'\ndf_feature: {df_feature.head()}')
 
-        # print(list(df_feature.columns))
         df_feature.index = df_feature['model']
-        # print(f'\nSAVE_FEATURE: {SAVE_FEATURE}')
         if SAVE_FEATURE:
-            # print(f'\n-----save feature')
+            logger.info(f'\n-----save feature')
             _dir = os.path.join(self.directory_experiments, 'features_final', self.test_dataset.replace('/', '_'))
             if not os.path.exists(_dir):
                 os.makedirs(_dir)
@@ -338,32 +307,22 @@ class RegressionModel():
                 file = os.path.join(_dir, f'features_{self.method}{self.embed_addition}_{self.hidden_channels}_{self.finetune_ratio}.csv')
             else:
                 file = os.path.join(_dir, f'features_{self.method}{self.embed_addition}_{self.hidden_channels}.csv')
-            # if not os.path.exists(file):
-            #     df_feature.to_csv(file)
-            print(f'3rd df_feature.shape: {df_feature.shape}')
-            # assert df_feature.shape[0] > 600
+
+            logger.info(f'3rd df_feature.shape: {df_feature.shape}')
             df_feature.to_csv(file)
 
-        # print(f'\n selected_columns: {self.selected_columns}')
         df_feature = df_feature[self.selected_columns]
         if 'score' in df_feature.columns:
             df_feature = df_feature.dropna(subset=['score'])
         if 'm_f0' in df_feature.columns:
             df_feature = df_feature.dropna(subset=['m_f0', 'd_f0'])
-        print(f'\n df_feature.len: {len(df_feature)}')
+        logger.info(f'\n df_feature.len: {len(df_feature)}')
 
         nan_columns = df_feature.columns[df_feature.isna().any()].tolist()
-        print(f'nan_columns: {nan_columns}')
+        logger.info(f'nan_columns: {nan_columns}')
         df_feature = fill_null_value(df_feature, columns=nan_columns)
-        # print(f'df_feature.columns:{df_feature.columns}')
-        # print(df_feature[['finetune_dataset','score']].head())
 
         self.df_feature = df_feature
-
-        #
-        # print(f'\n nan_columns: {nan_columns}')
-        # normal_columns = [col for col in df_feature.columns if 'm_f' not in col and 'd_f' not in col]
-        # df_feature[normal_columns].to_csv('../../features/features.csv')
 
     def split(self):
         df_train = self.df_feature[self.df_feature['finetune_dataset'] != self.test_dataset]
@@ -372,12 +331,8 @@ class RegressionModel():
         if self.finetune_ratio != 1:
             df_train = df_train.sample(frac=self.finetune_ratio, random_state=1)
 
-        # df_train = df_train.drop(columns='finetune_dataset')
         df_test = self.df_feature[self.df_feature['finetune_dataset'] == self.test_dataset]
-        # print(f'\n - test_dataset: {self.test_dataset}')
-        # print(df_test.head())
 
-        # df_test = df_test.drop(columns='finetune_dataset')
         self.selected_columns.remove('finetune_dataset')
 
         categorical_columns = ['architectures', 'model_type', 'finetune_dataset', 'dataset']
@@ -398,8 +353,8 @@ class RegressionModel():
         y_train = df_train[self.y_label].values
         y_test = df_test[self.y_label].values
 
-        print(f'\n --- dataset: {self.test_dataset}')
-        print(f'\n --- shape of X_train: {X_train.shape}, X_test.shape: {X_test.shape}')
+        logger.info(f'\n --- dataset: {self.test_dataset}')
+        logger.info(f'\n --- shape of X_train: {X_train.shape}, X_test.shape: {X_test.shape}')
         assert X_train.shape[0] > 200
 
         if 'lr' in self.method:
@@ -436,10 +391,7 @@ class RegressionModel():
             dir_path = os.path.join(self.directory_experiments, 'rank_final', f"{self.test_dataset.replace('/', '_')}", self.method)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
-        if self.finetune_ratio >= 1:
-            file = f'results{self.embed_addition}_{self.hidden_channels}.csv'
-        else:
-            file = f'results{self.embed_addition}_{self.finetune_ratio}_{self.hidden_channels}.csv'
+        file = f'results{self.embed_addition}_{self.finetune_ratio}_{self.hidden_channels}_0.csv'
 
         df_results.to_csv(os.path.join(dir_path, file))
 
@@ -476,7 +428,7 @@ if __name__ == '__main__':
     task_type = 'sequence_classification'
     path = os.path.join(get_root_path_string(), 'resources/experiments', task_type, 'log')
     performance_file = os.path.join(path, f'performance_rf_score.csv')
-    print(f'====== path: {path} ======')
+    logger.info(f'====== path: {path} ======')
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -638,13 +590,13 @@ if __name__ == '__main__':
     ]:
 
         for test_dataset in datasets:
-            print(f'\n\n======== test_dataset: {test_dataset}, method: {method} =============')
+            logger.info(f'\n\n======== test_dataset: {test_dataset}, method: {method} =============')
             for ratio in [1.0]:  #: 0.6, 0.8   0.3, 0.5, 0.7
-                print(f'\n -- ratio: {ratio}')
+                logger.info(f'\n -- ratio: {ratio}')
                 start = time.time()
                 df_list = []
                 for hidden_channels in [128]:  # 32,64,
-                    print(f'\n -------- hidden_channels: {hidden_channels}')
+                    logger.info(f'\n -------- hidden_channels: {hidden_channels}')
                     trainer = RegressionModel(
                         test_dataset,
                         finetune_ratio=ratio,
@@ -657,7 +609,7 @@ if __name__ == '__main__':
                     # try:
                     score, df_results = trainer.train()
                     # except Exception as e:
-                    #     print(e)
+                    #     logger.info(e)
                     #     continue
                 train_time = time.time() - start
                 df_perf.loc[len(df_perf)] = [method, test_dataset, train_time, score]

@@ -1,5 +1,6 @@
 import itertools
 import json
+import logging
 import os
 import pickle
 import sys
@@ -13,6 +14,8 @@ from transfergraph.config import get_root_path_string
 from transfergraph.dataset.embed_utils import DatasetEmbeddingMethod
 from transfergraph.dataset.embedder import determine_directory_embedded_dataset, determine_file_name_embedded_dataset
 from transfergraph.dataset.task import TaskType
+
+logger = logging.getLogger(__name__)
 
 
 class GraphAttributes():
@@ -58,9 +61,6 @@ class GraphAttributes():
         threshold = 1  # 0.7
 
         n = len(self.data_features)
-        # n = self.data_features.shape[0]
-        # print(f'len(dataset_features):{n}')
-        # print(f'emb_method: {self.args.dataset_embed_method}')
 
         distance_matrix = np.zeros([n, n])
         data_source = []
@@ -107,10 +107,9 @@ class GraphAttributes():
             dict_distance[name] = list(distance_matrix[idx, :])
         df_tmp = pd.DataFrame(dict_distance)
         df_tmp.index = df_tmp.columns
-        print(f'\n\n ====  Save correlation to path: {path}')
+        logger.info(f'\n\n ====  Save correlation to path: {path}')
         df_tmp.to_csv(path)
 
-        print(f'len(connected_dataset):{len(data_source)}')
         return torch.stack([torch.tensor(data_source), torch.tensor(data_target)]), torch.tensor(attr)  # dim=0
 
     def get_edge_index(self, method='accuracy', ratio=1.0):  # method='score'
@@ -130,17 +129,14 @@ class GraphAttributes():
             #     df = df[df['accuracy']> self.args.accu_pos_thres]
             ### Filter with 0.5 after normalization
             df['accuracy'] = df[['dataset', 'accuracy']].groupby('dataset').transform(lambda x: (x - x.min()) / (x.max() - x.min()))
-            print(df['accuracy'])
             df_neg = df[df['accuracy'] <= self.args.accu_neg_thres]  # df['mean']]
             df = df[df['accuracy'] > self.args.accu_pos_thres]
 
-            print(f'df_accu after filtering: {len(df)}')
-            # df = df[df['accuracy']>=self.args.accuracy_thres]
+            logger.info(f'df_accu after filtering: {len(df)}')
         elif method == 'score':
             df, df_neg = self.get_transferability_scores()
 
             #### Sample transferability score with finetune-ratio
-            # 'without_accuracy' in self.args.gnn_method and 
             if ratio != 1:
                 df = df.sample(frac=self.args.finetune_ratio, random_state=1)
 
@@ -150,10 +146,8 @@ class GraphAttributes():
         return edge_index_model_to_dataset, edge_attributes, negative_edges
 
     def get_edges(self, df, method, type='positive'):
-        print()
-        print('==========')
-        # print(f'len(df): {len(df)}')
-        print(f'\nlen(df) after filtering models by {method}, {type}: {len(df)}')
+
+        logger.info(f'\nlen(df) after filtering models by {method}, {type}: {len(df)}')
         mapped_dataset_id = pd.merge(df[['dataset', 'model', method]], self.unique_dataset_id, on='dataset', how='inner')
         mapped_model_id = pd.merge(
             mapped_dataset_id[['dataset', 'model', method]],
@@ -161,10 +155,6 @@ class GraphAttributes():
             on='model',
             how='inner'
         )  # how='left
-        print(f'mapped_model_id.len: {len(mapped_model_id)}, mapped_dataset_id.len: {len(mapped_dataset_id)}')
-        # print(f'mapped_model_id: {mapped_model_id}')
-        # print(f"df['dataset]: {pd.merge(df['dataset'],self.unique_dataset_id,on='dataset',how='left')}")
-        # print(f'mapped_dataset_id: {mapped_dataset_id}')
         edge_index_model_to_dataset = torch.stack(
             [torch.from_numpy(mapped_model_id['mappedID'].values), torch.from_numpy(mapped_dataset_id['mappedID'].values)],
             dim=0
@@ -176,28 +166,20 @@ class GraphAttributes():
                 [torch.from_numpy(mapped_model_id['mappedID'].values), torch.from_numpy(mapped_dataset_id['mappedID'].values)],
                 dim=1
             )
-        # print(f'== edge_index_model_to_dataset')
-        print(f'len(df): {len(df)}, len(mapped_model_id): {len(mapped_model_id)}')
         edge_attr = torch.from_numpy(mapped_model_id[method].values)
-        # print()
-        # print(df)
-        print(f'\nedge_index: {edge_index_model_to_dataset.shape}')
-        print(f'edge_attr: {edge_attr.shape}')
+
         return edge_index_model_to_dataset, edge_attr
 
     def del_node(self, unique_id, entity_list, entity_type):
         ## Drop rows that do not produce dataset features
-        print(f'len(unique_id): {len(unique_id)}')
-        # unique_id = unique_id.drop(labels=delete_row_idx, axis=0)
         unique_id = unique_id[unique_id[entity_type].isin(entity_list)]
-        print(f'len(unique_id): {len(unique_id)}')
         return unique_id
 
     def drop_nodes(self):
         # reallocate the node id
         a = set(self.unique_dataset_id['dataset'].unique())
         b = set(self.dataset_list)
-        print('absent dataset', a - b)
+        logger.info('absent dataset', a - b)
         self.unique_dataset_id = self.get_unique_node(
             self.del_node(self.unique_dataset_id, self.dataset_list.keys(), 'dataset')['dataset'],
             'dataset'
@@ -207,7 +189,6 @@ class GraphAttributes():
         ## Perform merge to obtain the edges from models and datasets:
         self.finetune_records = self.finetune_records[self.finetune_records['model'].isin(self.unique_model_id['model'].values)]
         self.finetune_records = self.finetune_records[self.finetune_records['dataset'].isin(self.unique_dataset_id['dataset'].values)]
-        print(f'len(df): {len(self.finetune_records)}')
 
     ## Retrieve the embeddings of the model
     def get_model_features(self, complete_model_features=False):
@@ -217,7 +198,7 @@ class GraphAttributes():
         INPUT_SHAPE = 128  # 64 # #224
         model_list = []
         for i, row in self.unique_model_id.iterrows():
-            print(f"======== i: {i}, model: {row['model']} ==========")
+            logger.info(f"======== i: {i}, model: {row['model']} ==========")
             model_match_rows = self.finetune_records.loc[self.finetune_records['model'] == row['model']]
             # model_match_rows = df_config.loc[df['model']==row['model']]
             if model_match_rows.empty:
@@ -237,12 +218,11 @@ class GraphAttributes():
                 ds_name = dataset_name
                 dataset_name = self.dataset_map[dataset_name] if dataset_name in self.dataset_map.keys() else dataset_name
             except:
-                print('fail to retrieve model')
+                logger.warn('fail to retrieve model')
                 continue
             if isinstance(dataset_name, list):
-                # print(dataset_name)
                 configs = self.finetune_records[self.finetune_records['dataset'] == ds_name]['configs'].values[0].replace("'", '"')
-                print(configs)
+                logger.info(configs)
                 if ds_name == 'clevr':
                     dataset_name = json.loads(configs)['preprocess']
                 else:
@@ -252,7 +232,7 @@ class GraphAttributes():
             if dataset_name == 'imagenet_21k':
                 dataset_name = 'imagenet'
 
-            print(f"== dataset_name: {dataset_name}")
+            logger.info(f"== dataset_name: {dataset_name}")
             if dataset_name == 'FastJobs_Visual_Emotional_Analysis':
                 # delete_model_row_idx.append(i)
                 model_list.append(row['model'])
@@ -266,39 +246,36 @@ class GraphAttributes():
                 dataset_name,
                 model_name.replace('/', '_') + f'_{ATTRIBUTION_METHOD}.npy'
             )
-            print(dataset_name, model_name)
+            logger.info(dataset_name, model_name)
 
             # load model features
             try:
                 features = np.load(path)
             except Exception as e:
-                # print('----------')
-                # print(e)
                 if complete_model_features:
-                    print(f'== Skip this model and delete it')
+                    logger.warning(f'== Skip this model and delete it')
                     # delete_model_row_idx.append(i)
                     model_list.append(row['model'])
                     continue
                 else:
                     features = np.zeros((INPUT_SHAPE, INPUT_SHAPE))
                 # features = np.zeros((INPUT_SHAPE,INPUT_SHAPE))
-            print(f'features.shape: {features.shape}')
+            logger.info(f'features.shape: {features.shape}')
             if features.shape == (INPUT_SHAPE, INPUT_SHAPE):
-                print('Try to obtain missing features')
+                logger.info('Try to obtain missing features')
                 sys.path.append('..')
                 from model_embed.attribution_map.embed import embed
                 method = ATTRIBUTION_METHOD  # 'saliency'
                 batch_size = 1
                 try:
                     features = embed('../', model_name, dataset_name, method, input_shape=IMAGE_SHAPE, batch_size=batch_size)
-                    print('----------')
                 except Exception as e:
                     # print(e)
                     # print('----------')
                     # features = np.zeros((3,INPUT_SHAPE,INPUT_SHAPE))
                     # delete_model_row_idx.append(i)
                     model_list.append(row['model'])
-                    print(f'--- fail - skip row {row["model"]}')
+                    logger.warning(f'--- fail - skip row {row["model"]}')
                     continue
             else:
                 if np.isnan(features).all():
@@ -310,10 +287,10 @@ class GraphAttributes():
                 features = np.resize(features, (INPUT_SHAPE, INPUT_SHAPE))
             features = features.flatten()
             model_feat.append(features)
-        print(f'== model_feat.shape:{len(model_feat)}')
+        logger.info(f'== model_feat.shape:{len(model_feat)}')
         model_feat = np.stack(model_feat)
         # model_feat.astype(np.double)
-        print(f'== model_feat.shape:{model_feat.shape}')
+        logger.info(f'== model_feat.shape:{model_feat.shape}')
         # return torch.from_numpy(model_feat).to(torch.float), delete_model_row_idx
         return model_feat, model_list  # delete_model_row_idx
 
@@ -339,22 +316,12 @@ class GraphAttributes():
             dataset_list[ds_name] = dataset_name
         return dataset_list  # , delete_dataset_row_idx
 
-    def _print(self, name, value, level=2):
-        if self.PRINT:
-            print()
-            if level == 1:
-                print('=====================')
-            elif level > 1:
-                print('---------------')
-            print(f'== {name}: {value}')
-
     ## Node idx
     def get_node_id(self):
         unique_model_id = self.get_unique_node(self.finetune_records['model'], 'model')
         unique_dataset_id = self.get_unique_node(self.finetune_records['dataset'], 'dataset')
-        print()
-        print(f"len(unique_model_id): {len(unique_model_id)}")
-        print(f'len(unique_dataset_id): {len(unique_dataset_id)}')
+        logger.info(f"len(unique_model_id): {len(unique_model_id)}")
+        logger.info(f'len(unique_dataset_id): {len(unique_dataset_id)}')
         return unique_model_id, unique_dataset_id
 
     def get_unique_node(self, col, name):
@@ -370,7 +337,6 @@ class GraphAttributes():
 
     def get_transferability_scores(self):
         df = self.finetune_records.copy()[['dataset', 'model', 'accuracy']]
-        # print(len(self.dataset_list),self.dataset_list)
         df_list = []
         df_neg_list = []
 
@@ -410,36 +376,21 @@ class GraphAttributes():
                     df_large = df_score[df_score['score'] >= self.args.top_pos_K]
                 elif self.args.top_pos_K > 1:
                     df_large = df_score.nlargest(self.args.top_pos_K, 'score')
-                # df_large = df_score
-                # print(df_large.head())
+
                 df_ = pd.merge(df_sub, df_large, on='model', how='left')
                 df_list.append(df_)
-                # print(f'df_')
-                # print(df_.sort_values(['score'],ascending=False).head())
-
                 # smallest
                 if self.args.top_neg_K <= 1:
                     df_small = df_score[df_score['score'] < self.args.top_neg_K]
-                # print(df_small[['model','score']])
-                # elif self.args.top_neg_K <= 1:
-                #     df_small = df_score.nsmallest(self.args.top_neg_K,'score')
+
                 df_s = pd.merge(df_sub, df_small, on='model', how='left')
-                # print(df_)
-                # print(f'\ndf_list: {df_list}')
-                # print(df_s)
                 df_neg_list.append(df_s)
-                # if 'score' in df.columns: 
-                #     df = pd.merge(df,df_,on=['dataset','model','accuracy','score'],how='left')
-                # else:
-                #     df = pd.merge(df,df_,on=['dataset','model','accuracy'],how='left')
             except Exception as e:
-                print(e)
-                # df_list.append(df_sub)
-                # df_neg_list.append(df_s)
+                logger.warning(e)
+                logger.warning(f"Skipping {dataset_name}")
                 continue
 
         df = pd.concat(df_list)
-        # print(df.head())
         df = df.dropna(subset=['score'])
 
         if not os.path.isdir(f"{self.resource_path}/features"):
@@ -449,8 +400,8 @@ class GraphAttributes():
         if 'score' not in df.columns: df['score'] = 0
         df_neg = pd.concat(df_neg_list).dropna()
 
-        print(f'\nlength of transferability positive: {len(df)}')
-        print(f'\nlength of transferability negative: {len(df)}')
+        logger.info(f'\nlength of transferability positive: {len(df)}')
+        logger.info(f'\nlength of transferability negative: {len(df)}')
         assert len(df) > 200
 
         return df, df_neg
@@ -494,8 +445,7 @@ class GraphAttributes():
             raise Exception(f"Unexpected task type {self.args.task_type}")
 
         finetune_records['input_shape'] = 0
-        print()
-        print(f'---- len(finetune_records_raw): {len(finetune_records)}')
+        logger.info(f'---- len(finetune_records_raw): {len(finetune_records)}')
 
         ##### Ignore pre-trained information
         ######################
@@ -520,7 +470,7 @@ class GraphAttributes():
         finetune_records['config'] = ''
         # filter models that are contained in the config file
         finetune_records = finetune_records[finetune_records['model'].isin(available_models)]
-        print(f'---- len(finetune_records_after_concatenating_model_config): {len(finetune_records)}')
+        logger.info(f'---- len(finetune_records_after_concatenating_model_config): {len(finetune_records)}')
 
         # ######################
         # ## Add an empty row to indicate the dataset
@@ -556,14 +506,10 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
                 self.test_dataset_idx = self.unique_dataset_id[self.unique_dataset_id['dataset'] == args.test_dataset]['mappedID'].values[0]
             except Exception as e:
                 # pass
-                print('\n\n==== fail ====')
-                print(e)
-                print(args.test_dataset)
-                # print(self.unique_dataset_id['dataset'].unique())
-            ##### !!! make the indeces of the dataset and the model different
+                logger.warning(e)
+                logger.warning(f"Test dataset {self.args.test_dataset} not found. Skipping.")
             if 'homo' in self.args.gnn_method or 'node2vec' in self.args.gnn_method:
                 self.unique_model_id['mappedID'] += self.max_dataset_idx + 1
-            # print(f'unique_model_id: {self.unique_model_id}')
             self.model_idx = self.unique_model_id['mappedID'].values
         else:
             self.test_dataset_idx = -1
@@ -585,9 +531,6 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
             self.negative_pairs = self.tran_negative_pairs
         else:
             self.negative_pairs = self.accu_negative_pairs
-        # print()
-        # print('=========')
-        # print(f'-- max node index: {torch.max(self.edge_index_accu_model_to_dataset),0}, {torch.max(self.edge_index_tran_model_to_dataset),0}')
 
         self.dataset_reference_model = args.dataset_reference_model
         self.edge_index_dataset_to_dataset, self.edge_attr_dataset_to_dataset = self.get_dataset_edge_index(
@@ -595,8 +538,8 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
             threshold=args.distance_thres,
             sim_method=args.dataset_distance_method
         )
-        print(f"len(unique_model_id): {len(self.unique_model_id)}")
-        print(f'len(unique_dataset_id): {len(self.unique_dataset_id)}')
+        logger.info(f"len(unique_model_id): {len(self.unique_model_id)}")
+        logger.info(f'len(unique_dataset_id): {len(self.unique_dataset_id)}')
 
     def get_dataset_features(self, reference_model):
         data_feat = {}
@@ -619,8 +562,8 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
                     )
                 features = np.load(path)
             except Exception as e:
-                # print('\n----------')
-                # print(e)
+                logger.warning(e)
+                logger.warning(f"No embedding available for {dataset_name} at path {path}, removing node.")
                 del self.dataset_list[ori_dataset_name]
                 continue
                 features = np.zeros((1, self.FEATURE_DIM))

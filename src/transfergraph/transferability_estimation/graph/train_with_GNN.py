@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 
@@ -12,7 +13,7 @@ from .utils._util import *
 from .utils.graph import HGraph
 from ...dataset.embed_utils import DatasetEmbeddingMethod
 
-# We can make use of the `loader.LinkNeighborLoader` from PyG:
+logger = logging.getLogger(__name__)
 
 SAVE_GRAPH = False
 SAVE_AND_BREAK = False
@@ -36,10 +37,11 @@ def train(model, train_data, graph_type='hetero', label_type=[], gnn_method='lr_
 
     if 'e2e' in gnn_method:
         L_fn = nn.MSELoss()
-    elif 'lr' in gnn_method or 'rf' in gnn_method:
+    elif 'xgb' or 'lr' in gnn_method or 'rf' in gnn_method:
         L_fn = F.binary_cross_entropy_with_logits
-    # print("Capturing:", torch.cuda.is_current_stream_capturing())
-    # torch.cuda.empty_cache()
+    else:
+        raise Exception(f"Unexpected gnn_method {gnn_method}")
+
     number_of_training_step = epochs * len(train_loader)
     progress_bar = tqdm(total=number_of_training_step)
     for epoch in range(1, epochs + 1):
@@ -53,7 +55,8 @@ def train(model, train_data, graph_type='hetero', label_type=[], gnn_method='lr_
             elif graph_type == 'homo':
                 ground_truth = sampled_data.edge_label
                 loss = L_fn(pred, ground_truth)
-            # loss = F.cross_entropy(pred, ground_truth)
+            else:
+                raise Exception(f"Unexpected graph type {graph_type}")
             loss.backward()
             optimizer.step()
             total_loss += float(loss) * pred.numel()
@@ -83,14 +86,13 @@ def validate(model, val_data, graph_type='hetero', label_type=[], batch_size=8):
             elif graph_type == 'homo':
                 ground_truths.append(sampled_data.edge_label)
     pred = torch.cat(preds, dim=0).cpu().numpy()
-    print(f'len(pred): {len(pred)}')  # , pred: {pred}')
+    logger.info(f'len(pred): {len(pred)}')  # , pred: {pred}')
     mask = pred > 0
     ground_truth = torch.cat(ground_truths, dim=0).cpu().numpy()
-    # print(f'len(ground_truth): {len(ground_truth)}: {np.sort(ground_truth)}')
     auc = roc_auc_score(ground_truth, pred, multi_class='ovr')
     pre = precision_score(ground_truth.astype(int), mask)
-    print()
-    print(f"Validation AUC: {auc:.4f}, pred: {pre:.4f}")
+    logger.info(f"Validation AUC: {auc:.4f}, pred: {pre:.4f}")
+    
     return auc
 
 
@@ -102,8 +104,7 @@ def custom_replace(data):
 
 
 def get_edge_label(data):
-    print()
-    print(f'======= homo graph processing ========')
+    logger.info(f'======= homo graph processing ========')
     edge_label_index = data["model", "trained_on", "dataset"].edge_label_index
     edge_label = data["model", "trained_on", "dataset"].edge_label
     return edge_label_index, edge_label
@@ -123,9 +124,6 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
     edge_attr_dataset_to_dataset = data_dict['edge_attr_dataset_to_dataset']
     negative_pairs = data_dict['negative_pairs']
     max_dataset_idx = data_dict['max_dataset_idx']
-
-    # print('')
-    # print(f'data_dict: {data_dict}')
 
     ## Construct a heterogeneous graph
     graph = HGraph(
@@ -150,15 +148,8 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
     )
 
     data = graph.data
-    print(f'== Begin splitting dataset ==')
+    logger.info(f'== Begin splitting dataset ==')
     train_data, val_data, test_data = graph.split()
-
-    ## Validate (sub)graphs
-    # data.validate()
-    # train_data.validate()
-    # val_data.validate()
-    # test_data.validate()
-    # print(val_data)
 
     ### !!! label_type ["model", "trained_on", "dataset"] or  ["model", "transfer", "dataset"]
     label_type = graph.label_type
@@ -166,15 +157,15 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
 
     unique_values = train_data[s, r, t].edge_label.unique(return_counts=True)
     if len(unique_values[0]) > 2 or 2 in train_data[s, r, t].edge_label:
-        print(f'=== 2 in train_data')
+        logger.info(f'=== 2 in train_data')
         train_data = custom_replace(train_data)
     unique_values = val_data[s, r, t].edge_label.unique(return_counts=True)
     if len(unique_values[0]) > 2 or 2 in val_data[s, r, t].edge_label:
-        print(f'=== 2 in val_data')
+        logger.info(f'=== 2 in val_data')
         val_data = custom_replace(val_data)
     unique_values = test_data[s, r, t].edge_label.unique(return_counts=True)
     if len(unique_values[0]) > 2 or 2 in test_data[s, r, t].edge_label:
-        print(f'=== 2 in test_data')
+        logger.info(f'=== 2 in test_data')
         test_data = custom_replace(test_data)
 
     ### save thd graph
@@ -200,7 +191,7 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
             return 0, ''
 
     ## Define GNN
-    print(f'== Load {args.gnn_method} ==')
+    logger.info(f'== Load {args.gnn_method} ==')
     from .utils.gnn import HeteroModel, HomoModel
     num_dataset_nodes = data["dataset"].num_nodes
     num_model_nodes = data["model"].num_nodes
@@ -215,37 +206,28 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
     else:
         dim_model_feature = 1
     metadata = data.metadata()
-    # print()
-    # print(f'metadata: {metadata}')
-    # print('\n',data[metadata[1][0]])
 
     if 'homo' in args.gnn_method:
-        # edge_label_index, edge_label = get_edge_label(train_data)
-
-        print(f'\n== data{data}')
+        logger.info(f'\n== data{data}')
         data_hetero = data
-        # data = data_hetero.to_homogeneous(add_node_type=False,add_edge_type=False)
         edge_lists = []
         for edge_name in metadata[1]:
-            # print(f'\nedge_name: {edge_name}')
             edge_index = data_hetero[edge_name].edge_index
-            # print(f'\nedge_index: {edge_index}')
             edge_lists.append(edge_index)
 
         node_x_lists = []
         dimension = 64  # 128
         for node_name in metadata[0]:
-            # print(node_name)
             try:
                 dimension = data_hetero[node_name].x.shape[1]
-                print(f'dimension: {dimension}')
+                logger.info(f'dimension: {dimension}')
                 node_x_lists.append(data_hetero[node_name].x)
             except:
                 node_x_lists.append(torch.rand((data_hetero[node_name].num_nodes, dimension)))
 
         data = Data(x=torch.cat(node_x_lists, dim=0), edge_index=torch.cat(edge_lists, dim=1).type(torch.int64))
         data.node_id = torch.from_numpy(np.asarray(data_dict['node_ID']))
-        print(f'\n===== homo_data: {data}')
+        logger.info(f'\n===== homo_data: {data}')
 
         transform = RandomLinkSplit(  # T.Compose([T.ToUndirected(),
             num_val=0.1,  # TODO
@@ -259,11 +241,8 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
             # rev_edge_types=("dataset", "rev_trained_on", "model"), 
             custom_negative_sampling=custom_negative_sampling
         )
-        train_data_hetero = train_data
         train_data, val_data, test_data = transform(data)
-        # data = data_homo
-        print(f'data_homo: {data}')
-        # print(data.node_id)
+        logger.info(f'data_homo: {data}')
 
         ## Validate (sub)graphs
         data.validate()
@@ -271,26 +250,19 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
         val_data.validate()
         test_data.validate()
 
-        # train_data =train_data.to_homogeneous(add_node_type=False,add_edge_type=False)
-        # print(f'train_data: {train_data}')
-        # print(f'\n== train_data_hetero:\n{train_data_hetero}')
-        # print(f'\n==train_data_hetero.edge_label_index.shape:{edge_label_index.shape}')
-        # print(f'edge_label.shape: {edge_label.shape}')
-        # print(f'\nnew edge_label.shape: {train_data.edge_label.shape}')
-        print(f'\nnew train_data_homo.edge_label.shape: {train_data.edge_label.shape}')
-        print(f'train_data_homo.edge_label.shape: {train_data.edge_label.shape}')
-        print(f'train_data_homo.edge_label.unique count: {train_data.edge_label.unique(return_counts=True)}')
+        logger.info(f'\nnew train_data_homo.edge_label.shape: {train_data.edge_label.shape}')
+        logger.info(f'train_data_homo.edge_label.shape: {train_data.edge_label.shape}')
+        logger.info(f'train_data_homo.edge_label.unique count: {train_data.edge_label.unique(return_counts=True)}')
 
         ################# Edge Label ##############
-        print(f'\n\ntrain_data_homo.edge_label_index: {train_data.edge_label_index}')
-        # print(f'\ntrain_data_homo.edge_label: {train_data.edge_label}')
+        logger.info(f'\n\ntrain_data_homo.edge_label_index: {train_data.edge_label_index}')
 
         for _data in [val_data, test_data]:
             unique_values = _data.edge_label.unique(return_counts=True)
-            print(f'\n_data_homo.edge_label.unique count: {unique_values}')
-            # print(val_data)
+            logger.info(f'\n_data_homo.edge_label.unique count: {unique_values}')
+            # logger.info(val_data)
             if len(unique_values[0]) > 2 or 2 in _data.edge_label:
-                print(f'=== 2 in _data')
+                logger.info(f'=== 2 in _data')
                 _data = custom_replace(_data)
 
         ############ Get regression label
@@ -336,8 +308,7 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
             hidden_channels=64,  # 64 # 128 args.hidden_channels
             node_types=data.node_types
         )
-    print()
-    print('== Begin training network ==')
+    logger.info('== Begin training network ==')
     # with torch.no_grad():  # Initialize lazy modules.
     #     out = model(data.x_dict, data.edge_index_dict)
     ## Train model
@@ -370,7 +341,6 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
     evaluation_dict['loss'] = loss
     evaluation_dict['train_time'] = train_time
     evaluation_dict['hidden_channels'] = args.hidden_channels
-    print()
 
     ## Validate model on validation set
     val_AUC = validate(model, val_data, graph_type, label_type, batch_size=batch_size)
@@ -379,9 +349,8 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
     test_AUC = validate(model, test_data, graph_type, label_type, batch_size=batch_size)
     evaluation_dict['test_AUC'] = test_AUC
 
-    print()
-    print('========== predict model nodes for the test dataset ========')
-    print(unique_dataset_id[unique_dataset_id['dataset'] == args.test_dataset])
+    logger.info('========== predict model nodes for the test dataset ========')
+    logger.info(unique_dataset_id[unique_dataset_id['dataset'] == args.test_dataset])
 
     dataset_index = data_dict['test_dataset_idx']
     dataset_index = np.repeat(dataset_index, len(data_dict['model_idx']))
@@ -400,7 +369,7 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
 
     pred, x_embedding_dict = predict_model_for_dataset(model, data)
 
-    if 'lr' in args.gnn_method or 'rf' in args.gnn_method:
+    if 'xgb' in 'lr' in args.gnn_method or 'rf' in args.gnn_method:
         from .train_with_linear_regression import RegressionModel
         trainer = RegressionModel(
             args.test_dataset,
@@ -435,19 +404,18 @@ def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, dire
     dir_path = os.path.join(directory_experiments, 'rank_final', f"{args.test_dataset.replace('/', '_')}", args.gnn_method)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-    if args.finetune_ratio >= 1:
-        file = f'results{embed_addition}_{args.hidden_channels}.csv'
+    if args.finetune_ratio > 1:
+        file = f'results{embed_addition}_{args.hidden_channels}_0.csv'
     else:
-        file = f'results{embed_addition}_{args.hidden_channels}_{args.finetune_ratio}.csv'
+        file = f'results{embed_addition}_{args.hidden_channels}_{args.finetune_ratio}_0.csv'
 
-    print(f'\n -- os.path.join(dir_path,file): {os.path.join(dir_path, file)}')
+    logger.info(f'\n -- os.path.join(dir_path,file): {os.path.join(dir_path, file)}')
     df_results.to_csv(os.path.join(dir_path, file))
 
     save_path = os.path.join(dir_path, config_name + '.csv')
 
     df_perf = pd.concat([df_perf, pd.DataFrame(evaluation_dict, index=[0])], ignore_index=True)
-    print()
-    print('======== save =======')
+    logger.info('======== save =======')
     # save the 
     df_perf.to_csv(args.path)
 
