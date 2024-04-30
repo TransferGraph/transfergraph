@@ -4,11 +4,11 @@ import os
 import time
 
 import numpy as np
-import pandas as pd
 import torch
 import torch.nn as nn
 import tqdm
 
+from .utils._util import save_pred
 from .utils.graph import Graph
 from .utils.node2vec import N2VModel
 from .utils.node2vec_w2v import N2V_W2VModel
@@ -161,6 +161,7 @@ def node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batc
 
     if 'xgb' in args.gnn_method or 'lr' in args.gnn_method or 'rf' in args.gnn_method:
         from .train_with_linear_regression import RegressionModel
+        logger.info("Using graph embeddings to learn prediction model")
         trainer = RegressionModel(
             args.test_dataset,
             finetune_ratio=args.finetune_ratio,
@@ -170,31 +171,7 @@ def node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batc
             reference_model=args.dataset_reference_model,
             task_type=args.task_type,
         )
-        score, results = trainer.train(x_embedding_dict, data_dict)
+        trainer.train(x_embedding_dict, data_dict)
     else:
-        results = {}
-
-    config_name = ','.join([('{0}={1}'.format(k[:14], str(v)[:5])) for k, v in setting_dict.items()])
-    results, save_path = save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, trainer.directory_experiments)
-    return results, save_path
-
-
-def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, directory_experiments):
-    df_model = pd.DataFrame(data_dict['model_idx'], columns=['mappedID'])
-    unique_model_id = data_dict['unique_model_id']
-    unique_model_id.index = range(len(unique_model_id))
-    df_results = df_model.merge(unique_model_id, how='inner', on='mappedID')
-    df_results['score'] = pred
-
-    # Save graph embedding distance results
-    dir_path = os.path.join(directory_experiments, 'rank_final', f"{args.test_dataset.replace('/', '_')}", args.gnn_method)
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-
-    save_path = os.path.join(dir_path, config_name + '.csv')
-
-    df_perf = pd.concat([df_perf, pd.DataFrame(evaluation_dict, index=[0])], ignore_index=True)
-    logger.info(f'======== save {args.path} =======')
-    df_perf.to_csv(args.path)
-
-    return df_results, save_path
+        logger.info("Directly using graph prediction to rank models")
+        save_pred(args, pred, data_dict)

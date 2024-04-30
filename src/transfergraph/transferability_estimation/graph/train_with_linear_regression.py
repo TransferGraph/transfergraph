@@ -56,7 +56,7 @@ class RegressionModel():
                                  'train_runtime',
                                  'dataset',
                                  'finetune_dataset', 'size', 'number_of_classes',
-                                 'test_accuracy'
+                                 'eval_accuracy'
                                  ]  # 'input_shape', 'elapsed_time', '#labels',
         dataset_map = {'oxford_iiit_pet': 'pets',
                        'oxford_flowers102': 'flowers'}
@@ -80,7 +80,7 @@ class RegressionModel():
         if 'without_accuracy' in method:
             self.y_label = 'score'
         else:
-            self.y_label = 'test_accuracy'
+            self.y_label = 'eval_accuracy'
         pass
 
     def feature_preprocess(self, embedding_dict={}, data_dict={}):
@@ -90,16 +90,13 @@ class RegressionModel():
         df_finetune = pd.read_csv(os.path.join(self.directory_experiments, 'records.csv'), index_col=0)
 
         # Filter by fine-tuning method
-        if self.peft_method is not None:
-            df_finetune = df_finetune[df_finetune['peft_method'] == self.peft_method]
-        else:
-            df_finetune = df_finetune[pd.isna(df_finetune['peft_method'])]
+        if 'peft_method' in df_finetune.columns:
+            if self.peft_method is not None:
+                df_finetune = df_finetune[df_finetune['peft_method'] == self.peft_method]
+            else:
+                df_finetune = df_finetune[pd.isna(df_finetune['peft_method'])]
 
-        df_finetune = df_finetune.rename(columns={'eval_accuracy': 'test_accuracy'})
-
-        df_finetune = df_finetune.rename(columns={'finetuned_dataset': 'finetune_dataset'})
-        if 'input_shape' in df_finetune.columns:
-            df_finetune = df_finetune.drop(columns=['input_shape'])
+            df_finetune = df_finetune.rename(columns={'finetuned_dataset': 'finetune_dataset'})
 
         # joining finetune records with model config (model)
         df_model = df_finetune.merge(df_model_config, how='inner', on='model')
@@ -107,16 +104,21 @@ class RegressionModel():
         # joining finetune records with dataset config (dataset metadata)
         df_feature = df_model.merge(df_dataset_config, how='inner', on='finetune_dataset')
 
-        ## !! image - fill those with mean value
-        # df_feature = fill_null_value(df_feature,columns=['test_accuracy','number_of_parameters'])
-        ## !! text
-        df_feature = df_feature.dropna(subset=['test_accuracy'])
-        df_feature = fill_null_value(df_feature, columns=['size', 'number_of_classes'])
+        if self.task_type == TaskType.SEQUENCE_CLASSIFICATION:
+            df_feature = df_feature.dropna(subset=['eval_accuracy'])
+            df_feature = fill_null_value(df_feature, columns=['size', 'number_of_classes'])
+
+            if 'input_shape' in df_feature.columns:
+                df_feature = df_feature.drop(columns=['input_shape'])
+        elif self.task_type == TaskType.IMAGE_CLASSIFICATION:
+            df_feature = fill_null_value(df_feature, columns=['eval_accuracy', 'number_of_parameters'])
+        else:
+            raise Exception(f'Unexpected task type {self.task_type.value}')
 
         df_feature = df_feature.dropna(subset=['model_type'])
 
         if 'normalize' in self.method:
-            df_feature['test_accuracy'] = df_feature[['finetune_dataset', 'test_accuracy']].groupby('finetune_dataset').transform(
+            df_feature['eval_accuracy'] = df_feature[['finetune_dataset', 'eval_accuracy']].groupby('finetune_dataset').transform(
                 lambda x: (x - x.min()) / (x.max() - x.min())
             )
 

@@ -74,10 +74,7 @@ def random_relative_top_accuracy_error(
     best_perf = np.max(actual_performances)
     mean_perf = np.mean(actual_performances)
 
-    mean_error = best_perf - mean_perf
-    predicted_error = best_perf - best_perf_from_top_k
-
-    return (mean_error - predicted_error) / best_perf
+    return (best_perf_from_top_k - mean_perf) / (best_perf - mean_perf)
 
 
 def random_absolute_top_accuracy_error(

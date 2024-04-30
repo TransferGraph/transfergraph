@@ -179,7 +179,7 @@ class GraphAttributes():
         # reallocate the node id
         a = set(self.unique_dataset_id['dataset'].unique())
         b = set(self.dataset_list)
-        logger.info('absent dataset', a - b)
+        logger.info(f'absent dataset: {a - b}')
         self.unique_dataset_id = self.get_unique_node(
             self.del_node(self.unique_dataset_id, self.dataset_list.keys(), 'dataset')['dataset'],
             'dataset'
@@ -414,7 +414,7 @@ class GraphAttributes():
         available_models = config['model'].unique()
         if self.args.task_type == TaskType.IMAGE_CLASSIFICATION:
             config['dataset'] = config['labels']
-            config = config.dropna(subset=['accuracy'])
+            config['accuracy'] = config['accuracy'].fillna((config['accuracy'].mean()))
         elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
             config = config.dropna(subset=['dataset'])
             ##### fill pre-trained null value with mean accuracy
@@ -428,23 +428,24 @@ class GraphAttributes():
         finetune_records = pd.read_csv(self.record_path)
 
         # Filter by fine-tuning method
-        if self.peft_method is not None:
-            finetune_records = finetune_records[finetune_records['peft_method'] == self.peft_method]
-        else:
-            finetune_records = finetune_records[pd.isna(finetune_records['peft_method'])]
+        if 'peft_method' in finetune_records.columns:
+            if self.peft_method is not None:
+                finetune_records = finetune_records[finetune_records['peft_method'] == self.peft_method]
+            else:
+                finetune_records = finetune_records[pd.isna(finetune_records['peft_method'])]
 
         # rename column name
         finetune_records['model'] = finetune_records['model']
         finetune_records['dataset'] = finetune_records['finetuned_dataset']  # finetune_records['train_dataset_name']
         if self.args.task_type == TaskType.IMAGE_CLASSIFICATION:
-            finetune_records['accuracy'] = finetune_records['test_accuracy']
+            finetune_records['accuracy'] = finetune_records['eval_accuracy']
         elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
             finetune_records['accuracy'] = finetune_records['eval_accuracy']
             finetune_records = finetune_records[finetune_records['dataset'] != 'dbpedia_14']
+            finetune_records['input_shape'] = 0
         else:
             raise Exception(f"Unexpected task type {self.args.task_type}")
 
-        finetune_records['input_shape'] = 0
         logger.info(f'---- len(finetune_records_raw): {len(finetune_records)}')
 
         ##### Ignore pre-trained information
@@ -545,7 +546,6 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
         data_feat = {}
 
         dataset_list = self.dataset_list.copy()
-        print('\n', dataset_list)
 
         for ori_dataset_name, dataset_name in dataset_list.items():
             embedding_directory = determine_directory_embedded_dataset(

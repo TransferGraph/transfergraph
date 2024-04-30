@@ -1,7 +1,8 @@
 import argparse
+import time
 
+from transfergraph.config import get_directory_experiments
 from transfergraph.transferability_estimation.graph.attributes import *
-from transfergraph.transferability_estimation.graph.utils.metric import record_metric  # record_result_metric
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +23,14 @@ def main(args):
         level=logging.INFO,
     )
     logger.info('======================= Begin New Session ==========================')
-    directory_experiments = os.path.join(get_root_path_string(), 'resources/experiments', args.task_type.value)
+    directory_experiments = get_directory_experiments(args.task_type)
     directory_log = os.path.join(directory_experiments, 'log')
+    args.time_start = time.time()
 
     if not os.path.exists(directory_log):
         os.makedirs(directory_log)
 
-    path = os.path.join(directory_log, f'performance_{args.dataset_embed_method.value}_{args.gnn_method}_score.csv')
+    path = os.path.join(directory_log, f'performance_score.csv')
     args.path = path
 
     if os.path.exists(path):
@@ -66,7 +68,8 @@ def main(args):
                 'train_time',
                 'loss',
                 'val_AUC',
-                'test_AUC'
+                'test_AUC',
+                'time_total',
             ]
         )
     setting_dict = {
@@ -138,33 +141,38 @@ def main(args):
         'max_dataset_idx': graph_attributes.max_dataset_idx,
         'finetune_records': graph_attributes.finetune_records,
         'model_config': graph_attributes.model_config
-        # 'max_model_idx':                graph_attributes.max_model_idx
     }
 
     batch_size = 16
 
     if 'node2vec+' in args.gnn_method:
         from transfergraph.transferability_estimation.graph.train_with_node2vec import node2vec_train
-        results, save_path = node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size, extend=True)
+        node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size, extend=True)
     elif 'node2vec' in args.gnn_method:
         from transfergraph.transferability_estimation.graph.train_with_node2vec import node2vec_train
-        results, save_path = node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size)
+        node2vec_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size)
     elif 'Conv' in args.gnn_method:
         from transfergraph.transferability_estimation.graph.train_with_GNN import gnn_train
-        results, save_path = gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size, custom_negative_sampling=True)
+        gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_size, custom_negative_sampling=True)
     elif args.gnn_method == '""':
         from transfergraph.transferability_estimation.graph.utils.basic import get_basic_features
-        results, save_path = get_basic_features(args.test_dataset, data_dict, setting_dict)
+        get_basic_features(args.test_dataset, data_dict, setting_dict)
     elif 'lr' in args.gnn_method:
         from transfergraph.transferability_estimation.graph.train_with_linear_regression import lr_train
         lr_train(args, graph_attributes)
     else:
         raise Exception(f"Unexpected gnn_method: {args.gnn_method}")
 
-    if isinstance(results, int): return 0
-
     setting_dict['gnn_method'] = args.gnn_method
-    record_metric('correlation', args.test_dataset, setting_dict, results, directory_experiments)
+
+    unique_model_id = data_dict['unique_model_id']
+    unique_model_id.index = range(len(unique_model_id))
+
+    evaluation_dict['time_total'] = time.time() - args.time_start
+    df_perf = pd.concat([df_perf, pd.DataFrame(evaluation_dict, index=[0])], ignore_index=True)
+    logger.info(f'======== save log: {args.path} =======')
+    # save the
+    df_perf.to_csv(args.path)
 
 
 if __name__ == '__main__':

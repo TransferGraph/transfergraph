@@ -1,6 +1,12 @@
+import logging
+import os
+
 import numpy as np
 import pandas as pd
 import torch
+
+from transfergraph.config import get_directory_experiments
+from transfergraph.dataset.embed_utils import DatasetEmbeddingMethod
 
 print(torch.__version__)
 # We can make use of the `loader.LinkNeighborLoader` from PyG:
@@ -16,6 +22,8 @@ import scipy.spatial.distance as distance
 import sys
 
 sys.path.append('/')
+
+logger = logging.getLogger(__name__)
 
 
 def get_variances(*embeddings, normalized=False):
@@ -56,6 +64,7 @@ def get_scaled_hessian(e0, e1):
     h0 = np.array(e0)
     h1 = np.array(e1)
     return h0 / (h0 + h1 + 1e-8), h1 / (h0 + h1 + 1e-8)
+
 
 def get_unique_node(col, name):
     unique_id = col.unique()
@@ -251,3 +260,27 @@ def predict_model_for_dataset(model, data, gnn_method='SageConv'):
     # print()
     # print(f"Validation AUC: {auc:.4f}")
     # return auc
+
+
+def save_pred(args, pred, data_dict):
+    directory_experiments = get_directory_experiments(args.task_type)
+    df_model = pd.DataFrame(data_dict['model_idx'], columns=['mappedID'])
+    unique_model_id = data_dict['unique_model_id']
+    unique_model_id.index = range(len(unique_model_id))
+    df_results = df_model.merge(unique_model_id, how='inner', on='mappedID')
+    df_results['score'] = pred
+    df_results.drop(columns=['mappedID'], inplace=True)
+
+    if args.dataset_embed_method == DatasetEmbeddingMethod.TASK2VEC:
+        embed_addition = '_task2vec'
+    else:
+        embed_addition = ''
+
+    # Save graph embedding distance results
+    dir_path = os.path.join(directory_experiments, 'rank_final', f"{args.test_dataset.replace('/', '_')}", args.gnn_method)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    file = f'results{embed_addition}_{args.finetune_ratio}_{args.hidden_channels}_0.csv'
+
+    logger.info(f'\n -- os.path.join(dir_path,file): {os.path.join(dir_path, file)}')
+    df_results.to_csv(os.path.join(dir_path, file))

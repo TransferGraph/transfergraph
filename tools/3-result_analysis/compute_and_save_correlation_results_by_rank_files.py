@@ -5,15 +5,15 @@ import numpy as np
 import pandas as pd
 from pandas import Series
 
-from transfergraph.config import get_root_path_string
+from transfergraph.config import get_directory_experiments
 from transfergraph.dataset.task import TaskType
 from transfergraph.transferability_estimation.correlation_utils import TransferabilityCorrelationMetric
 from transfergraph.transferability_estimation.result_analysis.result_analysis_utils import compute_correlation
 
 
 def compute_and_save_correlation_by_rank_files(task_type, all_metrics, all_method, all_target_datasets, peft_method, finetuning_ratio):
-    directory_experiments = f"{get_root_path_string()}/resources/experiments"
-    base_path = f"{directory_experiments}/{task_type.value}/rank_final"
+    directory_experiments = get_directory_experiments(task_type)
+    base_path = f"{directory_experiments}/rank_final"
     actual_performances = pd.read_csv(f"{directory_experiments}/{task_type.value}/records.csv")
 
     results = {metric: pd.DataFrame() for metric in all_metrics}

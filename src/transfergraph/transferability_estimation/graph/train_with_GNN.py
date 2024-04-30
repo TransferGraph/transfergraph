@@ -1,5 +1,3 @@
-import logging
-import os
 import time
 
 import torch.nn as nn
@@ -11,7 +9,6 @@ from tqdm import tqdm
 from .utils.CustomRandomLinkSplit import RandomLinkSplit
 from .utils._util import *
 from .utils.graph import HGraph
-from ...dataset.embed_utils import DatasetEmbeddingMethod
 
 logger = logging.getLogger(__name__)
 
@@ -369,8 +366,9 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
 
     pred, x_embedding_dict = predict_model_for_dataset(model, data)
 
-    if 'xgb' in 'lr' in args.gnn_method or 'rf' in args.gnn_method:
+    if 'xgb' in args.gnn_method or 'lr' in args.gnn_method or 'rf' in args.gnn_method:
         from .train_with_linear_regression import RegressionModel
+        logger.info("Using graph embeddings to learn prediction model")
         trainer = RegressionModel(
             args.test_dataset,
             finetune_ratio=args.finetune_ratio,
@@ -380,43 +378,7 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
             reference_model=args.dataset_reference_model,
             task_type=args.task_type,
         )
-        score, results = trainer.train(x_embedding_dict, data_dict)
+        trainer.train(x_embedding_dict, data_dict)
     else:
-        results = {}
-
-    results, save_path = save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, trainer.directory_experiments)
-    return results, save_path
-
-
-def save_pred(args, pred, df_perf, data_dict, evaluation_dict, config_name, directory_experiments):
-    df_model = pd.DataFrame(data_dict['model_idx'], columns=['mappedID'])
-    unique_model_id = data_dict['unique_model_id']
-    unique_model_id.index = range(len(unique_model_id))
-    df_results = df_model.merge(unique_model_id, how='inner', on='mappedID')
-    df_results['score'] = pred
-
-    if args.dataset_embed_method == DatasetEmbeddingMethod.TASK2VEC:
-        embed_addition = '_task2vec'
-    else:
-        embed_addition = ''
-
-    # Save graph embedding distance results
-    dir_path = os.path.join(directory_experiments, 'rank_final', f"{args.test_dataset.replace('/', '_')}", args.gnn_method)
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-    if args.finetune_ratio > 1:
-        file = f'results{embed_addition}_{args.hidden_channels}_0.csv'
-    else:
-        file = f'results{embed_addition}_{args.hidden_channels}_{args.finetune_ratio}_0.csv'
-
-    logger.info(f'\n -- os.path.join(dir_path,file): {os.path.join(dir_path, file)}')
-    df_results.to_csv(os.path.join(dir_path, file))
-
-    save_path = os.path.join(dir_path, config_name + '.csv')
-
-    df_perf = pd.concat([df_perf, pd.DataFrame(evaluation_dict, index=[0])], ignore_index=True)
-    logger.info('======== save =======')
-    # save the 
-    df_perf.to_csv(args.path)
-
-    return df_results, save_path
+        logger.info("Directly using graph prediction to rank models")
+        save_pred(args, pred, data_dict)
