@@ -20,10 +20,7 @@ class HuggingFaceDatasetBuilder:
         self.dataset_name = dataset_name
         self.max_train_samples = max_train_samples
 
-        if self.dataset_name is None:
-            self.config = ALL_DATASET_CONFIG[self.dataset_path]
-        else:
-            self.config = ALL_DATASET_CONFIG[self.dataset_path]['tasks'][self.dataset_name]
+        self.config = self.determine_dataset_config()
 
         if self.dataset_name is None:
             self.dataset_full_name = self.dataset_path
@@ -39,6 +36,22 @@ class HuggingFaceDatasetBuilder:
             self.cache_directory = None
 
         self.label_key = self.config.get("label_key", "label")
+
+    def determine_dataset_config(self):
+        if self.dataset_name is None:
+            if self.dataset_path in ALL_DATASET_CONFIG:
+                return ALL_DATASET_CONFIG[self.dataset_path]
+            else:
+                raise Exception(
+                    f"No configuration defined for {self.dataset_path}, please add it to transfergraph/dataset/base_dataset.py."
+                    )
+        else:
+            if self.dataset_path in ALL_DATASET_CONFIG and self.dataset_name in ALL_DATASET_CONFIG[self.dataset_path]['tasks']:
+                return ALL_DATASET_CONFIG[self.dataset_path]['tasks'][self.dataset_name]
+            else:
+                raise Exception(
+                    f"No configuration defined for {self.dataset_path}/{self.dataset_name}, please add it to transfergraph/dataset/base_dataset.py."
+                    )
 
     def _load_dataset(self):
         source = self.config.get("source", "huggingface")

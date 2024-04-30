@@ -76,7 +76,7 @@
 74,aXhyra/emotion_trained_31415,DistilBertForSequenceClassification,4,"['anger', 'joy', 'optimism', 'sadness']",distilbert,66956548,268963328,tweet_eval/emotion,0.72
 75,aXhyra/presentation_emotion_31415,DistilBertForSequenceClassification,4,"['anger', 'joy', 'optimism', 'sadness']",distilbert,66956548,268963328,tweet_eval/emotion,0.715
 76,JB173/distilbert-base-uncased-finetuned-emotion,DistilBertForSequenceClassification,6,"['LABEL_0', 'LABEL_1', 'LABEL_2', 'LABEL_3', 'LABEL_4', 'LABEL_5']",distilbert,66958086,268969472,dair-ai/emotion,
-77,nickmuchi/facebook-data2vec-finetuned-finance-classification,Data2VecTextForSequenceClassification,3,"['bearish', 'neutral', 'bullish']",data2vec-text,124647939,499894784,twitter-financial-news-sentiment,038557
+77,nickmuchi/facebook-data2vec-finetuned-finance-classification,Data2VecTextForSequenceClassification,3,"['bearish', 'neutral', 'bullish']",data2vec-text,124647939,499894784,twitter-financial-news-sentiment,0.38557
 78,Jeevesh8/feather_berts_96,BertForSequenceClassification,3,"['LABEL_0', 'LABEL_1', 'LABEL_2']",bert,109484547,439079424,,
 79,AnonymousSub/dummy_2,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,177854978,711706112,,
 80,Jeevesh8/init_bert_ft_qqp-24,BertForSequenceClassification,2,"['LABEL_0', 'LABEL_1']",bert,109483778,439076352,glue/qqp,
