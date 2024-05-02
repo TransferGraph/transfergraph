@@ -7,7 +7,7 @@ from transformers import AutoImageProcessor, AutoConfig, AutoModelForImageClassi
 from transfergraph.dataset.hugging_face.dataset import HuggingFaceDatasetImage, HuggingFaceDatasetText
 from transfergraph.dataset.task import TaskType
 from transfergraph.transferability_estimation.baseline.methods.estimator import TransferabilityEstimatorFeatureBased
-from transfergraph.transferability_estimation.baseline.methods.utils import TransferabilityMetric
+from transfergraph.transferability_estimation.baseline.methods.utils import TransferabilityMethod
 
 
 def main(args: argparse.Namespace):
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset_path', required=True, type=str, help='dataset path.')
     parser.add_argument('--dataset_name', required=False, type=str, help='dataset name.')
     parser.add_argument('--task_type', type=TaskType, required=True, help='the type of task.')
-    parser.add_argument('--metric', required=True, type=TransferabilityMetric, help='the type of metric.')
+    parser.add_argument('--metric', required=True, type=TransferabilityMethod, help='the type of metric.')
     parser.add_argument(
         "--batch_size",
         type=int,

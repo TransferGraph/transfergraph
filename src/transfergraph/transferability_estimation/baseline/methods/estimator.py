@@ -9,7 +9,7 @@ from transformers import PreTrainedModel
 
 from transfergraph.config import get_root_path_string
 from transfergraph.dataset.base_dataset import BaseDataset
-from transfergraph.transferability_estimation.baseline.methods.utils import TransferabilityMetric, TransferabilityDistanceFunction
+from transfergraph.transferability_estimation.baseline.methods.utils import TransferabilityMethod, TransferabilityDistanceFunction
 from transfergraph.transferability_estimation.feature_utils import extract_features
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ class TransferabilityEstimatorFeatureBased:
             self,
             dataset: BaseDataset,
             model: PreTrainedModel,
-            transferability_metric: TransferabilityMetric,
+            transferability_metric: TransferabilityMethod,
             args: argparse.Namespace
     ):
         self.dataset = dataset
@@ -34,19 +34,19 @@ class TransferabilityEstimatorFeatureBased:
         logger.info(f"  Model name = {self.model.name_or_path}")
         logger.info(f"  Metric = {self.transferability_metric.name}")
 
-        if self.transferability_metric == TransferabilityMetric.LOG_ME:
+        if self.transferability_metric == TransferabilityMethod.LOG_ME:
             from transfergraph.transferability_estimation.baseline.methods.logme import LogME
             metric = LogME()
-        elif self.transferability_metric == TransferabilityMetric.NLEEP:
+        elif self.transferability_metric == TransferabilityMethod.NLEEP:
             from transfergraph.transferability_estimation.baseline.methods.nleep import NLEEP
             metric = NLEEP()
-        elif self.transferability_metric == TransferabilityMetric.PARC:
+        elif self.transferability_metric == TransferabilityMethod.PARC:
             from transfergraph.transferability_estimation.baseline.methods.parc import PARC
             metric = PARC(TransferabilityDistanceFunction.CORRELATION)
-        elif self.transferability_metric == TransferabilityMetric.H_SCORE:
+        elif self.transferability_metric == TransferabilityMethod.H_SCORE:
             from transfergraph.transferability_estimation.baseline.methods.hscore import HScore
             metric = HScore()
-        elif self.transferability_metric == TransferabilityMetric.REG_H_SCORE:
+        elif self.transferability_metric == TransferabilityMethod.REG_H_SCORE:
             from transfergraph.transferability_estimation.baseline.methods.hscore_reg import HScoreR
             metric = HScoreR()
         else:

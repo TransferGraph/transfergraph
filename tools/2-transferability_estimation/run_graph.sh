@@ -1,5 +1,6 @@
 echo 
 echo ====== new command ========
+echo `realpath .`
 for CONTAIN_DATASET_FEATURE in True; #  True  False
 do
     echo CONTAIN_DATASET_FEATURE-$CONTAIN_DATASET_FEATURE
@@ -7,7 +8,7 @@ do
     do
         echo CONTAIN_DATA_SIMILARITY-$CONTAIN_DATA_SIMILARITY
         task_type=sequence_classification
-        for dataset in glue/sst2
+        for dataset in glue/sst2 tweet_eval/sentiment tweet_eval/emotion rotten_tomatoes glue/cola tweet_eval/irony tweet_eval/hate tweet_eval/offensive;
         do
             # tweet_eval/sentiment  tweet_eval/emotion rotten_tomatoes glue/cola tweet_eval/irony tweet_eval/hate tweet_eval/offensive ag_news
             # cifar100 svhn stanfordcars dtd caltech101 smallnorb_label_elevation
@@ -37,7 +38,9 @@ do
                                         for hidden_channels in 128; #64 32
                                         do
                                             echo hidden_channels-$hidden_channels
-                                            for GNN_METHOD in lr_homoGATConv_all_normalize lr_homoGCNConv_all_normalize lr_homo_SAGEConv_all_normalize lr_node2vec_all_normalize lr_node2vec+_all_normalize
+                                            for GNN_METHOD in xgb_homoGATConv_all_normalize_without_transfer xgb_homo_SAGEConv_all_normalize_without_transfer xgb_node2vec_all_normalize_without_transfer xgb_node2vec+_all_normalize_without_transfer\
+                                                              lr_homoGATConv_all_normalize_without_transfer lr_homo_SAGEConv_all_normalize_without_transfer lr_node2vec_all_normalize_without_transfer lr_node2vec+_all_normalize_without_transfer\
+                                                              rf_homoGATConv_all_normalize_without_transfer rf_homo_SAGEConv_all_normalize_without_transfer rf_node2vec_all_normalize_without_transfer rf_node2vec+_all_normalize_without_transfer;
                                                 # 
                                                 # lr_node2vec_without_accuracy lr_node2vec+_without_accuracy lr_homo_SAGEConv_without_accuracy lr_homoGATConv_without_accuracy
                                                 # lr_node2vec+_without_transfer lr_node2vec_without_transfer
@@ -54,7 +57,7 @@ do
                                                 echo GNN_METHOD-$GNN_METHOD
                                                 for finetune_ratio in 1.0; #1.0; #; # 0.3 0.7 0.5 
                                                 do
-                                                    echo "python3 run.py"
+                                                    echo "python3 tools/2-transferability_estimation/run.py"
                                                     echo "        --contain_data_similarity ${CONTAIN_DATA_SIMILARITY}"
                                                     echo "        --contain_dataset_feature ${CONTAIN_DATASET_FEATURE}"
                                                     echo "        --contain_model_feature ${CONTAIN_MODEL_FEATURE}"
@@ -69,7 +72,7 @@ do
                                                     echo "        --finetune_ratio ${finetune_ratio}"
                                                     echo "        --dataset_embed_method ${dataset_embed_method}"
                                                     echo "        --task_type ${task_type}"
-                                                    python3 run.py \
+                                                    python3 tools/2-transferability_estimation/run.py \
                                                             --contain_data_similarity ${CONTAIN_DATA_SIMILARITY} \
                                                             --contain_dataset_feature ${CONTAIN_DATASET_FEATURE} \
                                                             --contain_model_feature ${CONTAIN_MODEL_FEATURE} \

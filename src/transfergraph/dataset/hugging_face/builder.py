@@ -14,7 +14,7 @@ from transfergraph.dataset.base_dataset import ALL_DATASET_CONFIG
 
 
 class HuggingFaceDatasetBuilder:
-    def __init__(self, dataset_path: str, batch_size: int, dataset_name: str | None = None, max_train_samples: int = None):
+    def __init__(self, dataset_path: str, batch_size: int, dataset_name: str = None, max_train_samples: int = None):
         self.dataset_path = dataset_path
         self.batch_size = batch_size
         self.dataset_name = dataset_name
@@ -57,7 +57,10 @@ class HuggingFaceDatasetBuilder:
         source = self.config.get("source", "huggingface")
 
         if source == "huggingface":
-            all_dataset = load_dataset(self.dataset_path, self.dataset_name, cache_dir=self.cache_directory)
+            if "alias" in self.config:
+                all_dataset = load_dataset(self.config["alias"], cache_dir=self.cache_directory)
+            else:
+                all_dataset = load_dataset(self.dataset_path, self.dataset_name, cache_dir=self.cache_directory)
         elif source == 'local':
             file_type = self.config["type"]
             train_path = os.path.join(get_root_path_string(), self.config["train_path"])
@@ -103,7 +106,7 @@ class HuggingFaceDatasetBuilderText(HuggingFaceDatasetBuilder):
             dataset_path: str,
             tokenizer: PreTrainedTokenizer,
             batch_size: int,
-            dataset_name: str | None = None,
+            dataset_name: str = None,
             max_train_samples: int = None
     ):
         super().__init__(dataset_path, batch_size, dataset_name, max_train_samples)
@@ -186,7 +189,7 @@ class HuggingFaceDatasetBuilderImage(HuggingFaceDatasetBuilder):
             dataset_path: str,
             image_processor: BaseImageProcessor,
             batch_size: int,
-            dataset_name: str | None = None,
+            dataset_name: str = None,
             max_train_samples: int = None
     ):
         super().__init__(dataset_path, batch_size, dataset_name, max_train_samples)
@@ -203,12 +206,17 @@ class HuggingFaceDatasetBuilderImage(HuggingFaceDatasetBuilder):
         datasets = self._load_dataset()
         processed_datasets = self._preprocess(datasets)
 
+        if "validation" in processed_datasets:
+            validation_loader = DataLoader(processed_datasets["validation"], batch_size=self.batch_size, collate_fn=collate_fn)
+        else:
+            validation_loader = None
+
         from transfergraph.dataset.hugging_face.dataset import HuggingFaceDatasetImage
         return HuggingFaceDatasetImage(
             self.dataset_full_name,
             DataLoader(processed_datasets["train"], shuffle=True, batch_size=self.batch_size, collate_fn=collate_fn),
-            DataLoader(processed_datasets["validation"], batch_size=self.batch_size, collate_fn=collate_fn),
-            processed_datasets["train"].features[self.label_key].names,
+            validation_loader,
+            processed_datasets["train"].unique(self.label_key),
         )
 
     def _preprocess(self, datasets: DatasetDict) -> dict:
@@ -239,6 +247,10 @@ class HuggingFaceDatasetBuilderImage(HuggingFaceDatasetBuilder):
         train_dataset = datasets["train"].with_transform(preprocess_train)
 
         validation_split_key = self.determine_validation_split_key(datasets)
-        eval_dataset = datasets[validation_split_key].with_transform(preprocess_val)
 
-        return {"train": train_dataset, "validation": eval_dataset}
+        if validation_split_key is None:
+            return {"train": train_dataset}
+        else:
+            eval_dataset = datasets[validation_split_key].with_transform(preprocess_val)
+
+            return {"train": train_dataset, "validation": eval_dataset}

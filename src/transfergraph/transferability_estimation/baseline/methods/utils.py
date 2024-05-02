@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class TransferabilityMetric(Enum):
+class TransferabilityMethod(Enum):
     LOG_ME = "LogME"
     NLEEP = "NLEEP"
     PARC = "PARC"

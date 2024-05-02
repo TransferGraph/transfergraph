@@ -11,8 +11,8 @@ class HuggingFaceDatasetText(BaseDataset):
             self,
             name: str,
             train_loader: DataLoader,
-            eval_loader: DataLoader | None,
-            all_class: list[str | int],
+            eval_loader: DataLoader,
+            all_class: list,
             tokenizer: PreTrainedTokenizer,
     ):
         super().__init__(name, train_loader, eval_loader, all_class)
@@ -25,8 +25,8 @@ class HuggingFaceDatasetText(BaseDataset):
             dataset_path: str,
             tokenizer: PreTrainedTokenizer,
             batch_size: int,
-            dataset_name: str | None = None,
-            max_train_samples: int | None = None
+            dataset_name: str = None,
+            max_train_samples: int = None
     ):
         builder = HuggingFaceDatasetBuilderText(dataset_path, tokenizer, batch_size, dataset_name, max_train_samples)
 
@@ -40,7 +40,7 @@ class HuggingFaceDatasetImage(BaseDataset):
             dataset_path: str,
             image_processor: BaseImageProcessor,
             batch_size: int,
-            dataset_name: str | None = None
+            dataset_name: str = None
     ):
         builder = HuggingFaceDatasetBuilderImage(dataset_path, image_processor, batch_size, dataset_name)
 
