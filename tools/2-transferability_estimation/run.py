@@ -187,7 +187,7 @@ if __name__ == '__main__':
     parser.add_argument('--embed_dataset_feature', default='True', type=str, help='embed_dataset_feature')
     parser.add_argument('--embed_model_feature', default='True', type=str, help="embed_model_feature")
     parser.add_argument('--complete_model_features', default='True', type=str)
-    parser.add_argument('--dataset_reference_model', default='resnet50', type=str)
+    parser.add_argument('--dataset_reference_model', default='microsoft_resnet-50', type=str)
     parser.add_argument('--task_type', required=True, type=TaskType)
     parser.add_argument('--gnn_method', default='SAGEConv', type=str, help='contain_model_feature')
     parser.add_argument('--accuracy_thres', default=0.7, type=float, help='accuracy_thres')
@@ -210,7 +210,7 @@ if __name__ == '__main__':
         args.dataset_reference_model = 'EleutherAI_gpt-neo-125m'
     elif args.task_type == TaskType.IMAGE_CLASSIFICATION:
         if args.dataset_embed_method == DatasetEmbeddingMethod.DOMAIN_SIMILARITY:
-            args.dataset_reference_model = 'google_vit_base_patch16_224'
+            args.dataset_reference_model = 'microsoft_resnet-50'
         elif args.dataset_embed_method == DatasetEmbeddingMethod.TASK2VEC:
             args.dataset_reference_model = 'resnet34'
         else:

@@ -33,7 +33,7 @@ class RegressionModel():
             task_type=TaskType.SEQUENCE_CLASSIFICATION,
             peft_method=None,
     ):
-        if reference_model == 'resnet34' or reference_model == 'google_vit_base_patch16_224' or reference_model == 'microsoft/resnet-50':
+        if reference_model == 'resnet34' or reference_model == 'google_vit_base_patch16_224' or reference_model == 'microsoft_resnet-50':
             base_dataset = 'imagenet'
         elif reference_model == 'Ahmed9275_Vit-Cifar100':
             base_dataset = 'cifar100'

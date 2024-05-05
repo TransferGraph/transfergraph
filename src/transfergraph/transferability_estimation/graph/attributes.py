@@ -46,7 +46,7 @@ class GraphAttributes():
         self.unique_model_id, self.unique_dataset_id = self.get_node_id()
 
         # get dataset-dataset edge index
-        if args.dataset_reference_model == 'resnet34' or args.dataset_reference_model == 'google_vit_base_patch16_224':
+        if args.dataset_reference_model == 'resnet34' or args.dataset_reference_model == 'google_vit_base_patch16_224' or args.dataset_reference_model == 'microsoft_resnet-50':
             self.base_dataset = 'imagenet'
         elif args.dataset_reference_model == 'Ahmed9275_Vit-Cifar100':
             self.base_dataset = 'cifar100'
@@ -302,17 +302,6 @@ class GraphAttributes():
             dataset_name = ds_name.replace('/', '_').replace('-', '_')
 
             dataset_name = self.dataset_map[dataset_name] if dataset_name in self.dataset_map.keys() else dataset_name
-            if isinstance(dataset_name, list):
-                # print(dataset_name)
-                configs = self.finetune_records[self.finetune_records['dataset'] == ds_name]['configs'].values[0].replace("'", '"')
-                print(configs)
-                if ds_name == 'clevr':
-                    dataset_name = json.loads(configs)['preprocess']
-                else:
-                    dataset_name = f"{ds_name}_{json.loads(configs)['label_name']}"
-            # cannot load imagenet-21k and make them equal
-            if dataset_name == 'imagenet_21k':
-                dataset_name = 'imagenet'
             dataset_list[ds_name] = dataset_name
         return dataset_list  # , delete_dataset_row_idx
 
@@ -349,15 +338,8 @@ class GraphAttributes():
                 raise Exception(f"Unexpected task type {self.args.task_type}")
 
             try:
-                if self.args.task_type == TaskType.IMAGE_CLASSIFICATION:
-                    path = f'{self.resource_path}/LogME_scores/{dataset_name.replace(" ", "-")}.csv'
-                    df_score = pd.read_csv(path, index_col=0)
-                    df_score = df_score[df_score['model'] != 'time']
-                elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
-                    df_score_all = pd.read_csv(f'{self.resource_path}/transferability_score_records.csv', index_col=0)
-                    df_score = df_score_all[df_score_all['target_dataset'] == ori_dataset_name]
-                else:
-                    raise Exception(f"Unexpected task type {self.args.task_type}")
+                df_score_all = pd.read_csv(f'{self.resource_path}/transferability_score_records.csv', index_col=0)
+                df_score = df_score_all[df_score_all['target_dataset'] == ori_dataset_name]
 
                 # drop rows with -inf amount or replace it with really small number
                 df_score.loc[:, 'score'] = df_score['score'].replace([-np.inf, np.nan], -50)
@@ -550,7 +532,7 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
         for ori_dataset_name, dataset_name in dataset_list.items():
             embedding_directory = determine_directory_embedded_dataset(
                 reference_model,
-                TaskType.SEQUENCE_CLASSIFICATION,
+                self.args.task_type,
                 DatasetEmbeddingMethod.DOMAIN_SIMILARITY
                 )
             path = determine_file_name_embedded_dataset(embedding_directory, ori_dataset_name)
