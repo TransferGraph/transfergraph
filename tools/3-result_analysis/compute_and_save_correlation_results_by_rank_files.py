@@ -163,7 +163,7 @@ def main():
     parser.add_argument('--task_type', type=TaskType, required=True)
     parser.add_argument(
         '--all_metric',
-        type=TransferabilityCorrelationMetric,
+        type=str,
         required=False,
         nargs='+',
         default=[metric for metric in TransferabilityCorrelationMetric]
@@ -171,7 +171,7 @@ def main():
     parser.add_argument('--all_method', type=str, required=False, default=None)
     parser.add_argument(
         '--all_baseline',
-        type=TransferabilityCorrelationMetric,
+        type=str,
         required=False,
         nargs='+',
         default=[baseline for baseline in TransferabilityMethod]
@@ -182,6 +182,10 @@ def main():
 
     args = parser.parse_args()
 
+    args.all_metric = [TransferabilityCorrelationMetric(s.strip) for s in args.all_metric.split(",")] if args.all_metric is not None else [
+        baseline for baseline in TransferabilityCorrelationMetric]
+    args.all_baseline = [TransferabilityMethod(s.strip()) for s in
+                         args.all_baseline.split(",")] if args.all_baseline is not None else TransferabilityMethod
     args.all_method = [s.strip() for s in args.all_method.split(",")] if args.all_method is not None else []
     args.all_target_dataset = [s.strip() for s in args.all_target_dataset.split(",")] if args.all_target_dataset is not None else []
 

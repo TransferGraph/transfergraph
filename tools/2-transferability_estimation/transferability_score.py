@@ -62,7 +62,7 @@ def main(args: argparse.Namespace):
     estimator = TransferabilityEstimatorFeatureBased(
         dataset,
         model.to(device),
-        args.metric,
+        args.all_baseline,
         args,
     )
     estimator.score()
@@ -74,7 +74,12 @@ if __name__ == '__main__':
     parser.add_argument('--dataset_path', required=True, type=str, help='dataset path.')
     parser.add_argument('--dataset_name', required=False, type=str, help='dataset name.')
     parser.add_argument('--task_type', type=TaskType, required=True, help='the type of task.')
-    parser.add_argument('--metric', required=True, type=TransferabilityMethod, help='the type of metric.')
+    parser.add_argument(
+        '--all_baseline',
+        type=str,
+        required=False,
+        default=[baseline for baseline in TransferabilityMethod]
+    )
     parser.add_argument(
         "--batch_size",
         type=int,
@@ -83,5 +88,7 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
+
+    args.all_baseline = [TransferabilityMethod(s.strip()) for s in args.all_baseline.split(",")] if args.all_baseline is not None else []
 
     main(args)

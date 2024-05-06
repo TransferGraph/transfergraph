@@ -96,7 +96,7 @@ class RegressionModel():
             else:
                 df_finetune = df_finetune[pd.isna(df_finetune['peft_method'])]
 
-            df_finetune = df_finetune.rename(columns={'finetuned_dataset': 'finetune_dataset'})
+        df_finetune = df_finetune.rename(columns={'finetuned_dataset': 'finetune_dataset'})
 
         # joining finetune records with model config (model)
         df_model = df_finetune.merge(df_model_config, how='inner', on='model')

@@ -8,7 +8,7 @@ do
     do
         echo CONTAIN_DATA_SIMILARITY-$CONTAIN_DATA_SIMILARITY
         task_type=image_classification
-        for dataset in cifar100,caltech101,dtd,flowers,pets,smallnorb_label_elevation,stanfordcars,svhn;
+        for dataset in cifar100 caltech101 dtd flowers pets smallnorb_label_elevation stanfordcars svhn;
         do
             echo dataset-$dataset
             for complete_model_features in True; # False

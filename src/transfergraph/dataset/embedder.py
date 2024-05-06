@@ -58,7 +58,7 @@ class DatasetEmbedder:
 
 
 def determine_file_name_embedded_dataset(directory: str, dataset_name: str):
-    dataset_name_sanitized = dataset_name.replace('/', '_')
+    dataset_name_sanitized = dataset_name.replace('/', '_').replace(' ', '-')
 
     return os.path.join(directory, dataset_name_sanitized + f'_feature.npy')
 

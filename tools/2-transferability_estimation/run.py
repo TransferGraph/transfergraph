@@ -210,7 +210,7 @@ if __name__ == '__main__':
         args.dataset_reference_model = 'EleutherAI_gpt-neo-125m'
     elif args.task_type == TaskType.IMAGE_CLASSIFICATION:
         if args.dataset_embed_method == DatasetEmbeddingMethod.DOMAIN_SIMILARITY:
-            args.dataset_reference_model = 'microsoft_resnet-50'
+            args.dataset_reference_model = 'google_vit_base_patch16_224'
         elif args.dataset_embed_method == DatasetEmbeddingMethod.TASK2VEC:
             args.dataset_reference_model = 'resnet34'
         else:

@@ -22,6 +22,8 @@ def compute_correlation(
         return stats.weightedtau(actual_performances, transferability_scores)[0]
     elif metric == TransferabilityCorrelationMetric.TOP_1:
         return top_accuracy(actual_performances, transferability_scores, 1, transferability_scores_higher_is_better)
+    elif metric == TransferabilityCorrelationMetric.TOP_3:
+        return top_accuracy(actual_performances, transferability_scores, 3, transferability_scores_higher_is_better)
     elif metric == TransferabilityCorrelationMetric.RELATIVE_TOP_1:
         return relative_top_accuracy(actual_performances, transferability_scores, 1, transferability_scores_higher_is_better)
     elif metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_1_ERROR:

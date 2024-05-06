@@ -7,6 +7,7 @@ class TransferabilityCorrelationMetric(Enum):
     KENDALL = 'kendall'
     WEIGHTED_KENDALL = 'w-kendall'
     TOP_1 = 'top@1'
+    TOP_3 = 'top@3'
     RELATIVE_TOP_1 = 'rel@1'
     RANDOM_RELATIVE_TOP_1_ERROR = 'rrel@1'
     RANDOM_RELATIVE_TOP_3_ERROR = 'rrel@3'

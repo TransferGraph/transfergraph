@@ -506,10 +506,16 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
             ratio=args.finetune_ratio
         )  # ,ratio=args.finetune_ratio)#score
 
-        self.edge_index_tran_model_to_dataset, self.edge_attr_tran_model_to_dataset, self.tran_negative_pairs = self.get_edge_index(
-            method='score',
-            ratio=args.finetune_ratio
-        )  # ,ratio=args.finetune_ratio)#score
+        if not 'without_transfer' in args.gnn_method:
+            self.edge_index_tran_model_to_dataset, self.edge_attr_tran_model_to_dataset, self.tran_negative_pairs = self.get_edge_index(
+                method='score',
+                ratio=args.finetune_ratio
+            )  # ,ratio=args.finetune_ratio)#score
+        else:
+            self.edge_index_tran_model_to_dataset = None
+            self.edge_attr_tran_model_to_dataset = None
+            self.tran_negative_pairs = None
+
         if 'without_accuracy' in args.gnn_method or 'trained_on_transfer' in args.gnn_method:
             self.negative_pairs = self.tran_negative_pairs
         else:
