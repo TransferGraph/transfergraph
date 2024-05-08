@@ -38,6 +38,7 @@ class TransferabilityEstimatorFeatureBased:
         features_tensor, labels_tensor, _ = extract_features(self.dataset.train_loader, self.model)
 
         time_feature_extract = time.time() - time_start
+        result_record_list = list()
 
         for baseline_method in self.all_baseline:
             logger.info(f"  Metric = {baseline_method.name}")
@@ -66,7 +67,20 @@ class TransferabilityEstimatorFeatureBased:
 
             logger.info(f" {baseline_method} Score: {score}")
 
-            self._save_result_to_csv(score, baseline_method, time_feature_extract, time_method)
+            result_record_list.append(self._save_result_to_csv(score, baseline_method, time_feature_extract, time_method))
+
+        result_record = pd.concat(result_record_list, ignore_index=True)
+        file_name = os.path.join(
+            get_root_path_string(),
+            'resources/experiments',
+            self.args.task_type.value,
+            'transferability_score_records.csv'
+            )
+
+        if os.path.isfile(file_name):
+            result_record.to_csv(file_name, mode='a', index=True, header=False)
+        else:
+            result_record.to_csv(file_name, mode='w', index=True)
 
     def _read_transferability_score_records(self, file_name: str) -> pd.DataFrame:
         file = os.path.join(file_name)
@@ -80,15 +94,7 @@ class TransferabilityEstimatorFeatureBased:
         else:
             return pd.read_csv(file, index_col=0)
 
-    def _save_result_to_csv(self, score, baseline, time_feature_extract, time_method) -> None:
-        file_name = os.path.join(
-            get_root_path_string(),
-            'resources/experiments',
-            self.args.task_type.value,
-            'transferability_score_records.csv'
-            )
-        result_record = self._read_transferability_score_records(file_name)
-
+    def _save_result_to_csv(self, score, baseline, time_feature_extract, time_method) -> pd.DataFrame:
         training_record = vars(self.args)
 
         if "all_baseline" in training_record:
@@ -100,5 +106,4 @@ class TransferabilityEstimatorFeatureBased:
         training_record["runtime"] = time_feature_extract + time_method
         training_record["score"] = score
 
-        result_record = pd.concat([result_record, pd.DataFrame(training_record, index=[0])], ignore_index=True)
-        result_record.to_csv(file_name)
+        return pd.DataFrame(training_record, index=[0])
