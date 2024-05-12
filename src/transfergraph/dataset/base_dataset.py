@@ -215,9 +215,9 @@ ALL_DATASET_CONFIG = {
     },
     "flowers": {
         "source": "huggingface",
-        "alias": "clip-benchmark/wds_vtab-flowers",
-        "feature_key": "webp",
-        "label_key": "cls"
+        "alias": "nelorth/oxford-flowers",
+        "feature_key": "image",
+        "label_key": "label"
     },
     "smallnorb_label_elevation": {
         "source": "huggingface",
@@ -227,9 +227,9 @@ ALL_DATASET_CONFIG = {
     },
     "dtd": {
         "source": "huggingface",
-        "alias": "clip-benchmark/wds_vtab-dtd",
-        "feature_key": "webp",
-        "label_key": "cls"
+        "alias": "cansa/Describable-Textures-Dataset-DTD",
+        "feature_key": "image",
+        "label_key": "label"
     },
     "pets": {
         "source": "huggingface",
