@@ -129,6 +129,7 @@ def add_random_transferability_method_results(actual_performances_target, all_me
             random_correlation = actual_performances_target['eval_accuracy'].mean() / actual_performances_target['eval_accuracy'].max()
         elif metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_1_ERROR \
                 or metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_3_ERROR \
+                or metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_5_ERROR \
                 or metric == TransferabilityCorrelationMetric.PERCENTILE_TOP_1 \
                 or metric == TransferabilityCorrelationMetric.PERCENTILE_TOP_3 \
                 or metric == TransferabilityCorrelationMetric.RANDOM_ABSOLUTE_TOP_1_ERROR \
@@ -161,21 +162,9 @@ def replace_all_infinite_value(series: Series):
 def main():
     parser = argparse.ArgumentParser(description='Process transferability experiments.')
     parser.add_argument('--task_type', type=TaskType, required=True)
-    parser.add_argument(
-        '--all_metric',
-        type=str,
-        required=False,
-        nargs='+',
-        default=[metric for metric in TransferabilityCorrelationMetric]
-    )
+    parser.add_argument('--all_metric', type=str, required=False, default=None)
     parser.add_argument('--all_method', type=str, required=False, default=None)
-    parser.add_argument(
-        '--all_baseline',
-        type=str,
-        required=False,
-        nargs='+',
-        default=[baseline for baseline in TransferabilityMethod]
-    )
+    parser.add_argument('--all_baseline', type=str, required=False, default=None)
     parser.add_argument('--all_target_dataset', type=str, required=False, default=None)
     parser.add_argument('--peft_method', type=str, choices=[None, 'lora'], default=None, required=False)
     parser.add_argument('--finetuning_ratio', required=False, type=float, default=1.0)

@@ -24,12 +24,16 @@ def compute_correlation(
         return top_accuracy(actual_performances, transferability_scores, 1, transferability_scores_higher_is_better)
     elif metric == TransferabilityCorrelationMetric.TOP_3:
         return top_accuracy(actual_performances, transferability_scores, 3, transferability_scores_higher_is_better)
+    elif metric == TransferabilityCorrelationMetric.TOP_5:
+        return top_accuracy(actual_performances, transferability_scores, 5, transferability_scores_higher_is_better)
     elif metric == TransferabilityCorrelationMetric.RELATIVE_TOP_1:
         return relative_top_accuracy(actual_performances, transferability_scores, 1, transferability_scores_higher_is_better)
     elif metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_1_ERROR:
         return random_relative_top_accuracy_error(actual_performances, transferability_scores, 1, transferability_scores_higher_is_better)
     elif metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_3_ERROR:
         return random_relative_top_accuracy_error(actual_performances, transferability_scores, 3, transferability_scores_higher_is_better)
+    elif metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_5_ERROR:
+        return random_relative_top_accuracy_error(actual_performances, transferability_scores, 5, transferability_scores_higher_is_better)
     elif metric == TransferabilityCorrelationMetric.RANDOM_ABSOLUTE_TOP_1_ERROR:
         return random_absolute_top_accuracy_error(actual_performances, transferability_scores, 1, transferability_scores_higher_is_better)
     elif metric == TransferabilityCorrelationMetric.RANDOM_ABSOLUTE_TOP_3_ERROR:
