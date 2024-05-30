@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 from pandas import Series
+from scipy.stats import percentileofscore
 
 from transfergraph.config import get_directory_experiments
 from transfergraph.dataset.task import TaskType
@@ -20,7 +21,7 @@ def compute_and_save_correlation_by_rank_files(
         all_target_datasets,
         peft_method,
         finetuning_ratio
-        ):
+):
     directory_experiments = get_directory_experiments(task_type)
     base_path = f"{directory_experiments}/rank_final"
     actual_performances = pd.read_csv(f"{directory_experiments}/records.csv")
@@ -121,22 +122,24 @@ def filter_actual_performance_by_peft_method(actual_performances_target, peft_me
 
 
 def add_random_transferability_method_results(actual_performances_target, all_metrics, results, target_dataset):
-    # Randomize the eval_accuracy for the 'random' method
-    random_transferability_metric = np.random.permutation(actual_performances_target['eval_accuracy'].values)
     for metric in all_metrics:
-        if metric == TransferabilityCorrelationMetric.RELATIVE_TOP_1:
+        if metric == TransferabilityCorrelationMetric.RELATIVE_TOP_1 or \
+                metric == TransferabilityCorrelationMetric.RELATIVE_TOP_3 or \
+                metric == TransferabilityCorrelationMetric.RELATIVE_TOP_5:
             # Take the expected value as random pick, so we don't get lucky.
             random_correlation = actual_performances_target['eval_accuracy'].mean() / actual_performances_target['eval_accuracy'].max()
-        elif metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_1_ERROR \
-                or metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_3_ERROR \
-                or metric == TransferabilityCorrelationMetric.RANDOM_RELATIVE_TOP_5_ERROR \
-                or metric == TransferabilityCorrelationMetric.PERCENTILE_TOP_1 \
-                or metric == TransferabilityCorrelationMetric.PERCENTILE_TOP_3 \
-                or metric == TransferabilityCorrelationMetric.RANDOM_ABSOLUTE_TOP_1_ERROR \
-                or metric == TransferabilityCorrelationMetric.RANDOM_ABSOLUTE_TOP_3_ERROR:
-            # This is already random corrected.
-            continue
+        elif metric == TransferabilityCorrelationMetric.TOP_1 or \
+                metric == TransferabilityCorrelationMetric.TOP_3 or \
+                metric == TransferabilityCorrelationMetric.TOP_5:
+            random_correlation = actual_performances_target['eval_accuracy'].mean()
+        elif metric == TransferabilityCorrelationMetric.PERCENTILE_TOP_1 or \
+                metric == TransferabilityCorrelationMetric.PERCENTILE_TOP_3 or \
+                metric == TransferabilityCorrelationMetric.PERCENTILE_TOP_5:
+            random_accuracy = actual_performances_target['eval_accuracy'].mean()
+            random_correlation = percentileofscore(actual_performances_target['eval_accuracy'].tolist(), random_accuracy)
         else:
+            # Randomize the eval_accuracy for the 'random' method
+            random_transferability_metric = np.random.permutation(actual_performances_target['eval_accuracy'].values)
             # Compute the correlation for the 'random' method
             random_correlation = compute_correlation(
                 actual_performances_target['eval_accuracy'].tolist(),

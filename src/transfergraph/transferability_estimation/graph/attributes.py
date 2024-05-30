@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import pickle
+import re
 import sys
 
 import numpy as np
@@ -41,7 +42,16 @@ class GraphAttributes():
         self.model_config_path = os.path.join(self.resource_path, "model_config_dataset.csv")
         self.peft_method = args.peft_method
 
-        self.finetune_records = self.get_finetuned_records()
+        if 'model_ratio' in self.args.gnn_method:
+            match = re.search(r'model_ratio_([\d.]+)', self.args.gnn_method)
+            if match:
+                self.model_ratio = float(match.group(1))
+            else:
+                raise ValueError(f"Cannot parse model ratio from {self.args.gnn_method}")
+        else:
+            self.model_ratio = 1.0
+
+        self.finetune_records, self.model_config = self.get_finetuned_records()
         # get node id
         self.unique_model_id, self.unique_dataset_id = self.get_node_id()
 
@@ -388,6 +398,34 @@ class GraphAttributes():
 
         return df, df_neg
 
+    def select_models_with_uniform_distribution(self, finetune_df, model_config_df):
+        # Filter the results DataFrame for the desired dataset
+        target_dataset_finetune_df = finetune_df[finetune_df['finetuned_dataset'] == self.args.test_dataset]
+
+        # Sort the filtered DataFrame by eval_accuracy
+        sorted_results_df = target_dataset_finetune_df.sort_values(by='eval_accuracy')
+
+        # Calculate the number of models to sample based on the ratio
+        total_models = len(sorted_results_df)
+        num_samples = int(total_models * self.model_ratio)
+
+        # Use np.linspace to get indices for uniform sampling
+        indices = np.linspace(0, total_models - 1, num_samples).astype(int)
+
+        # Select the models corresponding to these indices
+        selected_finetune_records = sorted_results_df.iloc[indices]
+
+        # Get the list of selected model names
+        selected_model_names = selected_finetune_records['model'].unique()
+
+        # Filter the results DataFrame for the selected models
+        filtered_results_df = finetune_df[finetune_df['model'].isin(selected_model_names)]
+
+        # Filter the model information DataFrame for the selected models
+        filtered_model_info_df = model_config_df[model_config_df['model'].isin(selected_model_names)]
+
+        return filtered_results_df, filtered_model_info_df
+
     def get_finetuned_records(self):
         config = pd.read_csv(self.model_config_path)
         # model configuration
@@ -404,7 +442,6 @@ class GraphAttributes():
             config['input_shape'] = 0
         else:
             raise Exception(f"Unexpected task type {self.args.task_type}")
-        self.model_config = config
 
         ###### finetune results
         finetune_records = pd.read_csv(self.record_path)
@@ -430,8 +467,11 @@ class GraphAttributes():
 
         logger.info(f'---- len(finetune_records_raw): {len(finetune_records)}')
 
-        ##### Ignore pre-trained information
-        ######################
+        if self.model_ratio != 1:
+            finetune_records, model_config = self.select_models_with_uniform_distribution(finetune_records, config)
+        else:
+            model_config = config
+
         ## Delete the finetune records of the test datset
         ######################
         finetune_records = finetune_records[finetune_records['dataset'] != self.args.test_dataset]
@@ -463,7 +503,7 @@ class GraphAttributes():
 
         # self.finetune_records = finetune_records
 
-        return finetune_records
+        return finetune_records, model_config
 
 
 class GraphAttributesWithDomainSimilarity(GraphAttributes):

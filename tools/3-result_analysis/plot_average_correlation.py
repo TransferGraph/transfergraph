@@ -10,6 +10,8 @@ from transfergraph.transferability_estimation.correlation_utils import Transfera
 
 
 def shorten_method_name(method_name):
+    method_name = method_name.replace("xgb_homoGATConv_all_normalize_without_transfer", "Our approach")
+
     if '_' in method_name:
         # Add TG_ prefix
         prefix = "TG:"
@@ -18,6 +20,7 @@ def shorten_method_name(method_name):
         parts = [part.replace("node2vec", "N2V").replace("node2vec+", "N2V+")
                  .replace("SAGEConv", "GraphSAGE").replace("GATConv", "GAT")
                  .replace("homoGCNConv", "GCN").replace("normalize", "").replace("homo", "") for part in parts]
+        parts = [part.replace("all", "").replace("without", "").replace("transfer", "") for part in parts]
         # Join parts with underscores, remove redundant underscores, uppercase first part
         result = prefix + parts[0].upper() + '_' + '_'.join(parts[1:])
         result = result.strip('_')
@@ -51,6 +54,7 @@ def plot_correlation_metric(task_type, all_method, all_target_dataset, metric):
 
     # Calculate average across the specified columns
     df['average'] = df.mean(axis=1)
+    df.sort_values(by='average', ascending=False, inplace=True)
 
     # Prepare plot
     plt.figure(figsize=(10, 6))
@@ -59,8 +63,8 @@ def plot_correlation_metric(task_type, all_method, all_target_dataset, metric):
     colors = [color_map[name] for name in df.index]  # Retrieve colors for current methods
     sns.set_theme()
     sns.set_context("paper")
-    ax = sns.barplot(y=df.index, x='average', data=df, palette=colors, orient='h')
-    ax.set_xlabel('RRel@1_err', fontsize=24, labelpad=20)
+    ax = sns.barplot(y=df.index, x='average', data=df, palette=colors, orient='h', width=0.65)
+    ax.set_xlabel("Best predicted accuracy", fontsize=24, labelpad=20)
     ax.set_ylabel('Strategy', fontsize=24)
     ax.tick_params(axis='y', labelsize=20)  # Set the y-axis labels
     ax.tick_params(axis='x', labelsize=20)  # Set the x-axis labels
@@ -68,7 +72,7 @@ def plot_correlation_metric(task_type, all_method, all_target_dataset, metric):
     # Setting x-axis limits to focus on narrow range of similar values
     # xmin = df['average'].min() - 0.01  # slight offset to lower end
     xmin = 0
-    xmax = df['average'].max() + 0.02  # increased right margin for annotations
+    xmax = df['average'].max() + 0.1  # increased right margin for annotations
     plt.xlim(xmin, xmax)
 
     # Add text labels for the exact values
