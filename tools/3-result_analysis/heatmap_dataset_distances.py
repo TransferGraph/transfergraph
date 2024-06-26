@@ -4,26 +4,30 @@ import os
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from matplotlib.colors import LinearSegmentedColormap
 
 from transfergraph.config import get_root_path_string
 
 
-def shorten_dataset_name(name):
-    # Shorten the dataset names based on the specified rules
-    if name.startswith('tweet_eval'):
-        parts = name.split('/')
-        return f"Tw/{parts[1][:5]}"
-    elif name.startswith('glue'):
-        parts = name.split('/')
-        return f"Glue/{parts[1][0].upper()}"
-    elif name == 'stanfordcars':
-        return 'stanford'
-    elif name == 'rotten_tomatoes':
-        return 'rotten'
-    elif name == 'smallnorb_label_elevation':
-        return 'SmallN/El'
-    else:
-        return name
+sns.set_theme()
+sns.set_context("talk", font_scale=1.3)
+sns.set_style("whitegrid")
+
+def ucfirst(s):
+    if not s:
+        return s
+    return s[0].upper() + s[1:]
+
+def shorten_dataset_name(dataset_name):
+    return ucfirst(dataset_name.replace('rotten_tomatoes', 'Rotten').replace('tweet_eval/irony', 'Tw/Irony')\
+                       .replace('tweet_eval/sentiment', 'Tw/Senti').replace('tweet_eval/offensive', 'Tw/Offen')\
+                       .replace('glue/cola', 'Glue/C').replace('glue/sst2', 'Glue/S')\
+                       .replace('tweet_eval/hate', 'Tw/Hate').replace('tweet_eval/emotion', 'Tw/Emoti')\
+                       .replace('smallnorb_label_elevation', 'SmallN/El') \
+                       .replace('smallnorb_label_azimuth', 'SmallN/Az') \
+                       .replace('diabetic_retinopathy_detection', 'Diabetic') \
+                       .replace('stanfordcars', 'Stanford') \
+                       .replace('average', ''))
 
 def determine_target_dataset(target_dataset):
     if "glue" in target_dataset:
@@ -60,7 +64,11 @@ def generate_heatmap(task_type, datasets_to_include=None):
 
     # Generate the heatmap without annotating the actual values
     plt.figure(figsize=(12, 10))
-    ax = sns.heatmap(df, cmap='viridis', cbar=True)
+    inverted_cividis_red_blue_cmap = LinearSegmentedColormap.from_list(
+        "inverted_cividis_red_blue",
+        ["#313695", "#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#fee08b", "#fdae61", "#f46d43", "#d73027", "#a50026"]
+    )
+    ax = sns.heatmap(df, cmap='Spectral_r', cbar=True)
 
     # Rotate x-axis labels, position them at the top, and remove the plot title
     ax.xaxis.set_ticks_position('top')

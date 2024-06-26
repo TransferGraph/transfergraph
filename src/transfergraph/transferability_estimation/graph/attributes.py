@@ -431,12 +431,11 @@ class GraphAttributes():
         # model configuration
         config['configs'] = ''
         # config['accuracy'] = 0
-        available_models = config['model'].unique()
         if self.args.task_type == TaskType.IMAGE_CLASSIFICATION:
             config['dataset'] = config['labels']
             config['accuracy'] = config['accuracy'].fillna((config['accuracy'].mean()))
         elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
-            config = config.dropna(subset=['dataset'])
+            #config = config.dropna(subset=['dataset'])
             ##### fill pre-trained null value with mean accuracy
             config['accuracy'] = config['accuracy'].fillna((config['accuracy'].mean()))
             config['input_shape'] = 0
@@ -492,6 +491,7 @@ class GraphAttributes():
 
         finetune_records['config'] = ''
         # filter models that are contained in the config file
+        available_models = model_config['model'].unique()
         finetune_records = finetune_records[finetune_records['model'].isin(available_models)]
         logger.info(f'---- len(finetune_records_after_concatenating_model_config): {len(finetune_records)}')
 
@@ -500,8 +500,6 @@ class GraphAttributes():
         # ######################
         finetune_records.loc[len(finetune_records)] = {'dataset': self.args.test_dataset}
         finetune_records.index = range(len(finetune_records))
-
-        # self.finetune_records = finetune_records
 
         return finetune_records, model_config
 

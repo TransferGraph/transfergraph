@@ -1,0 +1,17 @@
+,model,score
+0,vaariis/distilbert-base-uncased-finetuned-emotion,0.8730697398576751
+1,connectivity/cola_6ep_ft-33,0.8976054443783736
+2,usami/distilbert-base-uncased-finetuned-cola,0.8666692740303213
+3,vesteinn/XLMR-ENIS-finetuned-cola,0.9003424201913339
+4,connectivity/cola_6ep_ft-10,0.9133674778639829
+5,Jeevesh8/init_bert_ft_qqp-33,0.8807063848496702
+6,Jeevesh8/init_bert_ft_qqp-33,0.8807063848496702
+7,philschmid/tiny-distilbert-classification,0.01797389529974671
+8,w11wo/sundanese-bert-base-emotion-classifier,0.6479784655469862
+9,aXhyra/demo_sentiment_31415,0.8987075047768158
+10,cambridgeltl/guardian_news_distilbert-base-uncased,0.8757513783694487
+11,Jeevesh8/feather_berts_46,0.8976984104151206
+12,rmihaylov/roberta-base-sentiment-bg,0.7394684302028933
+13,cardiffnlp/twitter-roberta-base-2021-124m,0.9296564880807102
+14,matthewburke/korean_sentiment,0.6238827250123172
+15,ali2066/DistilBERTFINAL_ctxSentence_TRAIN_editorials_TEST_NULL_second_train_set_null_False,0.9296327265957113

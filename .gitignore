@@ -26,6 +26,9 @@ scrap/
 # Models
 **/models/
 
+# Feature files
+**/features_final/
+
 # Slurm
 slurm-*.out
 *.sbatch

@@ -1,0 +1,15 @@
+,stanfordcars,svhn,caltech101,pets,cifar100,flowers,smallnorb_label_elevation,dtd,average
+lr_node2vec+_all_normalize_without_transfer,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+lr_homo_SAGEConv_all_normalize_without_transfer,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+lr_homoGATConv_all_normalize_without_transfer,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+rf_node2vec_all_normalize_without_transfer,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+lr_node2vec_all_normalize_without_transfer,1.0,0.9943139418781859,1.0,1.0,1.0,1.0,1.0,1.0,0.9996010245564736
+xgb_homoGATConv_all_normalize_without_transfer,1.0,1.0,0.982703454197888,1.0,1.0,1.0,1.0,1.0,0.9982821896210262
+xgb_node2vec_all_normalize_without_transfer,1.0,1.0,0.982703454197888,1.0,1.0,1.0,1.0,1.0,0.9982821896210262
+xgb_homo_SAGEConv_all_normalize_without_transfer,1.0,1.0,0.982703454197888,1.0,1.0,1.0,0.9961398888207562,1.0,0.9980488276743138
+Reg-H-Score,1.0,1.0,1.0,0.9867186248865638,0.989983873268022,1.0,0.9992964926590538,1.0,0.9978649855987597
+LogME,1.0,1.0,1.0,0.9830886670581327,0.989983873268022,1.0,0.9992964926590538,1.0,0.9975028626109624
+xgb_node2vec+_all_normalize_without_transfer,1.0,1.0,0.982703454197888,0.9706921745618854,1.0,1.0,1.0,1.0,0.9953584539152384
+rf_node2vec+_all_normalize_without_transfer,0.8540880808276832,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.9557561339846821
+rf_homo_SAGEConv_all_normalize_without_transfer,0.8540880808276832,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.9557561339846821
+rf_homoGATConv_all_normalize_without_transfer,0.8540880808276832,1.0,1.0,0.9706921745618854,0.9812807564890162,1.0,1.0,1.0,0.9513979348720546

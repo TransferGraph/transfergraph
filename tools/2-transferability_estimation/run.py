@@ -33,6 +33,15 @@ def main(args):
     path = os.path.join(directory_log, f'performance_score.csv')
     args.path = path
 
+    if 'model_ratio' in args.gnn_method:
+        match = re.search(r'model_ratio_([\d.]+)', args.gnn_method)
+        if match:
+            args.model_ratio = float(match.group(1))
+        else:
+            raise ValueError(f"Cannot parse model ratio from {args.gnn_method}")
+    else:
+        args.model_ratio = 1.0
+
     if os.path.exists(path):
         df_perf = pd.read_csv(path, index_col=0)
     else:
@@ -61,6 +70,7 @@ def main(args):
                 'gnn_method',
                 'accuracy_thres',
                 'finetune_ratio',
+                'model_ratio',
                 'hidden_channels',
                 'num_model',
                 'num_dataset',
@@ -92,6 +102,7 @@ def main(args):
         'accu_neg_thres': args.accu_neg_thres,
         'distance_thres': args.distance_thres,
         'finetune_ratio': args.finetune_ratio,
+        'model_ratio': args.model_ratio,
     }
     if args.dataset_reference_model != 'resnet50':
         setting_dict['dataset_reference_model'] = args.dataset_reference_model

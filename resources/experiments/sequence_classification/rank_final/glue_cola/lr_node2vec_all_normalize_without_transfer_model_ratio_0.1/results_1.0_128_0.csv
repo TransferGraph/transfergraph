@@ -1,0 +1,16 @@
+,model,score
+0,crcb/isear_bert,0.8975184376959802
+1,abdelkader/distilbert-base-uncased-finetuned-emotion,0.769892018629865
+2,Jeevesh8/bert_ft_qqp-88,0.8557428730648018
+3,connectivity/bert_ft_qqp-96,0.8354391738260701
+4,ChrisUPM/BioBERT_Re_trained,0.6001437639642794
+5,gchhablani/bert-base-cased-finetuned-wnli,0.8486005628455711
+6,nurkayevaa/autonlp-bert-covid-407910458,0.8307079059837742
+7,pietrotrope/emotion_final,0.7570529196972254
+8,elozano/tweet_offensive_eval,0.32421106623012397
+9,roberta-large,0.49543173488345504
+10,DoyyingFace/bert-asian-hate-tweets-asian-unclean-freeze-4,0.843984055188318
+11,finiteautomata/betonews-tweetcontext,0.5125286208775535
+12,waboucay/camembert-base-finetuned-xnli_fr-finetuned-nli-rua_wl,0.27184273392166325
+13,zenkri/autotrain-Arabic_Poetry_by_Subject-920730230,0.8500098333422138
+14,ASCCCCCCCC/distilbert-base-chinese-amazon_zh_20000,0.4776076906716295

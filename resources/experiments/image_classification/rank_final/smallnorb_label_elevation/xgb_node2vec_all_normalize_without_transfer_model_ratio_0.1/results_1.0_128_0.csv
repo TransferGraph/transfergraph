@@ -1,0 +1,17 @@
+,model,score
+0,Matthijs/snacks-classifier,0.9498692
+1,nateraw/vit-base-beans-demo-v3,0.9413125
+2,nickmuchi/vit-finetuned-cats-dogs,0.9489068
+3,nateraw/vit-base-patch16-224-cifar10,0.94956887
+4,edixo/road_good_damaged_condition,0.93866736
+5,juanfiguera/ice_cream,0.94233936
+6,AhmedSayeem/VIT_Basic,0.93194425
+7,ipvikas/rare-puppers,0.9420018
+8,Sena/flowers,0.9435789
+9,filipafcastro/beer_vs_wine,0.95181954
+10,facebook/convnext-tiny-224,0.9547899
+11,facebook/deit-tiny-distilled-patch16-224,0.9111762
+12,lysandre/tiny-vit-random,-0.00037665953
+13,microsoft/beit-base-patch16-224-pt22k,0.82756907
+14,facebook/convnext-xlarge-224-22k-1k,0.98732865
+15,facebook/convnext-base-224-22k,0.98039925
