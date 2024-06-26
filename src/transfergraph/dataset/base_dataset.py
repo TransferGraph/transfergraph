@@ -194,7 +194,49 @@ ALL_DATASET_CONFIG = {
     "cifar100": {
         "source": "huggingface",
         "label_key": "fine_label"
-    }
+    },
+    "stanfordcars": {
+        "source": "huggingface",
+        "alias": "Multimodal-Fatima/StanfordCars_train",
+        "feature_key": "image",
+        "label_key": "label"
+    },
+    "caltech101": {
+        "source": "huggingface",
+        "alias": "clip-benchmark/wds_vtab-caltech101",
+        "feature_key": "webp",
+        "label_key": "cls"
+    },
+    "svhn": {
+        "source": "huggingface",
+        "alias": "clip-benchmark/wds_vtab-svhn",
+        "feature_key": "webp",
+        "label_key": "cls"
+    },
+    "flowers": {
+        "source": "huggingface",
+        "alias": "nelorth/oxford-flowers",
+        "feature_key": "image",
+        "label_key": "label"
+    },
+    "smallnorb_label_elevation": {
+        "source": "huggingface",
+        "alias": "clip-benchmark/wds_vtab-smallnorb_label_elevation",
+        "feature_key": "webp",
+        "label_key": "cls"
+    },
+    "dtd": {
+        "source": "huggingface",
+        "alias": "cansa/Describable-Textures-Dataset-DTD",
+        "feature_key": "image",
+        "label_key": "label"
+    },
+    "pets": {
+        "source": "huggingface",
+        "alias": "clip-benchmark/wds_vtab-pets",
+        "feature_key": "webp",
+        "label_key": "cls"
+    },
 }
 
 
@@ -204,7 +246,7 @@ class BaseDataset:
             name: str,
             train_loader: DataLoader,
             eval_loader: DataLoader,
-            all_class: list[str | int],
+            all_class: list,
     ):
         self.name = name
         self.train_loader = train_loader

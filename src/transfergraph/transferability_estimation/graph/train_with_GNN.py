@@ -34,7 +34,7 @@ def train(model, train_data, graph_type='hetero', label_type=[], gnn_method='lr_
 
     if 'e2e' in gnn_method:
         L_fn = nn.MSELoss()
-    elif 'xgb' or 'lr' in gnn_method or 'rf' in gnn_method:
+    elif 'xgb' in gnn_method or 'lr' in gnn_method or 'rf' in gnn_method:
         L_fn = F.binary_cross_entropy_with_logits
     else:
         raise Exception(f"Unexpected gnn_method {gnn_method}")
@@ -302,7 +302,7 @@ def gnn_train(args, df_perf, data_dict, evaluation_dict, setting_dict, batch_siz
             args.embed_dataset_feature,
             args.gnn_method,
             label_type,
-            hidden_channels=64,  # 64 # 128 args.hidden_channels
+            hidden_channels=args.hidden_channels,
             node_types=data.node_types
         )
     logger.info('== Begin training network ==')

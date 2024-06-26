@@ -1,0 +1,16 @@
+,model,score
+0,milyiyo/selectra-small-finetuned-amazon-review,0.32092915974657
+1,vinai/bertweet-covid19-base-cased,0.7640987679237952
+2,Jeevesh8/bert_ft_qqp-40,0.87740083285201
+3,philschmid/tiny-distilbert-classification,0.027617518917679478
+4,SetFit/distilbert-base-uncased__sst2__train-16-0,0.849609790449477
+5,markt23917/finetuning-sentiment-model-3000-samples,0.8617702830330378
+6,juliensimon/autonlp-imdb-demo-hf-16622767,0.8391324036405808
+7,aXhyra/demo_sentiment_31415,0.8490906775794549
+8,roberta-large,0.568025427794678
+9,Jeevesh8/feather_berts_46,0.8898970858035156
+10,rmihaylov/roberta-base-sentiment-bg,0.5549889815130353
+11,Jeevesh8/lecun_feather_berts-7,0.8873851240843692
+12,joebobby/finetuning-sentiment-model-5000-samples3,0.8735517237148019
+13,ASCCCCCCCC/distilbert-base-chinese-amazon_zh_20000,0.5667294684197682
+14,ali2066/DistilBERTFINAL_ctxSentence_TRAIN_editorials_TEST_NULL_second_train_set_null_False,0.8877165384474773

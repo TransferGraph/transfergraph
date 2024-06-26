@@ -1,0 +1,9 @@
+,dataset,embedding_method,probe_model,number_of_samples,batch_size,time_total
+0,tweet_eval/irony,domain_similarity,EleutherAI/gpt-neo-125m,2862,16,4.508073329925537
+1,tweet_eval/emotion,domain_similarity,EleutherAI/gpt-neo-125m,3257,16,3.372576951980591
+2,glue/cola,domain_similarity,EleutherAI/gpt-neo-125m,8551,16,8.052160024642944
+3,rotten_tomatoes,domain_similarity,EleutherAI/gpt-neo-125m,8530,16,10.480889320373535
+4,tweet_eval/hate,domain_similarity,EleutherAI/gpt-neo-125m,9000,16,13.390923976898192
+5,tweet_eval/offensive,domain_similarity,EleutherAI/gpt-neo-125m,11916,16,20.59956383705139
+6,tweet_eval/sentiment,domain_similarity,EleutherAI/gpt-neo-125m,45615,16,44.16059255599976
+7,glue/sst2,domain_similarity,EleutherAI/gpt-neo-125m,67349,16,55.24655103683472

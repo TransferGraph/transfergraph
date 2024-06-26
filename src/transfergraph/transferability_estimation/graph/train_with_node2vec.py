@@ -27,9 +27,6 @@ def get_graph(args, data_dict, setting_dict):
     edge_index_tran_model_to_dataset = data_dict['edge_index_tran_model_to_dataset']
     edge_attr_tran_model_to_dataset = data_dict['edge_attr_tran_model_to_dataset']
 
-    logger.info(f'\nedge_index_accu_model_to_dataset: {edge_index_accu_model_to_dataset.shape}')
-    logger.info(f'\nedge_index_tran_model_to_dataset: {edge_index_tran_model_to_dataset.shape}')
-
     edge_index_dataset_to_dataset = data_dict['edge_index_dataset_to_dataset']
     edge_attr_dataset_to_dataset = data_dict['edge_attr_dataset_to_dataset']
 

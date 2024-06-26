@@ -1,0 +1,17 @@
+,model,score
+0,milyiyo/selectra-small-finetuned-amazon-review,0.4655681
+1,moghis/distilbert-base-uncased-finetuned-emotion,0.6485024
+2,uygarkurt/distilbert-base-uncased-finetuned-emotion,0.66666967
+3,riyadhctg/distilbert-base-uncased-finetuned-cola,0.5988524
+4,usami/distilbert-base-uncased-finetuned-cola,0.6187334
+5,philschmid/tiny-distilbert-classification,0.048657052
+6,cross-encoder/quora-roberta-base,0.80675936
+7,pietrotrope/emotion_final,0.72817516
+8,aXhyra/demo_sentiment_31415,0.671739
+9,manueltonneau/bert-twitter-en-is-hired,0.83282363
+10,IMSyPP/hate_speech_it,0.47233483
+11,Jeevesh8/feather_berts_96,0.7880999
+12,cardiffnlp/twitter-roberta-base-2021-124m,0.9277592
+13,anferico/bert-for-patents,0.5225772
+14,matthewburke/korean_sentiment,0.43000793
+15,cointegrated/roberta-base-formality,0.8658127

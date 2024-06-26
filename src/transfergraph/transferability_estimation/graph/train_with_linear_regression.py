@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import time
 from glob import glob
 
@@ -33,7 +34,7 @@ class RegressionModel():
             task_type=TaskType.SEQUENCE_CLASSIFICATION,
             peft_method=None,
     ):
-        if reference_model == 'resnet34' or reference_model == 'google_vit_base_patch16_224':
+        if reference_model == 'resnet34' or reference_model == 'google_vit_base_patch16_224' or reference_model == 'microsoft_resnet-50':
             base_dataset = 'imagenet'
         elif reference_model == 'Ahmed9275_Vit-Cifar100':
             base_dataset = 'cifar100'
@@ -43,6 +44,15 @@ class RegressionModel():
             base_dataset = 'gpt'
         else:
             raise Exception(f'Unexpected reference model {reference_model}')
+
+        if 'model_ratio' in method:
+            match = re.search(r'model_ratio_([\d.]+)', method)
+            if match:
+                self.model_ratio = float(match.group(1))
+            else:
+                raise ValueError(f"Cannot parse model ratio from {method}")
+        else:
+            self.model_ratio = 1.0
 
         if dataset_embed_method == DatasetEmbeddingMethod.TASK2VEC:
             dataset_correlation_file_name = f'corr_task2vec_{reference_model}_{base_dataset}.csv'
@@ -83,6 +93,34 @@ class RegressionModel():
             self.y_label = 'eval_accuracy'
         pass
 
+    def select_models_with_uniform_distribution(self, finetune_df, model_config_df):
+        # Filter the results DataFrame for the desired dataset
+        target_dataset_finetune_df = finetune_df[finetune_df['finetuned_dataset'] == self.test_dataset]
+
+        # Sort the filtered DataFrame by eval_accuracy
+        sorted_results_df = target_dataset_finetune_df.sort_values(by='eval_accuracy')
+
+        # Calculate the number of models to sample based on the ratio
+        total_models = len(sorted_results_df)
+        num_samples = int(total_models * self.model_ratio)
+
+        # Use np.linspace to get indices for uniform sampling
+        indices = np.linspace(0, total_models - 1, num_samples).astype(int)
+
+        # Select the models corresponding to these indices
+        selected_finetune_records = sorted_results_df.iloc[indices]
+
+        # Get the list of selected model names
+        selected_model_names = selected_finetune_records['model'].unique()
+
+        # Filter the results DataFrame for the selected models
+        filtered_results_df = finetune_df[finetune_df['model'].isin(selected_model_names)]
+
+        # Filter the model information DataFrame for the selected models
+        filtered_model_info_df = model_config_df[model_config_df['model'].isin(selected_model_names)]
+
+        return filtered_results_df, filtered_model_info_df
+
     def feature_preprocess(self, embedding_dict={}, data_dict={}):
         df_model_config = pd.read_csv(os.path.join(self.directory_experiments, 'model_config_dataset.csv'))
         df_dataset_config = pd.read_csv(os.path.join(self.directory_experiments, 'target_dataset_features.csv'))
@@ -96,7 +134,10 @@ class RegressionModel():
             else:
                 df_finetune = df_finetune[pd.isna(df_finetune['peft_method'])]
 
-            df_finetune = df_finetune.rename(columns={'finetuned_dataset': 'finetune_dataset'})
+        if self.model_ratio != 1:
+            df_finetune, df_model_config = self.select_models_with_uniform_distribution(df_finetune, df_model_config)
+
+        df_finetune = df_finetune.rename(columns={'finetuned_dataset': 'finetune_dataset'})
 
         # joining finetune records with model config (model)
         df_model = df_finetune.merge(df_model_config, how='inner', on='model')
@@ -268,7 +309,7 @@ class RegressionModel():
             df_feature['distance'].fillna(value=min_value, inplace=True)
 
             logger.info(f'\n2nd df_feature.shape: {df_feature.shape}')
-            assert df_feature.shape[0] > 600
+            assert df_feature.shape[0] > 100
 
             self.selected_columns += ['distance']
 
@@ -357,7 +398,7 @@ class RegressionModel():
 
         logger.info(f'\n --- dataset: {self.test_dataset}')
         logger.info(f'\n --- shape of X_train: {X_train.shape}, X_test.shape: {X_test.shape}')
-        assert X_train.shape[0] > 200
+        assert X_train.shape[1] > 100
 
         if 'lr' in self.method:
             model = LinearRegression()

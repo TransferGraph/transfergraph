@@ -8,6 +8,7 @@
 
 # Plots
 **.pdf
+**.png
 
 # logs
 logs/
@@ -24,6 +25,9 @@ scrap/
 
 # Models
 **/models/
+
+# Feature files
+**/features_final/
 
 # Slurm
 slurm-*.out

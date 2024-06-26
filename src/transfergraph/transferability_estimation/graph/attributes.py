@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import pickle
+import re
 import sys
 
 import numpy as np
@@ -41,12 +42,21 @@ class GraphAttributes():
         self.model_config_path = os.path.join(self.resource_path, "model_config_dataset.csv")
         self.peft_method = args.peft_method
 
-        self.finetune_records = self.get_finetuned_records()
+        if 'model_ratio' in self.args.gnn_method:
+            match = re.search(r'model_ratio_([\d.]+)', self.args.gnn_method)
+            if match:
+                self.model_ratio = float(match.group(1))
+            else:
+                raise ValueError(f"Cannot parse model ratio from {self.args.gnn_method}")
+        else:
+            self.model_ratio = 1.0
+
+        self.finetune_records, self.model_config = self.get_finetuned_records()
         # get node id
         self.unique_model_id, self.unique_dataset_id = self.get_node_id()
 
         # get dataset-dataset edge index
-        if args.dataset_reference_model == 'resnet34' or args.dataset_reference_model == 'google_vit_base_patch16_224':
+        if args.dataset_reference_model == 'resnet34' or args.dataset_reference_model == 'google_vit_base_patch16_224' or args.dataset_reference_model == 'microsoft_resnet-50':
             self.base_dataset = 'imagenet'
         elif args.dataset_reference_model == 'Ahmed9275_Vit-Cifar100':
             self.base_dataset = 'cifar100'
@@ -302,17 +312,6 @@ class GraphAttributes():
             dataset_name = ds_name.replace('/', '_').replace('-', '_')
 
             dataset_name = self.dataset_map[dataset_name] if dataset_name in self.dataset_map.keys() else dataset_name
-            if isinstance(dataset_name, list):
-                # print(dataset_name)
-                configs = self.finetune_records[self.finetune_records['dataset'] == ds_name]['configs'].values[0].replace("'", '"')
-                print(configs)
-                if ds_name == 'clevr':
-                    dataset_name = json.loads(configs)['preprocess']
-                else:
-                    dataset_name = f"{ds_name}_{json.loads(configs)['label_name']}"
-            # cannot load imagenet-21k and make them equal
-            if dataset_name == 'imagenet_21k':
-                dataset_name = 'imagenet'
             dataset_list[ds_name] = dataset_name
         return dataset_list  # , delete_dataset_row_idx
 
@@ -349,15 +348,8 @@ class GraphAttributes():
                 raise Exception(f"Unexpected task type {self.args.task_type}")
 
             try:
-                if self.args.task_type == TaskType.IMAGE_CLASSIFICATION:
-                    path = f'{self.resource_path}/LogME_scores/{dataset_name.replace(" ", "-")}.csv'
-                    df_score = pd.read_csv(path, index_col=0)
-                    df_score = df_score[df_score['model'] != 'time']
-                elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
-                    df_score_all = pd.read_csv(f'{self.resource_path}/transferability_score_records.csv', index_col=0)
-                    df_score = df_score_all[df_score_all['target_dataset'] == ori_dataset_name]
-                else:
-                    raise Exception(f"Unexpected task type {self.args.task_type}")
+                df_score_all = pd.read_csv(f'{self.resource_path}/transferability_score_records.csv', index_col=0)
+                df_score = df_score_all[df_score_all['target_dataset'] == ori_dataset_name]
 
                 # drop rows with -inf amount or replace it with really small number
                 df_score.loc[:, 'score'] = df_score['score'].replace([-np.inf, np.nan], -50)
@@ -406,23 +398,49 @@ class GraphAttributes():
 
         return df, df_neg
 
+    def select_models_with_uniform_distribution(self, finetune_df, model_config_df):
+        # Filter the results DataFrame for the desired dataset
+        target_dataset_finetune_df = finetune_df[finetune_df['finetuned_dataset'] == self.args.test_dataset]
+
+        # Sort the filtered DataFrame by eval_accuracy
+        sorted_results_df = target_dataset_finetune_df.sort_values(by='eval_accuracy')
+
+        # Calculate the number of models to sample based on the ratio
+        total_models = len(sorted_results_df)
+        num_samples = int(total_models * self.model_ratio)
+
+        # Use np.linspace to get indices for uniform sampling
+        indices = np.linspace(0, total_models - 1, num_samples).astype(int)
+
+        # Select the models corresponding to these indices
+        selected_finetune_records = sorted_results_df.iloc[indices]
+
+        # Get the list of selected model names
+        selected_model_names = selected_finetune_records['model'].unique()
+
+        # Filter the results DataFrame for the selected models
+        filtered_results_df = finetune_df[finetune_df['model'].isin(selected_model_names)]
+
+        # Filter the model information DataFrame for the selected models
+        filtered_model_info_df = model_config_df[model_config_df['model'].isin(selected_model_names)]
+
+        return filtered_results_df, filtered_model_info_df
+
     def get_finetuned_records(self):
         config = pd.read_csv(self.model_config_path)
         # model configuration
         config['configs'] = ''
         # config['accuracy'] = 0
-        available_models = config['model'].unique()
         if self.args.task_type == TaskType.IMAGE_CLASSIFICATION:
             config['dataset'] = config['labels']
             config['accuracy'] = config['accuracy'].fillna((config['accuracy'].mean()))
         elif self.args.task_type == TaskType.SEQUENCE_CLASSIFICATION:
-            config = config.dropna(subset=['dataset'])
+            #config = config.dropna(subset=['dataset'])
             ##### fill pre-trained null value with mean accuracy
             config['accuracy'] = config['accuracy'].fillna((config['accuracy'].mean()))
             config['input_shape'] = 0
         else:
             raise Exception(f"Unexpected task type {self.args.task_type}")
-        self.model_config = config
 
         ###### finetune results
         finetune_records = pd.read_csv(self.record_path)
@@ -448,8 +466,11 @@ class GraphAttributes():
 
         logger.info(f'---- len(finetune_records_raw): {len(finetune_records)}')
 
-        ##### Ignore pre-trained information
-        ######################
+        if self.model_ratio != 1:
+            finetune_records, model_config = self.select_models_with_uniform_distribution(finetune_records, config)
+        else:
+            model_config = config
+
         ## Delete the finetune records of the test datset
         ######################
         finetune_records = finetune_records[finetune_records['dataset'] != self.args.test_dataset]
@@ -470,6 +491,7 @@ class GraphAttributes():
 
         finetune_records['config'] = ''
         # filter models that are contained in the config file
+        available_models = model_config['model'].unique()
         finetune_records = finetune_records[finetune_records['model'].isin(available_models)]
         logger.info(f'---- len(finetune_records_after_concatenating_model_config): {len(finetune_records)}')
 
@@ -479,9 +501,7 @@ class GraphAttributes():
         finetune_records.loc[len(finetune_records)] = {'dataset': self.args.test_dataset}
         finetune_records.index = range(len(finetune_records))
 
-        # self.finetune_records = finetune_records
-
-        return finetune_records
+        return finetune_records, model_config
 
 
 class GraphAttributesWithDomainSimilarity(GraphAttributes):
@@ -524,10 +544,16 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
             ratio=args.finetune_ratio
         )  # ,ratio=args.finetune_ratio)#score
 
-        self.edge_index_tran_model_to_dataset, self.edge_attr_tran_model_to_dataset, self.tran_negative_pairs = self.get_edge_index(
-            method='score',
-            ratio=args.finetune_ratio
-        )  # ,ratio=args.finetune_ratio)#score
+        if not 'without_transfer' in args.gnn_method:
+            self.edge_index_tran_model_to_dataset, self.edge_attr_tran_model_to_dataset, self.tran_negative_pairs = self.get_edge_index(
+                method='score',
+                ratio=args.finetune_ratio
+            )  # ,ratio=args.finetune_ratio)#score
+        else:
+            self.edge_index_tran_model_to_dataset = None
+            self.edge_attr_tran_model_to_dataset = None
+            self.tran_negative_pairs = None
+
         if 'without_accuracy' in args.gnn_method or 'trained_on_transfer' in args.gnn_method:
             self.negative_pairs = self.tran_negative_pairs
         else:
@@ -550,7 +576,7 @@ class GraphAttributesWithDomainSimilarity(GraphAttributes):
         for ori_dataset_name, dataset_name in dataset_list.items():
             embedding_directory = determine_directory_embedded_dataset(
                 reference_model,
-                TaskType.SEQUENCE_CLASSIFICATION,
+                self.args.task_type,
                 DatasetEmbeddingMethod.DOMAIN_SIMILARITY
                 )
             path = determine_file_name_embedded_dataset(embedding_directory, ori_dataset_name)

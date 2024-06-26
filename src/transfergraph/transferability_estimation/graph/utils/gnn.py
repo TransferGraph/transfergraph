@@ -261,7 +261,7 @@ class HomoModel(torch.nn.Module):
         # elif 'GraphSAGE' in self.gnn_method:
         #     self.gnn = GraphSAGE(hidden_channels,hidden_channels,num_layers=2)
 
-        if 'lr' in self.gnn_method or 'rf' in self.gnn_method:
+        if 'xgb' in self.gnn_method or 'lr' in self.gnn_method or 'rf' in self.gnn_method:
             self.classifier = HomoClassifier()
         elif 'e2e' in self.gnn_method:
             self.classifier = HomoRegression(hidden_channels)

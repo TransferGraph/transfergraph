@@ -1,0 +1,9 @@
+,dataset,embedding_method,probe_model,number_of_samples,batch_size,time_total
+0,cifar100,domain_similarity,google/vit-base-patch16-224,50000,16,147.43138456344604
+1,caltech101,domain_similarity,google/vit-base-patch16-224,2753,16,9.683180570602415
+2,pets,domain_similarity,google/vit-base-patch16-224,2944,16,17.993175983428955
+3,stanfordcars,domain_similarity,google/vit-base-patch16-224,8144,16,63.773595333099365
+4,flowers,domain_similarity,google/vit-base-patch16-224,7169,16,41.67031502723694
+5,svhn,domain_similarity,google/vit-base-patch16-224,65931,16,203.29967522621155
+6,dtd,domain_similarity,google/vit-base-patch16-224,5640,16,225.72574973106384
+7,smallnorb_label_elevation,domain_similarity,google/vit-base-patch16-224,24300,16,72.05033683776855

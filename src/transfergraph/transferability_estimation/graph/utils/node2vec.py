@@ -97,7 +97,7 @@ class N2VModel(torch.nn.Module):
             sparse=False,  # True
             epochs=15,
             extend=False,
-    ):
+    ): 
         super().__init__()
         self.epochs = epochs
         self.base = Node2Vec(
